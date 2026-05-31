@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="responsive.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificações - Pague Junto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Nunito', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #060D1F; color: #fff; min-height: 100vh; padding-bottom: 40px; }
+        .bg-glow { position: fixed; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(ellipse 70% 50% at 50% -10%, rgba(0,80,255,0.2) 0%, transparent 60%); }
+
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 16px; position: sticky; top: 0; background: #060D1F; z-index: 10; }
+        .header-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.07); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; }
+        .header-title { font-size: 17px; font-weight: 900; }
+        .marcar-lidas { font-size: 13px; font-weight: 800; color: #3B82F6; cursor: pointer; background: none; border: none; }
+
+        .content { padding: 0 16px; max-width: 480px; margin: 0 auto; position: relative; z-index: 1; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Notificação card */
+        .notif-card {
+            background: #131F35; border-radius: 18px; padding: 16px;
+            margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.06);
+            display: flex; align-items: flex-start; gap: 14px;
+            animation: fadeUp 0.3s ease both;
+            transition: background 0.2s;
+        }
+        .notif-card.nao-lida { border-left: 3px solid #3B82F6; background: rgba(37,99,235,0.06); }
+        .notif-card.convite { border-left-color: #3B82F6; }
+        .notif-card.aceito { border-left-color: #22C55E; }
+        .notif-card.recusado { border-left-color: #F87171; }
+        .notif-card.pagamento { border-left-color: #F59E0B; }
+
+        .notif-icon {
+            width: 46px; height: 46px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+        }
+        .notif-icon.convite { background: rgba(37,99,235,0.15); color: #3B82F6; }
+        .notif-icon.aceito { background: rgba(34,197,94,0.15); color: #22C55E; }
+        .notif-icon.recusado { background: rgba(248,113,113,0.15); color: #F87171; }
+        .notif-icon.pagamento { background: rgba(245,158,11,0.15); color: #F59E0B; }
+
+        .notif-body { flex: 1; }
+        .notif-titulo { font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 4px; line-height: 1.4; }
+        .notif-titulo span { color: #3B82F6; }
+        .notif-desc { font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 600; margin-bottom: 10px; line-height: 1.4; }
+        .notif-tempo { font-size: 11px; color: rgba(255,255,255,0.25); font-weight: 700; }
+        .notif-dot { width: 8px; height: 8px; border-radius: 50%; background: #3B82F6; flex-shrink: 0; margin-top: 6px; }
+
+        /* Botões aceitar/recusar */
+        .notif-actions { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-aceitar {
+            flex: 1; background: #2563EB; color: #fff;
+            font-size: 13px; font-weight: 900; font-family: 'Nunito', sans-serif;
+            padding: 10px; border-radius: 10px; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn-aceitar:hover { background: #1d4ed8; }
+        .btn-aceitar:active { transform: scale(0.97); }
+        .btn-aceitar.pagar-depois { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.1); }
+
+        .btn-recusar {
+            background: rgba(248,113,113,0.1); color: #F87171;
+            font-size: 13px; font-weight: 900; font-family: 'Nunito', sans-serif;
+            padding: 10px 16px; border-radius: 10px;
+            border: 1px solid rgba(248,113,113,0.2); cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-recusar:hover { background: rgba(248,113,113,0.18); }
+
+        /* Rateio preview no convite */
+        .rateio-preview {
+            background: rgba(255,255,255,0.04); border-radius: 12px; padding: 12px 14px;
+            margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.06);
+        }
+        .rateio-preview .nome { font-size: 14px; font-weight: 900; color: #3B82F6; }
+        .rateio-preview .valor { font-size: 20px; font-weight: 900; color: #fff; margin: 4px 0; }
+        .rateio-preview .criador { font-size: 12px; color: rgba(255,255,255,0.3); font-weight: 600; }
+
+        /* Seção vazia */
+        .empty-state { text-align: center; padding: 60px 20px; }
+        .empty-state i { font-size: 48px; color: rgba(255,255,255,0.08); margin-bottom: 16px; display: block; }
+        .empty-state h3 { font-size: 18px; font-weight: 900; color: rgba(255,255,255,0.3); margin-bottom: 6px; }
+        .empty-state p { font-size: 14px; color: rgba(255,255,255,0.2); font-weight: 600; }
+
+        /* Agrupamento por data */
+        .date-label { font-size: 12px; font-weight: 900; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.06em; margin: 20px 0 10px; }
+    </style>
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<div class="header">
+    <button class="header-btn" onclick="location.href='dashboard.html'">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+    <span class="header-title">Notificações</span>
+    <button class="marcar-lidas" onclick="marcarTodasLidas()">Marcar todas</button>
+</div>
+
+<div class="content" id="conteudo">
+    <p style="text-align:center; color:rgba(255,255,255,0.3); padding:40px 0; font-size:14px; font-weight:700;">
+        <i class="fas fa-spinner fa-spin" style="display:block; font-size:28px; margin-bottom:12px; color:#2563EB;"></i>
+        Carregando notificações...
+    </p>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, query, where, orderBy, getDocs, doc, updateDoc, getDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import firebaseConfig from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    let usuarioLogado = null;
+
+    function fmt(v) { return Number(v).toFixed(2).replace('.', ','); }
+    function tempoAtras(ts) {
+        if (!ts) return 'agora';
+        const d = ts.toDate ? ts.toDate() : new Date(ts);
+        const diff = Math.floor((Date.now() - d.getTime()) / 1000);
+        if (diff < 60) return 'agora mesmo';
+        if (diff < 3600) return `${Math.floor(diff/60)} min atrás`;
+        if (diff < 86400) return `${Math.floor(diff/3600)}h atrás`;
+        return `${Math.floor(diff/86400)}d atrás`;
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) { window.location.href = 'login.html'; return; }
+        usuarioLogado = user;
+        carregarNotificacoes();
+    });
+
+    async function carregarNotificacoes() {
+        const conteudo = document.getElementById('conteudo');
+        try {
+            const q = query(
+                collection(db, "notificacoes"),
+                where("destinatarioId", "==", usuarioLogado.uid),
+                orderBy("criadoEm", "desc")
+            );
+            const snap = await getDocs(q);
+
+            if (snap.empty) {
+                conteudo.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bell"></i>
+                        <h3>Sem notificações</h3>
+                        <p>Quando alguém te convidar para um rateio, você verá aqui.</p>
+                    </div>`;
+                return;
+            }
+
+            conteudo.innerHTML = '';
+            let ultimaData = '';
+
+            snap.forEach(d => {
+                const n = { id: d.id, ...d.data() };
+                const data = n.criadoEm?.toDate?.() || new Date();
+                const hoje = new Date();
+                const ontem = new Date(); ontem.setDate(ontem.getDate() - 1);
+                let dataLabel = data.toLocaleDateString('pt-BR');
+                if (data.toDateString() === hoje.toDateString()) dataLabel = 'Hoje';
+                else if (data.toDateString() === ontem.toDateString()) dataLabel = 'Ontem';
+
+                if (dataLabel !== ultimaData) {
+                    conteudo.innerHTML += `<div class="date-label">${dataLabel}</div>`;
+                    ultimaData = dataLabel;
+                }
+
+                conteudo.innerHTML += renderNotif(n);
+            });
+
+        } catch (e) {
+            conteudo.innerHTML = `<p style="text-align:center;color:#F87171;padding:40px;font-weight:700;">Erro ao carregar notificações.</p>`;
+            console.error(e);
+        }
+    }
+
+    function renderNotif(n) {
+        const naoLida = !n.lida ? 'nao-lida' : '';
+
+        if (n.tipo === 'convite_rateio') {
+            return `
+            <div class="notif-card convite ${naoLida}" id="notif-${n.id}">
+                <div class="notif-icon convite"><i class="fas fa-user-plus"></i></div>
+                <div class="notif-body">
+                    <div class="notif-titulo"><span>@${n.remetenteUsername || 'alguém'}</span> te convidou para um rateio!</div>
+                    <div class="rateio-preview">
+                        <div class="nome">${n.rateioNome}</div>
+                        <div class="valor">R$ ${fmt(n.rateioValor)}<span style="font-size:14px;opacity:0.5;"> por pessoa</span></div>
+                        <div class="criador">Criado por ${n.remetenteNome}</div>
+                    </div>
+                    <div class="notif-actions">
+                        <button class="btn-aceitar" onclick="aceitarConvite('${n.id}', '${n.rateioId}')">
+                            <i class="fas fa-check"></i> Aceitar e entrar
+                        </button>
+                        <button class="btn-aceitar pagar-depois" onclick="aceitarPagarDepois('${n.id}', '${n.rateioId}')">
+                            <i class="fas fa-clock"></i> Depois
+                        </button>
+                        <button class="btn-recusar" onclick="recusarConvite('${n.id}', '${n.rateioId}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="notif-tempo">${tempoAtras(n.criadoEm)}</div>
+                </div>
+                ${!n.lida ? '<div class="notif-dot"></div>' : ''}
+            </div>`;
+        }
+
+        if (n.tipo === 'convite_aceito') {
+            return `
+            <div class="notif-card aceito ${naoLida}" id="notif-${n.id}">
+                <div class="notif-icon aceito"><i class="fas fa-check-circle"></i></div>
+                <div class="notif-body">
+                    <div class="notif-titulo"><span>@${n.remetenteUsername}</span> aceitou seu convite!</div>
+                    <div class="notif-desc">Ele entrou no rateio <strong>${n.rateioNome}</strong> e está pronto para pagar.</div>
+                    <div class="notif-tempo">${tempoAtras(n.criadoEm)}</div>
+                </div>
+                ${!n.lida ? '<div class="notif-dot"></div>' : ''}
+            </div>`;
+        }
+
+        if (n.tipo === 'convite_recusado') {
+            return `
+            <div class="notif-card recusado ${naoLida}" id="notif-${n.id}">
+                <div class="notif-icon recusado"><i class="fas fa-times-circle"></i></div>
+                <div class="notif-body">
+                    <div class="notif-titulo"><span>@${n.remetenteUsername}</span> recusou seu convite.</div>
+                    <div class="notif-desc">Rateio: <strong>${n.rateioNome}</strong></div>
+                    <div class="notif-tempo">${tempoAtras(n.criadoEm)}</div>
+                </div>
+                ${!n.lida ? '<div class="notif-dot"></div>' : ''}
+            </div>`;
+        }
+
+        if (n.tipo === 'pagamento_recebido') {
+            return `
+            <div class="notif-card pagamento ${naoLida}" id="notif-${n.id}">
+                <div class="notif-icon pagamento"><i class="fas fa-money-bill-wave"></i></div>
+                <div class="notif-body">
+                    <div class="notif-titulo">💰 Pagamento recebido!</div>
+                    <div class="notif-desc"><span style="color:#F59E0B;">@${n.remetenteUsername}</span> pagou R$ ${fmt(n.valor)} no rateio <strong>${n.rateioNome}</strong>.</div>
+                    <div class="notif-tempo">${tempoAtras(n.criadoEm)}</div>
+                </div>
+                ${!n.lida ? '<div class="notif-dot"></div>' : ''}
+            </div>`;
+        }
+
+        return '';
+    }
+
+    window.aceitarConvite = async (notifId, rateioId) => {
+        await marcarLida(notifId);
+        // Adiciona como participante pendente no rateio
+        await addDoc(collection(db, "participantes_rateio"), {
+            rateioId, usuarioId: usuarioLogado.uid,
+            nome: usuarioLogado.displayName,
+            email: usuarioLogado.email,
+            status: 'pendente', // vai pagar
+            entradaEm: serverTimestamp()
+        });
+        // Notifica o criador
+        const notifSnap = await getDoc(doc(db, "notificacoes", notifId));
+        if (notifSnap.exists()) {
+            const nd = notifSnap.data();
+            await addDoc(collection(db, "notificacoes"), {
+                destinatarioId: nd.remetenteId,
+                tipo: 'convite_aceito',
+                remetenteUsername: nd.destinatarioUsername,
+                remetenteNome: usuarioLogado.displayName,
+                rateioId, rateioNome: nd.rateioNome,
+                lida: false, criadoEm: serverTimestamp()
+            });
+        }
+        window.location.href = `pagamento.html?id=${rateioId}`;
+    };
+
+    window.aceitarPagarDepois = async (notifId, rateioId) => {
+        await marcarLida(notifId);
+        await addDoc(collection(db, "participantes_rateio"), {
+            rateioId, usuarioId: usuarioLogado.uid,
+            nome: usuarioLogado.displayName,
+            email: usuarioLogado.email,
+            status: 'pagar_depois',
+            entradaEm: serverTimestamp()
+        });
+        // Atualiza o card na tela
+        const card = document.getElementById(`notif-${notifId}`);
+        if (card) {
+            card.querySelector('.notif-actions').innerHTML = `
+                <div style="font-size:13px;color:#F59E0B;font-weight:800;">
+                    <i class="fas fa-clock"></i> Salvo para pagar depois — aparece no seu dashboard.
+                </div>`;
+        }
+        alert('Rateio salvo! Você pode pagar quando quiser pelo seu dashboard.');
+    };
+
+    window.recusarConvite = async (notifId, rateioId) => {
+        await marcarLida(notifId);
+        const notifSnap = await getDoc(doc(db, "notificacoes", notifId));
+        if (notifSnap.exists()) {
+            const nd = notifSnap.data();
+            await addDoc(collection(db, "notificacoes"), {
+                destinatarioId: nd.remetenteId,
+                tipo: 'convite_recusado',
+                remetenteUsername: nd.destinatarioUsername,
+                rateioId, rateioNome: nd.rateioNome,
+                lida: false, criadoEm: serverTimestamp()
+            });
+        }
+        const card = document.getElementById(`notif-${notifId}`);
+        if (card) {
+            card.style.opacity = '0.4';
+            card.querySelector('.notif-actions').innerHTML = `<div style="font-size:13px;color:#F87171;font-weight:800;"><i class="fas fa-times"></i> Convite recusado.</div>`;
+        }
+    };
+
+    async function marcarLida(notifId) {
+        await updateDoc(doc(db, "notificacoes", notifId), { lida: true });
+    }
+
+    window.marcarTodasLidas = async () => {
+        const q = query(collection(db, "notificacoes"), where("destinatarioId", "==", usuarioLogado.uid), where("lida", "==", false));
+        const snap = await getDocs(q);
+        snap.forEach(d => updateDoc(doc(db, "notificacoes", d.id), { lida: true }));
+        document.querySelectorAll('.nao-lida').forEach(el => el.classList.remove('nao-lida'));
+        document.querySelectorAll('.notif-dot').forEach(el => el.remove());
+    };
+</script>
+</body>
+</html>

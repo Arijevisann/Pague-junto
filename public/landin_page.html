@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pague Junto – Juntar ficou simples. Pagar ficou fácil.</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #040D1F;
+            --bg2: #071228;
+            --surface: #0A1830;
+            --surface2: #0E2040;
+            --border: #1A3560;
+            --accent: #1A6EFF;
+            --accent2: #3B8BFF;
+            --accent-light: #60A5FA;
+            --cyan: #00C4FF;
+            --text: #EEF4FF;
+            --text2: #7A9CC8;
+            --text3: #3A5A8A;
+            --green: #10D68B;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── AMBIENT GLOW ── */
+        .glow-bg {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 70% 20%, rgba(26,110,255,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 10% 80%, rgba(0,196,255,0.06) 0%, transparent 55%),
+                radial-gradient(ellipse 40% 40% at 90% 70%, rgba(26,110,255,0.08) 0%, transparent 55%);
+        }
+
+        /* ── NAVBAR ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 60px;
+            background: rgba(4,13,31,0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(26,110,255,0.12);
+            z-index: 100;
+        }
+        .nav-logo { display: flex; align-items: center; gap: 10px; }
+        .nav-logo-mark {
+            width: 38px; height: 38px;
+            background: var(--accent);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 900; color: #fff;
+            box-shadow: 0 6px 20px rgba(26,110,255,0.4);
+        }
+        .nav-logo-text { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; }
+        .nav-logo-text span { color: var(--cyan); }
+        .nav-links { display: flex; align-items: center; gap: 32px; }
+        .nav-links a { font-size: 14px; font-weight: 600; color: var(--text2); text-decoration: none; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--text); }
+        .nav-cta { display: flex; align-items: center; gap: 12px; }
+        .btn-outline { background: transparent; color: var(--accent-light); font-size: 14px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(26,110,255,0.3); cursor: pointer; transition: all 0.2s; }
+        .btn-outline:hover { background: rgba(26,110,255,0.1); border-color: var(--accent); }
+        .btn-nav-primary { background: var(--accent); color: #fff; font-size: 14px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; padding: 10px 22px; border-radius: 10px; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(26,110,255,0.35); }
+        .btn-nav-primary:hover { background: #1560e8; box-shadow: 0 6px 20px rgba(26,110,255,0.45); }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh;
+            display: flex; align-items: center;
+            padding: 100px 60px 60px;
+            position: relative; z-index: 1;
+            gap: 40px;
+        }
+        .hero-left { flex: 1; max-width: 560px; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(26,110,255,0.1);
+            border: 1px solid rgba(26,110,255,0.25);
+            border-radius: 20px; padding: 6px 14px;
+            font-size: 12px; font-weight: 700; color: var(--accent-light);
+            margin-bottom: 28px;
+            animation: fadeUp 0.5s ease both;
+        }
+        .hero-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); }
+
+        .hero-title {
+            font-size: 58px; font-weight: 900;
+            letter-spacing: -1.5px; line-height: 1.08;
+            margin-bottom: 20px;
+            animation: fadeUp 0.5s ease 0.1s both;
+        }
+        .hero-title .blue { color: var(--cyan); }
+        .hero-title .white { color: #fff; }
+
+        .hero-desc {
+            font-size: 18px; color: var(--text2); font-weight: 500;
+            line-height: 1.6; margin-bottom: 36px;
+            animation: fadeUp 0.5s ease 0.2s both;
+        }
+
+        .hero-steps {
+            display: flex; align-items: center; gap: 0;
+            margin-bottom: 36px;
+            animation: fadeUp 0.5s ease 0.3s both;
+        }
+        .hero-step { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .step-icon {
+            width: 56px; height: 56px; border-radius: 16px;
+            background: rgba(26,110,255,0.12);
+            border: 1px solid rgba(26,110,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; color: var(--accent2);
+        }
+        .step-label { font-size: 13px; font-weight: 700; color: var(--text2); text-align: center; }
+        .step-arrow { color: var(--text3); font-size: 12px; margin: 0 12px 18px; }
+
+        .hero-actions {
+            display: flex; align-items: center; gap: 14px;
+            animation: fadeUp 0.5s ease 0.4s both;
+        }
+        .btn-primary-hero {
+            background: var(--accent); color: #fff;
+            font-size: 16px; font-weight: 800;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 16px 32px; border-radius: 14px; border: none;
+            cursor: pointer; display: flex; align-items: center; gap: 10px;
+            transition: all 0.2s;
+            box-shadow: 0 8px 28px rgba(26,110,255,0.4);
+            letter-spacing: -0.2px;
+        }
+        .btn-primary-hero:hover { background: #1560e8; box-shadow: 0 12px 36px rgba(26,110,255,0.5); transform: translateY(-1px); }
+        .btn-secondary-hero {
+            background: transparent; color: var(--text2);
+            font-size: 15px; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 16px 24px; border-radius: 14px;
+            border: 1px solid var(--border); cursor: pointer;
+            display: flex; align-items: center; gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-secondary-hero:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+
+        .hero-trust {
+            display: flex; align-items: center; gap: 16px;
+            margin-top: 24px;
+            animation: fadeUp 0.5s ease 0.5s both;
+        }
+        .trust-item { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--text3); }
+        .trust-item i { color: var(--accent2); font-size: 14px; }
+        .trust-divider { width: 1px; height: 18px; background: var(--border); }
+
+        /* ── HERO RIGHT — MOCKUP ── */
+        .hero-right {
+            flex: 1;
+            position: relative;
+            display: flex; align-items: center; justify-content: center;
+            min-height: 600px;
+            animation: fadeUp 0.6s ease 0.2s both;
+        }
+
+        /* Phone mockup */
+        .phone-wrap {
+            position: relative; z-index: 3;
+        }
+        .phone {
+            width: 280px;
+            background: #0a0f1e;
+            border-radius: 40px;
+            border: 2px solid rgba(255,255,255,0.12);
+            box-shadow:
+                0 40px 80px rgba(0,0,0,0.6),
+                0 0 0 1px rgba(26,110,255,0.15),
+                inset 0 1px 0 rgba(255,255,255,0.06);
+            overflow: hidden;
+            position: relative;
+        }
+        .phone-notch {
+            width: 80px; height: 24px;
+            background: #0a0f1e;
+            border-radius: 0 0 14px 14px;
+            margin: 0 auto;
+            position: relative; z-index: 2;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-top: none;
+        }
+        .phone-screen { padding: 0 0 20px; }
+
+        /* Phone topbar */
+        .phone-topbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px 8px; }
+        .phone-menu-icon { color: rgba(255,255,255,0.4); font-size: 14px; }
+        .phone-logo { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 800; }
+        .phone-logo-mark { width: 22px; height: 22px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; color: #fff; }
+        .phone-logo span { color: var(--cyan); }
+        .phone-bell { color: rgba(255,255,255,0.5); font-size: 15px; }
+
+        /* Rateio card no phone */
+        .phone-rateio { background: #0d1d38; margin: 0 14px 12px; border-radius: 16px; padding: 14px; border: 1px solid rgba(26,110,255,0.15); }
+        .phone-rateio-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .phone-rateio-icon { width: 28px; height: 28px; background: rgba(26,110,255,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+        .phone-rateio-name { font-size: 13px; font-weight: 700; }
+        .phone-rateio-valor { font-size: 24px; font-weight: 900; letter-spacing: -0.5px; color: #fff; margin-bottom: 2px; }
+        .phone-rateio-label { font-size: 11px; color: var(--text2); font-weight: 500; margin-bottom: 10px; }
+        .phone-progress { background: rgba(255,255,255,0.08); border-radius: 99px; height: 5px; margin-bottom: 5px; overflow: hidden; }
+        .phone-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--cyan)); border-radius: 99px; width: 75%; }
+        .phone-progress-info { display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; color: var(--text2); margin-bottom: 12px; }
+
+        /* Avatares */
+        .phone-avatares { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 14px; }
+        .av-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .av-circle { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #0a0f1e; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; position: relative; }
+        .av-check { position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; border-radius: 50%; background: var(--green); border: 2px solid #0a0f1e; display: flex; align-items: center; justify-content: center; font-size: 7px; color: #fff; }
+        .av-check.pending { background: var(--text3); }
+        .av-label { font-size: 9px; font-weight: 600; color: var(--text2); }
+
+        .btn-phone-convidar { width: 100%; background: var(--accent); color: #fff; font-size: 12px; font-weight: 700; padding: 11px; border-radius: 10px; border: none; display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 12px; }
+
+        /* Atividades no phone */
+        .phone-ativ-title { font-size: 11px; font-weight: 700; color: var(--text2); margin: 0 14px 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .phone-ativ-item { display: flex; align-items: center; gap: 8px; padding: 7px 14px; }
+        .phone-ativ-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; flex-shrink: 0; }
+        .phone-ativ-info { flex: 1; }
+        .phone-ativ-name { font-size: 11px; font-weight: 700; }
+        .phone-ativ-time { font-size: 10px; color: var(--text3); font-weight: 500; }
+        .phone-ativ-valor { font-size: 11px; font-weight: 800; color: var(--green); }
+        .phone-ativ-valor.pending { color: var(--text3); }
+
+        .btn-phone-pagar { margin: 10px 14px 0; background: var(--accent); color: #fff; font-size: 13px; font-weight: 800; padding: 13px; border-radius: 12px; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 6px 20px rgba(26,110,255,0.4); }
+
+        /* Cards flutuantes */
+        .float-card {
+            position: absolute;
+            background: rgba(10,24,48,0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(26,110,255,0.2);
+            border-radius: 18px;
+            padding: 16px 18px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .float-rateio-criado {
+            top: 40px; left: -60px;
+            width: 200px;
+            animation-delay: 0s;
+        }
+        .float-rateio-criado .fc-icon { width: 44px; height: 44px; background: rgba(26,110,255,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin: 0 auto 10px; }
+        .float-rateio-criado .fc-title { font-size: 14px; font-weight: 800; text-align: center; margin-bottom: 4px; }
+        .float-rateio-criado .fc-desc { font-size: 11px; color: var(--text2); font-weight: 500; text-align: center; line-height: 1.4; margin-bottom: 10px; }
+        .fc-btn { width: 100%; background: var(--accent); color: #fff; font-size: 12px; font-weight: 700; padding: 9px; border-radius: 8px; border: none; cursor: pointer; }
+
+        .float-sua-parte {
+            bottom: 100px; left: -80px;
+            width: 180px;
+            animation-delay: 1s;
+        }
+        .float-sua-parte .sp-label { font-size: 11px; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
+        .float-sua-parte .sp-valor { font-size: 22px; font-weight: 900; color: var(--cyan); letter-spacing: -0.5px; margin-bottom: 10px; }
+        .float-card-img { width: 100%; height: 50px; background: linear-gradient(135deg, #1A3A8F, #2563EB); border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .card-chip { width: 20px; height: 16px; background: rgba(255,215,0,0.6); border-radius: 4px; }
+
+        .float-pago {
+            top: 60px; right: -60px;
+            width: 170px;
+            animation-delay: 0.5s;
+        }
+        .float-pago .fp-circle { width: 44px; height: 44px; border-radius: 50%; background: rgba(16,214,139,0.12); border: 2px solid rgba(16,214,139,0.3); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 18px; color: var(--green); }
+        .float-pago .fp-title { font-size: 15px; font-weight: 800; text-align: center; margin-bottom: 3px; }
+        .float-pago .fp-sub { font-size: 12px; color: var(--cyan); font-weight: 700; text-align: center; }
+
+        /* ── SEÇÃO FEATURES ── */
+        .section { padding: 80px 60px; position: relative; z-index: 1; }
+        .section-center { text-align: center; max-width: 600px; margin: 0 auto 52px; }
+        .section-badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(26,110,255,0.08); border: 1px solid rgba(26,110,255,0.2); border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 700; color: var(--accent-light); margin-bottom: 16px; }
+        .section-title { font-size: 38px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 14px; line-height: 1.15; }
+        .section-desc { font-size: 16px; color: var(--text2); font-weight: 500; line-height: 1.6; }
+
+        .features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+        .feature-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px; padding: 28px 24px;
+            transition: all 0.3s;
+            position: relative; overflow: hidden;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .feature-card:hover { background: var(--surface2); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .feature-card:hover::before { opacity: 1; }
+        .feature-icon { width: 52px; height: 52px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 16px; }
+        .fi-blue { background: rgba(26,110,255,0.12); color: var(--accent2); }
+        .fi-cyan { background: rgba(0,196,255,0.1); color: var(--cyan); }
+        .fi-green { background: rgba(16,214,139,0.1); color: var(--green); }
+        .fi-purple { background: rgba(139,92,246,0.1); color: #A78BFA; }
+        .fi-amber { background: rgba(245,158,11,0.1); color: #FBBF24; }
+        .fi-pink { background: rgba(236,72,153,0.1); color: #F472B6; }
+        .feature-title { font-size: 17px; font-weight: 800; letter-spacing: -0.2px; margin-bottom: 8px; }
+        .feature-desc { font-size: 14px; color: var(--text2); font-weight: 500; line-height: 1.6; }
+
+        /* ── COMO FUNCIONA ── */
+        .steps-row { display: flex; align-items: flex-start; gap: 0; justify-content: center; max-width: 860px; margin: 0 auto; }
+        .step-block { flex: 1; text-align: center; padding: 0 20px; position: relative; }
+        .step-block::after { content: ''; position: absolute; top: 36px; right: -10%; width: 20%; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+        .step-block:last-child::after { display: none; }
+        .step-num-circle { width: 72px; height: 72px; border-radius: 50%; background: rgba(26,110,255,0.12); border: 2px solid rgba(26,110,255,0.25); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 26px; color: var(--accent2); position: relative; }
+        .step-num { position: absolute; top: -4px; right: -4px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); font-size: 10px; font-weight: 900; color: #fff; display: flex; align-items: center; justify-content: center; }
+        .step-block-title { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
+        .step-block-desc { font-size: 13px; color: var(--text2); font-weight: 500; line-height: 1.5; }
+
+        /* ── CTA SECTION ── */
+        .cta-section {
+            padding: 80px 60px;
+            position: relative; z-index: 1;
+        }
+        .cta-card {
+            background: linear-gradient(135deg, #0B1F4A 0%, #0E2A6E 50%, #0B1F4A 100%);
+            border: 1px solid rgba(26,110,255,0.3);
+            border-radius: 28px;
+            padding: 60px 48px;
+            text-align: center;
+            position: relative; overflow: hidden;
+            max-width: 860px; margin: 0 auto;
+        }
+        .cta-card::before { content: ''; position: absolute; top: -60px; left: 50%; transform: translateX(-50%); width: 400px; height: 200px; background: radial-gradient(ellipse, rgba(26,110,255,0.2) 0%, transparent 65%); pointer-events: none; }
+        .cta-title { font-size: 42px; font-weight: 900; letter-spacing: -1px; margin-bottom: 14px; position: relative; }
+        .cta-desc { font-size: 17px; color: var(--text2); font-weight: 500; margin-bottom: 36px; line-height: 1.6; position: relative; }
+        .cta-btns { display: flex; align-items: center; justify-content: center; gap: 14px; position: relative; }
+        .btn-cta-primary { background: var(--accent); color: #fff; font-size: 16px; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; padding: 16px 36px; border-radius: 14px; border: none; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.2s; box-shadow: 0 8px 28px rgba(26,110,255,0.4); letter-spacing: -0.2px; }
+        .btn-cta-primary:hover { background: #1560e8; transform: translateY(-2px); box-shadow: 0 12px 36px rgba(26,110,255,0.5); }
+        .btn-cta-secondary { background: rgba(255,255,255,0.06); color: var(--text); font-size: 15px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; padding: 16px 28px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.2s; }
+        .btn-cta-secondary:hover { background: rgba(255,255,255,0.1); }
+        .cta-stats { display: flex; align-items: center; justify-content: center; gap: 40px; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 32px; }
+        .cta-stat-val { font-size: 28px; font-weight: 900; color: var(--cyan); letter-spacing: -0.5px; }
+        .cta-stat-label { font-size: 12px; color: var(--text2); font-weight: 600; margin-top: 3px; }
+
+        /* ── FOOTER ── */
+        footer {
+            padding: 40px 60px;
+            border-top: 1px solid rgba(26,110,255,0.1);
+            display: flex; align-items: center; justify-content: space-between;
+            position: relative; z-index: 1;
+        }
+        .footer-logo { display: flex; align-items: center; gap: 10px; }
+        .footer-logo-mark { width: 32px; height: 32px; background: var(--accent); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; color: #fff; }
+        .footer-logo-text { font-size: 17px; font-weight: 800; }
+        .footer-logo-text span { color: var(--cyan); }
+        .footer-copy { font-size: 13px; color: var(--text3); font-weight: 500; }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { font-size: 13px; color: var(--text3); font-weight: 600; text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--text2); }
+
+        /* Animations */
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .hero { padding: 100px 32px 60px; }
+            .hero-title { font-size: 44px; }
+            .float-card { display: none; }
+            .section { padding: 60px 32px; }
+            .features-grid { grid-template-columns: repeat(2,1fr); }
+            nav { padding: 16px 32px; }
+            .nav-links { display: none; }
+        }
+        @media (max-width: 768px) {
+            .hero { flex-direction: column; padding: 90px 24px 50px; text-align: center; }
+            .hero-title { font-size: 36px; }
+            .hero-steps { justify-content: center; }
+            .hero-actions { flex-direction: column; }
+            .hero-trust { justify-content: center; flex-wrap: wrap; }
+            .hero-right { min-height: 400px; }
+            .phone { width: 240px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .steps-row { flex-direction: column; align-items: center; gap: 24px; }
+            .step-block::after { display: none; }
+            .cta-section { padding: 40px 24px; }
+            .cta-card { padding: 40px 24px; }
+            .cta-title { font-size: 28px; }
+            .cta-btns { flex-direction: column; }
+            .cta-stats { flex-direction: column; gap: 20px; }
+            footer { flex-direction: column; gap: 16px; text-align: center; padding: 32px 24px; }
+            .section { padding: 50px 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="glow-bg"></div>
+
+<!-- ════════ NAV ════════ -->
+<nav>
+    <div class="nav-logo">
+        <div class="nav-logo-mark">PJ</div>
+        <span class="nav-logo-text">Pague<span>Junto</span></span>
+    </div>
+    <div class="nav-links">
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#recursos">Recursos</a>
+        <a href="#empresas">Para empresas</a>
+        <a href="#precos">Preços</a>
+    </div>
+    <div class="nav-cta">
+        <button class="btn-outline">Entrar</button>
+        <button class="btn-nav-primary">Criar conta grátis</button>
+    </div>
+</nav>
+
+<!-- ════════ HERO ════════ -->
+<section class="hero">
+    <div class="hero-left">
+        <div class="hero-badge">
+            <span>✨ Novidade — Rateio entre empresas disponível</span>
+        </div>
+
+        <h1 class="hero-title">
+            Juntar ficou <span class="blue">simples.</span><br>
+            Pagar ficou <span class="blue">fácil.</span>
+        </h1>
+
+        <p class="hero-desc">
+            Crie um rateio, convide amigos<br>
+            e acompanhe tudo em um só lugar.
+        </p>
+
+        <div class="hero-steps">
+            <div class="hero-step">
+                <div class="step-icon"><i class="fas fa-users"></i></div>
+                <div class="step-label">Crie um rateio</div>
+            </div>
+            <div class="step-arrow">· · · ›</div>
+            <div class="hero-step">
+                <div class="step-icon"><i class="fas fa-wallet"></i></div>
+                <div class="step-label">Convide amigos</div>
+            </div>
+            <div class="step-arrow">· · · ›</div>
+            <div class="hero-step">
+                <div class="step-icon"><i class="fas fa-circle-check"></i></div>
+                <div class="step-label">Acompanhe e pague</div>
+            </div>
+        </div>
+
+        <div class="hero-actions">
+            <button class="btn-primary-hero">
+                <i class="fas fa-rocket"></i> Começar grátis
+            </button>
+            <button class="btn-secondary-hero">
+                <i class="fas fa-play-circle"></i> Ver demonstração
+            </button>
+        </div>
+
+        <div class="hero-trust">
+            <div class="trust-item"><i class="fas fa-shield-halved"></i> Seus dados protegidos com segurança</div>
+            <div class="trust-divider"></div>
+            <div class="trust-item"><i class="fas fa-lock"></i> Pagamento 100% seguro</div>
+        </div>
+    </div>
+
+    <!-- Phone + floating cards -->
+    <div class="hero-right">
+
+        <!-- Card flutuante: Rateio criado -->
+        <div class="float-card float-rateio-criado">
+            <div class="fc-icon"><i class="fas fa-users" style="color:var(--accent2);font-size:20px;"></i></div>
+            <div class="fc-title">Rateio criado</div>
+            <div class="fc-desc">Convide seus amigos e comece a juntar.</div>
+            <button class="fc-btn">Convidar</button>
+        </div>
+
+        <!-- Card flutuante: Sua parte -->
+        <div class="float-card float-sua-parte">
+            <div class="sp-label">Sua parte</div>
+            <div class="sp-valor">R$ 256,00</div>
+            <div class="float-card-img">
+                <div class="card-chip"></div>
+                <i class="fab fa-cc-mastercard" style="font-size:22px;color:rgba(255,255,255,0.6);"></i>
+            </div>
+        </div>
+
+        <!-- Card flutuante: Pago -->
+        <div class="float-card float-pago">
+            <div class="fp-circle"><i class="fas fa-check"></i></div>
+            <div class="fp-title">Pagamento<br>realizado!</div>
+            <div class="fp-sub">Tudo certo.</div>
+        </div>
+
+        <!-- Phone mockup -->
+        <div class="phone-wrap">
+            <div class="phone">
+                <div class="phone-notch"></div>
+                <div class="phone-screen">
+
+                    <div class="phone-topbar">
+                        <i class="fas fa-bars phone-menu-icon"></i>
+                        <div class="phone-logo">
+                            <div class="phone-logo-mark">PJ</div>
+                            Pague<span>Junto</span>
+                        </div>
+                        <i class="fas fa-bell phone-bell"></i>
+                    </div>
+
+                    <div class="phone-rateio">
+                        <div class="phone-rateio-header">
+                            <div class="phone-rateio-icon">✈️</div>
+                            <span class="phone-rateio-name">Viagem com amigos</span>
+                        </div>
+                        <div class="phone-rateio-valor">R$ 1.280,00</div>
+                        <div class="phone-rateio-label">Total do rateio</div>
+                        <div class="phone-progress"><div class="phone-progress-fill"></div></div>
+                        <div class="phone-progress-info"><span>4 de 5 participantes pagaram</span><span>75%</span></div>
+
+                        <div class="phone-avatares">
+                            <div class="av-item">
+                                <div class="av-circle" style="background:linear-gradient(135deg,#2563EB,#60A5FA);">V<div class="av-check"><i class="fas fa-check" style="font-size:6px;"></i></div></div>
+                                <div class="av-label">Você</div>
+                            </div>
+                            <div class="av-item">
+                                <div class="av-circle" style="background:linear-gradient(135deg,#10B981,#34D399);">L<div class="av-check"><i class="fas fa-check" style="font-size:6px;"></i></div></div>
+                                <div class="av-label">Lucas</div>
+                            </div>
+                            <div class="av-item">
+                                <div class="av-circle" style="background:linear-gradient(135deg,#8B5CF6,#A78BFA);">M<div class="av-check"><i class="fas fa-check" style="font-size:6px;"></i></div></div>
+                                <div class="av-label">Marina</div>
+                            </div>
+                            <div class="av-item">
+                                <div class="av-circle" style="background:linear-gradient(135deg,#F59E0B,#FCD34D);">R<div class="av-check"><i class="fas fa-check" style="font-size:6px;"></i></div></div>
+                                <div class="av-label">Rafa</div>
+                            </div>
+                            <div class="av-item">
+                                <div class="av-circle" style="background:linear-gradient(135deg,#374151,#6B7280);">J<div class="av-check pending"></div></div>
+                                <div class="av-label">João</div>
+                            </div>
+                        </div>
+
+                        <button class="btn-phone-convidar">
+                            <i class="fas fa-user-plus"></i> Convidar amigos
+                        </button>
+                    </div>
+
+                    <div class="phone-ativ-title">Atividades</div>
+
+                    <div class="phone-ativ-item">
+                        <div class="phone-ativ-avatar" style="background:linear-gradient(135deg,#10B981,#34D399);">L</div>
+                        <div class="phone-ativ-info">
+                            <div class="phone-ativ-name">Lucas pagou sua parte</div>
+                            <div class="phone-ativ-time">Hoje, 10:45</div>
+                        </div>
+                        <div class="phone-ativ-valor">R$ 256,00</div>
+                    </div>
+                    <div class="phone-ativ-item">
+                        <div class="phone-ativ-avatar" style="background:linear-gradient(135deg,#8B5CF6,#A78BFA);">M</div>
+                        <div class="phone-ativ-info">
+                            <div class="phone-ativ-name">Marina pagou sua parte</div>
+                            <div class="phone-ativ-time">Hoje, 09:30</div>
+                        </div>
+                        <div class="phone-ativ-valor">R$ 256,00</div>
+                    </div>
+                    <div class="phone-ativ-item">
+                        <div class="phone-ativ-avatar" style="background:linear-gradient(135deg,#F59E0B,#FCD34D);">R</div>
+                        <div class="phone-ativ-info">
+                            <div class="phone-ativ-name">Rafa pagou sua parte</div>
+                            <div class="phone-ativ-time">Ontem, 22:18</div>
+                        </div>
+                        <div class="phone-ativ-valor">R$ 256,00</div>
+                    </div>
+                    <div class="phone-ativ-item">
+                        <div class="phone-ativ-avatar" style="background:linear-gradient(135deg,#374151,#6B7280);">J</div>
+                        <div class="phone-ativ-info">
+                            <div class="phone-ativ-name">João ainda não pagou</div>
+                            <div class="phone-ativ-time"></div>
+                        </div>
+                        <div class="phone-ativ-valor pending">R$ 256,00</div>
+                    </div>
+
+                    <button class="btn-phone-pagar">
+                        <i class="fas fa-lock"></i> Pagar agora
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ════════ COMO FUNCIONA ════════ -->
+<section class="section" id="como-funciona" style="background:rgba(10,24,48,0.3);">
+    <div class="section-center">
+        <div class="section-badge">Como funciona</div>
+        <h2 class="section-title">Simples do começo ao fim</h2>
+        <p class="section-desc">Em 3 passos você cria um rateio, convida quem quiser e acompanha tudo em tempo real.</p>
+    </div>
+    <div class="steps-row">
+        <div class="step-block">
+            <div class="step-num-circle">
+                <i class="fas fa-plus-circle" style="font-size:26px;"></i>
+                <div class="step-num">1</div>
+            </div>
+            <div class="step-block-title">Crie um rateio</div>
+            <div class="step-block-desc">Dê um nome, defina o valor total e quantas pessoas vão dividir.</div>
+        </div>
+        <div class="step-block">
+            <div class="step-num-circle">
+                <i class="fas fa-share-nodes" style="font-size:24px;"></i>
+                <div class="step-num">2</div>
+            </div>
+            <div class="step-block-title">Convide as pessoas</div>
+            <div class="step-block-desc">Compartilhe via WhatsApp, link ou @username. Cada um recebe sua cobrança.</div>
+        </div>
+        <div class="step-block">
+            <div class="step-num-circle">
+                <i class="fas fa-circle-check" style="font-size:26px;"></i>
+                <div class="step-num">3</div>
+            </div>
+            <div class="step-block-title">Cada um paga o seu</div>
+            <div class="step-block-desc">Pague via Pix, cartão ou boleto. O sistema confirma automaticamente.</div>
+        </div>
+        <div class="step-block">
+            <div class="step-num-circle">
+                <i class="fas fa-money-bill-transfer" style="font-size:22px;"></i>
+                <div class="step-num">4</div>
+            </div>
+            <div class="step-block-title">Receba o repasse</div>
+            <div class="step-block-desc">Quando todos pagaram, o valor é enviado direto para sua conta.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ════════ RECURSOS ════════ -->
+<section class="section" id="recursos">
+    <div class="section-center">
+        <div class="section-badge">Recursos</div>
+        <h2 class="section-title">Tudo que você precisa<br>em um só lugar</h2>
+        <p class="section-desc">Do rateio pessoal entre amigos ao compartilhamento de custos entre empresas.</p>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon fi-blue"><i class="fas fa-qrcode"></i></div>
+            <div class="feature-title">Pagamento via Pix</div>
+            <div class="feature-desc">Gera o código Pix automaticamente para cada participante. Aprovação instantânea, 24h por dia.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon fi-cyan"><i class="fab fa-whatsapp"></i></div>
+            <div class="feature-title">Convite pelo WhatsApp</div>
+            <div class="feature-desc">Compartilha o link do rateio com um clique. Cada pessoa recebe sua cobrança individualizada.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon fi-green"><i class="fas fa-chart-line"></i></div>
+            <div class="feature-title">Acompanhamento em tempo real</div>
+            <div class="feature-desc">Veja quem pagou e quem está pendente. Notificações automáticas de confirmação.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon fi-purple"><i class="fas fa-building"></i></div>
+            <div class="feature-title">Rateio entre empresas</div>
+            <div class="feature-desc">Divida custos de campanhas, eventos e projetos entre empresas parceiras com controle total.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon fi-amber"><i class="fas fa-file-invoice"></i></div>
+            <div class="feature-title">Comprovante automático</div>
+            <div class="feature-desc">Cada pagamento gera um comprovante que pode ser baixado ou compartilhado na hora.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon fi-pink"><i class="fas fa-shield-halved"></i></div>
+            <div class="feature-title">100% seguro</div>
+            <div class="feature-desc">Criptografia de ponta a ponta, instituição de pagamento autorizada pelo Banco Central.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ════════ CTA ════════ -->
+<section class="cta-section">
+    <div class="cta-card">
+        <h2 class="cta-title">Pronto para simplificar<br>seus rateios? 🚀</h2>
+        <p class="cta-desc">Cadastre-se grátis e crie seu primeiro rateio em menos de 2 minutos.<br>Sem mensalidade. Sem pegadinhas.</p>
+        <div class="cta-btns">
+            <button class="btn-cta-primary"><i class="fas fa-rocket"></i> Criar conta grátis</button>
+            <button class="btn-cta-secondary">Falar com suporte</button>
+        </div>
+        <div class="cta-stats">
+            <div style="text-align:center;">
+                <div class="cta-stat-val">+50mil</div>
+                <div class="cta-stat-label">Rateios criados</div>
+            </div>
+            <div style="width:1px;height:40px;background:rgba(255,255,255,0.08);"></div>
+            <div style="text-align:center;">
+                <div class="cta-stat-val">R$12M+</div>
+                <div class="cta-stat-label">Transacionados</div>
+            </div>
+            <div style="width:1px;height:40px;background:rgba(255,255,255,0.08);"></div>
+            <div style="text-align:center;">
+                <div class="cta-stat-val">4.9 ⭐</div>
+                <div class="cta-stat-label">Avaliação média</div>
+            </div>
+            <div style="width:1px;height:40px;background:rgba(255,255,255,0.08);"></div>
+            <div style="text-align:center;">
+                <div class="cta-stat-val">BCB</div>
+                <div class="cta-stat-label">Autorizado pelo Bacen</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ════════ FOOTER ════════ -->
+<footer>
+    <div class="footer-logo">
+        <div class="footer-logo-mark">PJ</div>
+        <span class="footer-logo-text">Pague<span>Junto</span></span>
+    </div>
+    <div class="footer-copy">© 2024 Pague Junto. Todos os direitos reservados.</div>
+    <div class="footer-links">
+        <a href="#">Termos</a>
+        <a href="#">Privacidade</a>
+        <a href="#">Contato</a>
+    </div>
+</footer>
+
+</body>
+</html>

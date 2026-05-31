@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="responsive.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Pague Junto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Nunito', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #060D1F; color: #fff; min-height: 100vh; padding-bottom: 100px; }
+        .bg-glow { position: fixed; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,80,255,0.2) 0%, transparent 60%); }
+
+        /* Navbar */
+        .navbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; position: sticky; top: 0; background: #060D1F; z-index: 10; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .navbar img { height: 34px; }
+        .navbar-right { display: flex; align-items: center; gap: 10px; }
+        .bell-btn { position: relative; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.06); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7); font-size: 17px; transition: background 0.2s; }
+        .bell-btn:hover { background: rgba(255,255,255,0.10); }
+        .bell-badge { position: absolute; top: 4px; right: 4px; width: 18px; height: 18px; border-radius: 50%; background: #F87171; color: #fff; font-size: 10px; font-weight: 900; display: none; align-items: center; justify-content: center; border: 2px solid #060D1F; }
+        .bell-badge.show { display: flex; }
+        .logout-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.05); border: none; cursor: pointer; color: rgba(255,255,255,0.4); font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .logout-btn:hover { background: rgba(248,113,113,0.15); color: #F87171; }
+        .avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #1e3a6e, #2563EB); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 900; cursor: pointer; border: 2px solid rgba(37,99,235,0.4); }
+
+        .content { padding: 20px; max-width: 480px; margin: 0 auto; position: relative; z-index: 1; }
+
+        /* Saudação */
+        .greeting { margin-bottom: 20px; }
+        .greeting h2 { font-size: 22px; font-weight: 900; }
+        .greeting h2 span { color: #3B82F6; }
+        .greeting p { font-size: 14px; color: rgba(255,255,255,0.4); font-weight: 600; margin-top: 3px; }
+        .username-tag { font-size: 13px; color: rgba(255,255,255,0.3); font-weight: 700; margin-top: 2px; }
+        .username-tag span { color: #3B82F6; }
+
+        /* Card criar */
+        .create-card { background: linear-gradient(135deg, #1a3a6b 0%, #2563EB 100%); border-radius: 24px; padding: 22px; margin-bottom: 22px; position: relative; overflow: hidden; }
+        .create-card::before { content: ''; position: absolute; top: -40px; right: -40px; width: 160px; height: 160px; background: rgba(255,255,255,0.06); border-radius: 50%; }
+        .create-card h3 { font-size: 19px; font-weight: 900; margin-bottom: 4px; position: relative; z-index: 1; }
+        .create-card p { font-size: 13px; color: rgba(255,255,255,0.65); font-weight: 600; margin-bottom: 16px; position: relative; z-index: 1; }
+        .btn-criar-card { background: #fff; color: #2563EB; font-size: 14px; font-weight: 900; font-family: 'Nunito', sans-serif; padding: 12px 22px; border-radius: 12px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; position: relative; z-index: 1; transition: transform 0.1s; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+        .btn-criar-card:active { transform: scale(0.97); }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 0; background: rgba(255,255,255,0.05); border-radius: 14px; padding: 4px; margin-bottom: 16px; }
+        .tab { flex: 1; text-align: center; padding: 10px 6px; font-size: 12px; font-weight: 800; border-radius: 10px; cursor: pointer; transition: all 0.2s; color: rgba(255,255,255,0.4); }
+        .tab.active { background: #2563EB; color: #fff; }
+
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .section-title { font-size: 15px; font-weight: 900; }
+        .section-count { background: rgba(37,99,235,0.15); color: #3B82F6; font-size: 11px; font-weight: 900; padding: 3px 10px; border-radius: 20px; }
+
+        /* Rateio card */
+        .rateio-card { background: #131F35; border-radius: 20px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; animation: fadeUp 0.4s ease both; }
+        .rateio-card:hover { background: #1a2a45; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+        .rateio-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .rateio-icon { width: 44px; height: 44px; border-radius: 13px; background: linear-gradient(135deg, #1a3a6b, #2563EB); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+        .rateio-nome { font-size: 15px; font-weight: 900; }
+        .rateio-data { font-size: 11px; color: rgba(255,255,255,0.3); font-weight: 600; margin-top: 2px; }
+
+        .badge { font-size: 10px; font-weight: 900; padding: 3px 10px; border-radius: 20px; }
+        .badge.ativo { background: rgba(34,197,94,0.15); color: #22C55E; }
+        .badge.andamento { background: rgba(245,158,11,0.15); color: #F59E0B; }
+        .badge.repasse { background: rgba(37,99,235,0.15); color: #3B82F6; }
+        .badge.criador { background: rgba(37,99,235,0.12); color: #3B82F6; font-size: 9px; }
+        .badge.participante { background: rgba(34,197,94,0.12); color: #22C55E; font-size: 9px; }
+        .badge.pagar-depois { background: rgba(129,140,248,0.15); color: #818CF8; font-size: 9px; }
+
+        /* Meu pagamento no card */
+        .meu-pagamento {
+            background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.15);
+            border-radius: 12px; padding: 10px 14px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .meu-pagamento i { color: #22C55E; font-size: 16px; }
+        .meu-pagamento span { font-size: 13px; font-weight: 700; color: #22C55E; }
+        .meu-pagamento .valor { margin-left: auto; font-size: 14px; font-weight: 900; color: #22C55E; }
+
+        .meu-pagamento.pendente { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.15); }
+        .meu-pagamento.pendente i { color: #F59E0B; }
+        .meu-pagamento.pendente span { color: #F59E0B; }
+        .meu-pagamento.pendente .valor { color: #F59E0B; }
+
+        .stats { display: flex; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; margin-bottom: 10px; }
+        .stat { flex: 1; text-align: center; }
+        .stat + .stat { border-left: 1px solid rgba(255,255,255,0.05); }
+        .stat-label { font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 700; text-transform: uppercase; margin-bottom: 3px; }
+        .stat-val { font-size: 14px; font-weight: 900; }
+        .stat-val.blue { color: #3B82F6; }
+        .stat-val.green { color: #22C55E; }
+
+        .progress-bar { background: rgba(255,255,255,0.07); border-radius: 99px; height: 6px; margin-bottom: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #2563EB, #22C55E); border-radius: 99px; }
+        .progress-info { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.3); margin-bottom: 12px; }
+
+        .rateio-actions { display: flex; gap: 8px; }
+        .btn-ver { flex: 1; background: rgba(37,99,235,0.12); color: #3B82F6; font-size: 12px; font-weight: 800; font-family: 'Nunito', sans-serif; padding: 10px; border-radius: 10px; border: 1px solid rgba(37,99,235,0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-pagar-agora { flex: 1; background: #2563EB; color: #fff; font-size: 12px; font-weight: 900; font-family: 'Nunito', sans-serif; padding: 10px; border-radius: 10px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-comp { background: rgba(34,197,94,0.12); color: #22C55E; font-size: 12px; font-weight: 800; font-family: 'Nunito', sans-serif; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(34,197,94,0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-simular { background: rgba(245,158,11,0.12); color: #F59E0B; font-size: 12px; font-weight: 800; font-family: 'Nunito', sans-serif; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(245,158,11,0.2); cursor: pointer; }
+        .btn-zap { background: rgba(34,197,94,0.12); color: #22C55E; font-size: 14px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(34,197,94,0.2); cursor: pointer; }
+
+        /* Footer */
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: #060D1F; border-top: 1px solid rgba(255,255,255,0.06); padding: 12px 40px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        .footer-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+        .footer-item i { font-size: 20px; }
+        .footer-item span { font-size: 10px; font-weight: 800; }
+        .footer-item.active { color: #3B82F6; }
+        .footer-item:not(.active) { color: rgba(255,255,255,0.3); }
+
+        /* Modal simulador */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 50; display: none; align-items: flex-end; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: #131F35; border-radius: 28px 28px 0 0; padding: 28px 24px 40px; width: 100%; max-width: 480px; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-handle { width: 40px; height: 4px; background: rgba(255,255,255,0.15); border-radius: 99px; margin: 0 auto 24px; }
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+        .tag { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .tag:hover { background: rgba(37,99,235,0.2); border-color: #2563EB; color: #3B82F6; }
+        .sim-input { width: 100%; background: #1a2a45; border: 2px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 15px 18px; font-size: 15px; font-weight: 700; color: #fff; outline: none; font-family: 'Nunito', sans-serif; margin-bottom: 12px; }
+        .sim-input:focus { border-color: #2563EB; }
+        .sim-input::placeholder { color: rgba(255,255,255,0.2); }
+        .btn-sim { width: 100%; background: #F59E0B; color: #000; font-size: 16px; font-weight: 900; font-family: 'Nunito', sans-serif; padding: 17px; border-radius: 14px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-sim:disabled { opacity: 0.6; cursor: not-allowed; }
+        .sim-adicionados { margin-top: 16px; }
+        .sim-item { background: rgba(34,197,94,0.08); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #22C55E; }
+    </style>
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<nav class="navbar">
+    <img src="logo.png" alt="Pague Junto">
+    <div class="navbar-right">
+        <button class="bell-btn" onclick="location.href='notificacoes.html'">
+            <i class="fas fa-bell"></i>
+            <div class="bell-badge" id="bellBadge">0</div>
+        </button>
+        <button class="logout-btn" id="btnLogout"><i class="fas fa-sign-out-alt"></i></button>
+        <div class="avatar" id="userAvatar" onclick="location.href='perfil.html'">?</div>
+    </div>
+</nav>
+
+<div class="content">
+    <div class="greeting">
+        <h2>Olá, <span id="userName">Usuário</span>! 👋</h2>
+        <div class="username-tag">Seu ID: <span id="userUsername">@—</span></div>
+        <p>Gerencie seus rateios.</p>
+    </div>
+
+    <div class="create-card">
+        <h3>Vamos dividir?</h3>
+        <p>Crie um rateio e convide seus amigos</p>
+        <button class="btn-criar-card" onclick="location.href='criar-rateio.html'">
+            <i class="fas fa-plus"></i> Criar rateio
+        </button>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" id="tabMeus" onclick="mudarTab('meus')">Meus rateios</div>
+        <div class="tab" id="tabParticipo" onclick="mudarTab('participo')">Participo</div>
+        <div class="tab" id="tabPagarDepois" onclick="mudarTab('pagarDepois')">Pagar depois</div>
+    </div>
+
+    <div class="section-header">
+        <span class="section-title" id="sectionTitle">Criados por mim</span>
+        <span class="section-count" id="sectionCount">0</span>
+    </div>
+
+    <div id="listaRateios">
+        <p style="text-align:center; color:rgba(255,255,255,0.3); font-size:14px; font-weight:700; padding:40px 0;">
+            <i class="fas fa-spinner fa-spin" style="display:block; font-size:28px; margin-bottom:12px; color:#2563EB;"></i>
+            Carregando...
+        </p>
+    </div>
+</div>
+
+<div class="footer">
+    <div class="footer-item active"><i class="fas fa-home"></i><span>Início</span></div>
+    <div class="footer-item" onclick="location.href='criar-rateio.html'"><i class="fas fa-plus-circle"></i><span>Criar</span></div>
+    <div class="footer-item" onclick="location.href='notificacoes.html'" style="position:relative;">
+        <i class="fas fa-bell"></i><span>Avisos</span>
+        <div id="footerBadge" style="display:none; position:absolute; top:-2px; right:8px; width:8px; height:8px; background:#F87171; border-radius:50%;"></div>
+    </div>
+    <div class="footer-item" onclick="location.href='perfil.html'"><i class="fas fa-user"></i><span>Perfil</span></div>
+</div>
+
+<!-- Modal simulador -->
+<div class="modal-overlay" id="modalSim" onclick="fecharSim(event)">
+    <div class="modal">
+        <div class="modal-handle"></div>
+        <div style="font-size:18px; font-weight:900; margin-bottom:6px;">🧪 Simular participante</div>
+        <div style="font-size:13px; color:rgba(255,255,255,0.4); font-weight:600; margin-bottom:16px;" id="simNomeRateio">—</div>
+        <div class="tags">
+            <div class="tag" onclick="usarNome('João Silva')">João Silva</div>
+            <div class="tag" onclick="usarNome('Maria Costa')">Maria Costa</div>
+            <div class="tag" onclick="usarNome('Pedro Almeida')">Pedro Almeida</div>
+            <div class="tag" onclick="usarNome('Ana Souza')">Ana Souza</div>
+            <div class="tag" onclick="usarNome('Lucas Martins')">Lucas Martins</div>
+        </div>
+        <input class="sim-input" id="simNomeInput" type="text" placeholder="Nome do participante">
+        <button class="btn-sim" id="btnAdicionarSim" onclick="adicionarSim()">
+            <i class="fas fa-user-plus"></i> Adicionar participante
+        </button>
+        <div class="sim-adicionados" id="simAdicionados"></div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import firebaseConfig from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let usuarioLogado = null;
+    let tabAtual = 'meus';
+    let rateioSimAtual = null;
+    let simAdicionados = [];
+
+    function fmt(v) { return Number(v).toFixed(2).replace('.', ','); }
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) { window.location.href = 'index.html'; return; }
+        usuarioLogado = user;
+
+        const nome = user.displayName || 'Usuário';
+        document.getElementById('userName').textContent = nome.split(' ')[0];
+        document.getElementById('userAvatar').textContent = nome.charAt(0).toUpperCase();
+
+        try {
+            const snap = await getDoc(doc(db, "usuarios", user.uid));
+            if (snap.exists()) {
+                const d = snap.data();
+                document.getElementById('userUsername').textContent = '@' + (d.username || '—');
+            }
+        } catch (e) {}
+
+        carregarNotifBadge();
+        carregarRateios();
+    });
+
+    async function carregarNotifBadge() {
+        try {
+            const q = query(collection(db, "notificacoes"), where("destinatarioId", "==", usuarioLogado.uid), where("lida", "==", false));
+            const snap = await getDocs(q);
+            if (snap.size > 0) {
+                document.getElementById('bellBadge').textContent = snap.size > 9 ? '9+' : snap.size;
+                document.getElementById('bellBadge').classList.add('show');
+                document.getElementById('footerBadge').style.display = 'block';
+            }
+        } catch (e) {}
+    }
+
+    window.mudarTab = (tab) => {
+        tabAtual = tab;
+        ['meus','participo','pagarDepois'].forEach(t => {
+            const el = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+            if (el) el.classList.toggle('active', t === tab);
+        });
+        const titles = { meus: 'Criados por mim', participo: 'Rateios que participo', pagarDepois: 'Pagar depois' };
+        document.getElementById('sectionTitle').textContent = titles[tab];
+        carregarRateios();
+    };
+
+    async function carregarRateios() {
+        const lista = document.getElementById('listaRateios');
+        lista.innerHTML = `<p style="text-align:center; color:rgba(255,255,255,0.3); font-size:14px; font-weight:700; padding:30px 0;"><i class="fas fa-spinner fa-spin" style="display:block; font-size:24px; margin-bottom:10px; color:#2563EB;"></i>Carregando...</p>`;
+
+        try {
+            let rateios = [];
+
+            if (tabAtual === 'meus') {
+                // Rateios criados pelo usuário
+                const q = query(collection(db, "rateios"), where("criadorEmail", "==", usuarioLogado.email));
+                const snap = await getDocs(q);
+                snap.forEach(d => rateios.push({ id: d.id, tipo: 'criador', ...d.data() }));
+
+            } else if (tabAtual === 'participo') {
+                // ✅ CORRIGIDO: busca em AMBAS as coleções
+
+                // 1. Busca em participantes_rateio (convites via @username)
+                const q1 = query(collection(db, "participantes_rateio"), where("usuarioId", "==", usuarioLogado.uid), where("status", "==", "pendente"));
+                const snap1 = await getDocs(q1);
+                const idsJaAdicionados = new Set();
+
+                for (const d of snap1.docs) {
+                    const pd = d.data();
+                    if (!idsJaAdicionados.has(pd.rateioId)) {
+                        const rSnap = await getDoc(doc(db, "rateios", pd.rateioId));
+                        if (rSnap.exists()) {
+                            rateios.push({ id: rSnap.id, tipo: 'participante', meuStatus: 'pendente', ...rSnap.data() });
+                            idsJaAdicionados.add(pd.rateioId);
+                        }
+                    }
+                }
+
+                // 2. ✅ Busca em pagamentos (convites via link WhatsApp)
+                const q2 = query(collection(db, "pagamentos"), where("emailParticipante", "==", usuarioLogado.email));
+                const snap2 = await getDocs(q2);
+
+                for (const d of snap2.docs) {
+                    const pd = d.data();
+                    // Não mostra rateios criados pelo próprio usuário
+                    if (!idsJaAdicionados.has(pd.rateioId)) {
+                        const rSnap = await getDoc(doc(db, "rateios", pd.rateioId));
+                        if (rSnap.exists() && rSnap.data().criadorEmail !== usuarioLogado.email) {
+                            rateios.push({
+                                id: rSnap.id,
+                                tipo: 'participante',
+                                meuStatus: pd.status || 'pago',
+                                meuValor: pd.totalPago || pd.valor,
+                                meuPagamentoId: d.id,
+                                ...rSnap.data()
+                            });
+                            idsJaAdicionados.add(pd.rateioId);
+                        }
+                    }
+                }
+
+            } else if (tabAtual === 'pagarDepois') {
+                // Busca em participantes_rateio com status pagar_depois
+                const q1 = query(collection(db, "participantes_rateio"), where("usuarioId", "==", usuarioLogado.uid), where("status", "==", "pagar_depois"));
+                const snap1 = await getDocs(q1);
+                const ids = new Set();
+
+                for (const d of snap1.docs) {
+                    const pd = d.data();
+                    if (!ids.has(pd.rateioId)) {
+                        const rSnap = await getDoc(doc(db, "rateios", pd.rateioId));
+                        if (rSnap.exists()) {
+                            rateios.push({ id: rSnap.id, tipo: 'pagar_depois', ...rSnap.data() });
+                            ids.add(pd.rateioId);
+                        }
+                    }
+                }
+            }
+
+            document.getElementById('sectionCount').textContent = rateios.length;
+
+            if (rateios.length === 0) {
+                const msgs = {
+                    meus: 'Você ainda não criou nenhum rateio.',
+                    participo: 'Você não está participando de nenhum rateio ainda.',
+                    pagarDepois: 'Nenhum rateio salvo para pagar depois.'
+                };
+                lista.innerHTML = `<div style="text-align:center; padding:40px 0;"><i class="fas fa-layer-group" style="font-size:40px; color:rgba(255,255,255,0.1); display:block; margin-bottom:12px;"></i><p style="color:rgba(255,255,255,0.3); font-size:14px; font-weight:700;">${msgs[tabAtual]}</p></div>`;
+                return;
+            }
+
+            lista.innerHTML = '';
+
+            for (const r of rateios) {
+                const pq = query(collection(db, "pagamentos"), where("rateioId", "==", r.id));
+                const pSnap = await getDocs(pq);
+                const pagos = pSnap.size;
+                const total = r.qtdPessoas || 0;
+                const pct = total > 0 ? Math.round((pagos / total) * 100) : 0;
+                const data = r.dataCriacao?.toDate?.()?.toLocaleDateString('pt-BR') || 'Hoje';
+
+                // Status badge do rateio
+                let statusBadge = '';
+                if (pagos >= total && total > 0) statusBadge = '<span class="badge repasse">AGUARDANDO REPASSE</span>';
+                else if (pagos > 0) statusBadge = '<span class="badge andamento">EM ANDAMENTO</span>';
+                else statusBadge = '<span class="badge ativo">ATIVO</span>';
+
+                // Badge do papel do usuário
+                const papelBadge = r.tipo === 'criador'
+                    ? '<span class="badge criador">CRIADOR</span>'
+                    : r.tipo === 'pagar_depois'
+                    ? '<span class="badge pagar-depois">PAGAR DEPOIS</span>'
+                    : '<span class="badge participante">PARTICIPANTE</span>';
+
+                // Meu pagamento (só para participantes)
+                let meuPagamentoHtml = '';
+                if (r.tipo === 'participante') {
+                    const pago = r.meuStatus === 'pago';
+                    meuPagamentoHtml = `
+                    <div class="meu-pagamento ${pago ? '' : 'pendente'}">
+                        <i class="fas ${pago ? 'fa-check-circle' : 'fa-clock'}"></i>
+                        <span>${pago ? 'Você pagou' : 'Seu pagamento pendente'}</span>
+                        <span class="valor">R$ ${fmt(r.valorIndividual)}</span>
+                    </div>`;
+                }
+
+                // Ações
+                let acoesHtml = '';
+                if (r.tipo === 'criador') {
+                    acoesHtml = `
+                        <button class="btn-ver" onclick="event.stopPropagation(); location.href='detalhes-rateio.html?id=${r.id}'"><i class="fas fa-eye"></i> Ver</button>
+                        <button class="btn-simular" onclick="event.stopPropagation(); abrirSim('${r.id}', '${r.nome.replace(/'/g,"\\'")}')"><i class="fas fa-flask"></i></button>
+                        <button class="btn-zap" onclick="event.stopPropagation(); compartilhar('${r.id}', '${r.nome.replace(/'/g,"\\'")}', ${r.valorIndividual})"><i class="fab fa-whatsapp"></i></button>`;
+                } else if (r.meuStatus === 'pago') {
+                    acoesHtml = `
+                        <button class="btn-ver" onclick="event.stopPropagation(); location.href='detalhes-rateio.html?id=${r.id}'"><i class="fas fa-eye"></i> Ver rateio</button>
+                        <button class="btn-comp" onclick="event.stopPropagation(); location.href='comprovante.html?id=${r.id}'"><i class="fas fa-file-alt"></i> Comprovante</button>`;
+                } else {
+                    acoesHtml = `
+                        <button class="btn-ver" onclick="event.stopPropagation(); location.href='detalhes-rateio.html?id=${r.id}'"><i class="fas fa-eye"></i> Ver rateio</button>
+                        <button class="btn-pagar-agora" onclick="event.stopPropagation(); location.href='pagamento.html?id=${r.id}'"><i class="fas fa-lock"></i> Pagar agora</button>`;
+                }
+
+                lista.innerHTML += `
+                <div class="rateio-card" onclick="location.href='detalhes-rateio.html?id=${r.id}'">
+                    <div class="rateio-top">
+                        <div class="rateio-icon">💰</div>
+                        <div style="flex:1;">
+                            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:2px;">
+                                <span class="rateio-nome">${r.nome}</span>
+                                ${papelBadge}
+                            </div>
+                            <div class="rateio-data"><i class="fas fa-calendar" style="font-size:9px;"></i> ${data}</div>
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    ${meuPagamentoHtml}
+                    <div class="stats">
+                        <div class="stat"><div class="stat-label">Total</div><div class="stat-val blue">R$ ${fmt(r.valorTotal)}</div></div>
+                        <div class="stat"><div class="stat-label">Por pessoa</div><div class="stat-val">R$ ${fmt(r.valorIndividual)}</div></div>
+                        <div class="stat"><div class="stat-label">Pagos</div><div class="stat-val green">${pagos}/${total}</div></div>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+                    <div class="progress-info"><span>${pagos} de ${total} pagos</span><span>${pct}%</span></div>
+                    <div class="rateio-actions">${acoesHtml}</div>
+                </div>`;
+            }
+
+        } catch (e) {
+            console.error(e);
+            lista.innerHTML = `<p style="color:#F87171; text-align:center; padding:20px; font-weight:700;">Erro ao carregar rateios.</p>`;
+        }
+    }
+
+    // Simulador
+    window.abrirSim = (id, nome) => {
+        rateioSimAtual = id;
+        simAdicionados = [];
+        document.getElementById('simNomeRateio').textContent = `Rateio: ${nome}`;
+        document.getElementById('simNomeInput').value = '';
+        document.getElementById('simAdicionados').innerHTML = '';
+        document.getElementById('modalSim').classList.add('open');
+    };
+    window.fecharSim = (e) => { if (e.target === document.getElementById('modalSim')) document.getElementById('modalSim').classList.remove('open'); };
+    window.usarNome = (nome) => { document.getElementById('simNomeInput').value = nome; };
+
+    window.adicionarSim = async () => {
+        const nome = document.getElementById('simNomeInput').value.trim();
+        if (!nome) return;
+        const btn = document.getElementById('btnAdicionarSim');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adicionando...'; btn.disabled = true;
+
+        const rSnap = await getDoc(doc(db, "rateios", rateioSimAtual));
+        const rd = rSnap.data();
+        await addDoc(collection(db, "pagamentos"), {
+            rateioId: rateioSimAtual,
+            nomeParticipante: nome,
+            emailParticipante: `sim_${Date.now()}@teste.com`,
+            valor: rd.valorIndividual, taxa: rd.valorIndividual * 0.01,
+            totalPago: rd.valorIndividual * 1.01,
+            metodo: 'pix', status: 'pago', simulado: true,
+            dataPagamento: serverTimestamp()
+        });
+
+        simAdicionados.push(nome);
+        document.getElementById('simAdicionados').innerHTML = simAdicionados.map(n => `
+            <div class="sim-item"><i class="fas fa-check-circle"></i> ${n} adicionado!</div>`).join('');
+        document.getElementById('simNomeInput').value = '';
+        carregarRateios();
+        btn.innerHTML = '<i class="fas fa-user-plus"></i> Adicionar participante'; btn.disabled = false;
+    };
+
+    window.compartilhar = (id, nome, valor) => {
+        const link = `${window.location.origin}/convite.html?id=${id}`;
+        const msg = `Olá! Você foi convidado para o rateio *${nome}*! 🎉%0A%0A💰 Valor: *R$ ${fmt(valor)}*%0A%0A👉 ${link}`;
+        window.open(`https://wa.me/?text=${msg}`, '_blank');
+    };
+
+    document.getElementById('btnLogout').addEventListener('click', () => signOut(auth).then(() => window.location.href = 'index.html'));
+</script>
+</body>
+</html>

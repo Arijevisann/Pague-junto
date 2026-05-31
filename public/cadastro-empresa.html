@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="responsive.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro da Empresa - Pague Junto</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #080E1C;
+            --surface: #0E1829;
+            --surface2: #131F35;
+            --surface3: #1A2845;
+            --border: #1E2E48;
+            --border2: #162238;
+            --text: #F1F5FF;
+            --text2: #7A90B8;
+            --text3: #3D5478;
+            --accent: #2563EB;
+            --accent2: #3B82F6;
+            --accent-light: #60A5FA;
+            --green: #10B981;
+            --amber: #F59E0B;
+            --red: #EF4444;
+            --step-done: #2563EB;
+            --step-active: #2563EB;
+            --step-inactive: #1A2845;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 0 60px;
+        }
+
+        /* Ambient glow */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 500px;
+            background: radial-gradient(ellipse, rgba(37,99,235,0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Header */
+        .header {
+            width: 100%;
+            max-width: 520px;
+            padding: 24px 20px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+        }
+        .back-btn {
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text2); font-size: 14px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .back-btn:hover { background: var(--surface3); color: var(--text); }
+        .header-title { font-size: 16px; font-weight: 700; color: var(--text2); }
+
+        /* Wrapper */
+        .wrapper {
+            width: 100%;
+            max-width: 520px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Stepper */
+        .stepper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 32px;
+            padding: 0 4px;
+        }
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            position: relative;
+        }
+        .step-circle {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 800;
+            transition: all 0.35s ease;
+            position: relative;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+        .step-circle.done {
+            background: var(--step-done);
+            color: #fff;
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.15);
+        }
+        .step-circle.active {
+            background: var(--step-active);
+            color: #fff;
+            box-shadow: 0 0 0 5px rgba(37,99,235,0.2), 0 0 16px rgba(37,99,235,0.3);
+        }
+        .step-circle.inactive {
+            background: var(--step-inactive);
+            color: var(--text3);
+            border: 1.5px solid var(--border);
+        }
+        .step-label {
+            font-size: 10px; font-weight: 700;
+            text-align: center;
+            white-space: nowrap;
+            transition: color 0.3s;
+            line-height: 1.3;
+            max-width: 64px;
+        }
+        .step-label.done, .step-label.active { color: var(--accent-light); }
+        .step-label.inactive { color: var(--text3); }
+
+        /* Connector line between circles */
+        .step-connector {
+            height: 2px;
+            flex: 1;
+            margin-bottom: 22px;
+            transition: background 0.35s;
+        }
+        .step-connector.done { background: var(--accent); }
+        .step-connector.inactive { background: var(--border); }
+
+        /* Screens */
+        .screen { display: none; animation: fadeIn 0.35s ease; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Hero intro (step 1) */
+        .hero-row {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            margin-bottom: 24px; gap: 16px;
+        }
+        .hero-text h1 { font-size: 28px; font-weight: 800; line-height: 1.2; letter-spacing: -0.5px; margin-bottom: 8px; }
+        .hero-text h1 span { color: var(--accent-light); }
+        .hero-text p { font-size: 14px; color: var(--text2); font-weight: 500; line-height: 1.5; }
+        .hero-visual {
+            width: 90px; height: 90px; flex-shrink: 0;
+            background: linear-gradient(135deg, rgba(37,99,235,0.15), rgba(99,102,241,0.1));
+            border-radius: 20px;
+            border: 1px solid rgba(37,99,235,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 40px;
+        }
+
+        /* Form card */
+        .form-card {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 14px;
+            border: 1px solid var(--border);
+        }
+        .form-card-title {
+            font-size: 15px; font-weight: 800;
+            margin-bottom: 18px; letter-spacing: -0.2px;
+        }
+
+        /* Fields */
+        .field { margin-bottom: 16px; }
+        .field:last-child { margin-bottom: 0; }
+        .field label {
+            display: block;
+            font-size: 12px; font-weight: 700;
+            color: var(--text2);
+            margin-bottom: 7px;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .field label .optional {
+            color: var(--text3); font-weight: 600;
+            text-transform: none; letter-spacing: 0; font-size: 11px;
+        }
+        .field input, .field select {
+            width: 100%;
+            background: var(--surface2);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 14px; font-weight: 600;
+            color: var(--text);
+            outline: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .field input::placeholder { color: var(--text3); font-weight: 500; }
+        .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%233D5478' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; cursor: pointer; }
+        .field select option { background: var(--surface2); color: var(--text); }
+        .field input:focus, .field select:focus {
+            border-color: var(--accent2);
+            background: var(--surface3);
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+        }
+        .field input.filled { border-color: rgba(37,99,235,0.4); }
+
+        /* Input with icon */
+        .input-icon-wrap { position: relative; }
+        .input-icon-wrap i {
+            position: absolute; right: 16px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--text3); font-size: 14px; pointer-events: none;
+        }
+        .input-icon-wrap input { padding-right: 42px; }
+
+        /* Grid */
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* Security notice */
+        .security-card {
+            background: rgba(37,99,235,0.05);
+            border: 1px solid rgba(37,99,235,0.12);
+            border-radius: 14px; padding: 14px 16px;
+            display: flex; align-items: flex-start; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .security-card i { color: var(--accent2); font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+        .security-card div { flex: 1; }
+        .security-card strong { font-size: 13px; font-weight: 700; display: block; margin-bottom: 2px; }
+        .security-card p { font-size: 12px; color: var(--text2); font-weight: 500; line-height: 1.4; }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            background: var(--accent);
+            color: #fff; font-size: 16px; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 17px; border-radius: 14px; border: none;
+            cursor: pointer; transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 6px 20px rgba(37,99,235,0.3);
+            margin-bottom: 12px; letter-spacing: -0.2px;
+        }
+        .btn-primary:hover { background: #1d4ed8; box-shadow: 0 8px 28px rgba(37,99,235,0.4); }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-ghost {
+            width: 100%;
+            background: transparent; color: var(--accent-light);
+            font-size: 14px; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 14px; border-radius: 14px;
+            border: none; cursor: pointer;
+            transition: color 0.2s;
+        }
+        .btn-ghost:hover { color: #fff; }
+
+        /* Step sections for review */
+        .review-section {
+            background: var(--surface);
+            border-radius: 18px; padding: 18px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+        }
+        .review-section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 14px;
+        }
+        .review-section-title { font-size: 14px; font-weight: 800; letter-spacing: -0.2px; }
+        .btn-edit {
+            font-size: 13px; font-weight: 700; color: var(--accent-light);
+            background: none; border: none; cursor: pointer;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .review-row {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 9px 0; border-bottom: 1px solid var(--border2);
+            font-size: 13px;
+        }
+        .review-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .review-label { color: var(--text2); font-weight: 500; display: flex; align-items: center; gap: 8px; flex-shrink: 0; min-width: 120px; }
+        .review-label i { color: var(--text3); font-size: 12px; width: 14px; text-align: center; }
+        .review-val { font-weight: 600; color: var(--text); text-align: right; }
+
+        /* Confirm checkbox */
+        .confirm-row {
+            display: flex; align-items: flex-start; gap: 12px;
+            background: var(--surface); border-radius: 14px;
+            padding: 16px; margin-bottom: 20px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+        }
+        .confirm-check {
+            width: 22px; height: 22px; border-radius: 6px;
+            border: 2px solid var(--border);
+            background: var(--surface2);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; margin-top: 1px;
+            transition: all 0.2s;
+        }
+        .confirm-check.checked {
+            background: var(--accent); border-color: var(--accent);
+        }
+        .confirm-check.checked::after { content: '✓'; color: #fff; font-size: 12px; font-weight: 900; }
+        .confirm-text { font-size: 13px; font-weight: 600; color: var(--text2); line-height: 1.5; }
+
+        /* Secure footer */
+        .secure-footer {
+            text-align: center;
+            font-size: 12px; font-weight: 600; color: var(--text3);
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+            margin-top: 4px;
+        }
+
+        /* Badge segmento */
+        .badge-segmento {
+            display: inline-block;
+            background: rgba(99,102,241,0.1);
+            color: #818CF8;
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 20px; padding: 2px 10px;
+            font-size: 12px; font-weight: 700;
+        }
+
+        /* Step indicator label */
+        .step-indicator {
+            font-size: 12px; font-weight: 700; color: var(--text3);
+            text-align: center; margin-bottom: 6px;
+            letter-spacing: 0.05em; text-transform: uppercase;
+        }
+        .step-indicator span { color: var(--accent-light); }
+
+        /* Responsiveness */
+        @media (max-width: 400px) {
+            .step-label { font-size: 9px; max-width: 52px; }
+            .hero-text h1 { font-size: 24px; }
+            .hero-visual { width: 72px; height: 72px; font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <button class="back-btn" onclick="voltarOuSair()">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+    <span class="header-title">Cadastro da Empresa</span>
+</div>
+
+<div class="wrapper">
+
+    <!-- Stepper -->
+    <div class="stepper" id="stepper">
+        <div class="step">
+            <div class="step-circle active" id="sc1"><i class="fas fa-check" style="display:none;" id="si1"></i><span id="sn1">1</span></div>
+            <div class="step-label active" id="sl1">Dados da<br>empresa</div>
+        </div>
+        <div class="step-connector inactive" id="con1"></div>
+        <div class="step">
+            <div class="step-circle inactive" id="sc2"><span id="sn2">2</span></div>
+            <div class="step-label inactive" id="sl2">Dados do<br>responsável</div>
+        </div>
+        <div class="step-connector inactive" id="con2"></div>
+        <div class="step">
+            <div class="step-circle inactive" id="sc3"><span id="sn3">3</span></div>
+            <div class="step-label inactive" id="sl3">Conta<br>bancária</div>
+        </div>
+        <div class="step-connector inactive" id="con3"></div>
+        <div class="step">
+            <div class="step-circle inactive" id="sc4"><span id="sn4">4</span></div>
+            <div class="step-label inactive" id="sl4">Documentos<br>e endereço</div>
+        </div>
+        <div class="step-connector inactive" id="con4"></div>
+        <div class="step">
+            <div class="step-circle inactive" id="sc5"><span id="sn5">5</span></div>
+            <div class="step-label inactive" id="sl5">Revisão</div>
+        </div>
+    </div>
+
+    <!-- ══════════ STEP 1 — Dados da empresa ══════════ -->
+    <div class="screen active" id="step1">
+        <div class="hero-row">
+            <div class="hero-text">
+                <h1>Vamos cadastrar<br><span>sua empresa</span></h1>
+                <p>Preencha as informações para<br>criar sua conta na Pague Junto.</p>
+            </div>
+            <div class="hero-visual">🏢</div>
+        </div>
+
+        <div class="form-card">
+            <div class="form-card-title">Dados da empresa</div>
+
+            <div class="field">
+                <label>Razão social</label>
+                <input type="text" id="razaoSocial" placeholder="Ex.: Pague Junto Soluções LTDA">
+            </div>
+            <div class="field">
+                <label>Nome fantasia <span class="optional">(opcional)</span></label>
+                <input type="text" id="nomeFantasia" placeholder="Ex.: Pague Junto">
+            </div>
+            <div class="field">
+                <label>CNPJ</label>
+                <input type="text" id="cnpj" placeholder="00.000.000/0000-00" maxlength="18">
+            </div>
+            <div class="field">
+                <label>Segmento da empresa</label>
+                <select id="segmento">
+                    <option value="" disabled selected>Selecione o segmento</option>
+                    <option>Serviços Financeiros</option>
+                    <option>Tecnologia</option>
+                    <option>Agência de Marketing</option>
+                    <option>Marketing Digital</option>
+                    <option>Design e Branding</option>
+                    <option>Comunicação</option>
+                    <option>Mídia e Performance</option>
+                    <option>Varejo</option>
+                    <option>Saúde</option>
+                    <option>Educação</option>
+                    <option>Outro</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Data de abertura</label>
+                <div class="input-icon-wrap">
+                    <input type="text" id="dataAbertura" placeholder="dd/mm/aaaa" maxlength="10">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="security-card">
+            <i class="fas fa-shield-halved"></i>
+            <div>
+                <strong>Seus dados estão protegidos</strong>
+                <p>Utilizamos criptografia de ponta a ponta para garantir a segurança das suas informações.</p>
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="irPara(2)">Continuar</button>
+        <button class="btn-ghost">Salvar e continuar depois</button>
+    </div>
+
+    <!-- ══════════ STEP 2 — Dados do responsável ══════════ -->
+    <div class="screen" id="step2">
+        <div class="hero-row" style="margin-bottom:20px;">
+            <div class="hero-text">
+                <h1>Dados do <span>responsável</span></h1>
+                <p>Quem será o contato principal<br>pela empresa na plataforma.</p>
+            </div>
+            <div class="hero-visual">👤</div>
+        </div>
+
+        <div class="form-card">
+            <div class="form-card-title">Informações pessoais</div>
+
+            <div class="field">
+                <label>Nome completo</label>
+                <input type="text" id="nomeResp" placeholder="Ex.: João da Silva Santos">
+            </div>
+            <div class="field">
+                <label>E-mail corporativo</label>
+                <input type="email" id="emailResp" placeholder="joao@empresa.com.br">
+            </div>
+            <div class="field">
+                <label>Telefone / WhatsApp</label>
+                <input type="tel" id="telefoneResp" placeholder="(11) 99999-9999" maxlength="15">
+            </div>
+            <div class="field">
+                <label>Cargo na empresa</label>
+                <select id="cargoResp">
+                    <option value="" disabled selected>Selecione o cargo</option>
+                    <option>Sócio Administrador</option>
+                    <option>CEO / Diretor Geral</option>
+                    <option>CFO / Diretor Financeiro</option>
+                    <option>Gerente Financeiro</option>
+                    <option>Contador</option>
+                    <option>Procurador</option>
+                    <option>Outro</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>CPF do responsável</label>
+                <input type="text" id="cpfResp" placeholder="000.000.000-00" maxlength="14">
+            </div>
+        </div>
+
+        <div class="security-card">
+            <i class="fas fa-user-shield"></i>
+            <div>
+                <strong>Por que pedimos essas informações?</strong>
+                <p>O responsável é necessário para validação da empresa junto ao Banco Central e para comunicações importantes.</p>
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="irPara(3)">Continuar</button>
+        <button class="btn-ghost" onclick="irPara(1)">Voltar</button>
+    </div>
+
+    <!-- ══════════ STEP 3 — Conta bancária ══════════ -->
+    <div class="screen" id="step3">
+        <div class="hero-row" style="margin-bottom:20px;">
+            <div class="hero-text">
+                <h1>Conta <span>bancária</span></h1>
+                <p>Para receber os repasses<br>dos rateios da sua empresa.</p>
+            </div>
+            <div class="hero-visual">🏦</div>
+        </div>
+
+        <div class="form-card">
+            <div class="form-card-title">Dados bancários</div>
+
+            <div class="field">
+                <label>Banco</label>
+                <select id="banco">
+                    <option value="" disabled selected>Selecione o banco</option>
+                    <option>Banco do Brasil (001)</option>
+                    <option>Bradesco (237)</option>
+                    <option>Itaú (341)</option>
+                    <option>Caixa Econômica Federal (104)</option>
+                    <option>Santander (033)</option>
+                    <option>Nubank (260)</option>
+                    <option>Inter (077)</option>
+                    <option>Sicoob (756)</option>
+                    <option>C6 Bank (336)</option>
+                    <option>Outro</option>
+                </select>
+            </div>
+            <div class="grid2">
+                <div class="field" style="margin-bottom:0;">
+                    <label>Agência</label>
+                    <input type="text" id="agencia" placeholder="0000-0">
+                </div>
+                <div class="field" style="margin-bottom:0;">
+                    <label>Conta</label>
+                    <input type="text" id="conta" placeholder="00000-0">
+                </div>
+            </div>
+            <div class="field" style="margin-top:16px;">
+                <label>Tipo de conta</label>
+                <select id="tipoConta">
+                    <option value="" disabled selected>Selecione</option>
+                    <option>Conta Corrente</option>
+                    <option>Conta Poupança</option>
+                    <option>Conta Salário</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Nome do titular</label>
+                <input type="text" id="titular" placeholder="Razão social ou nome completo">
+            </div>
+        </div>
+
+        <div class="security-card">
+            <i class="fas fa-lock"></i>
+            <div>
+                <strong>Repasses automáticos e seguros</strong>
+                <p>Seus dados bancários são criptografados e nunca são compartilhados com terceiros.</p>
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="irPara(4)">Continuar</button>
+        <button class="btn-ghost" onclick="irPara(2)">Voltar</button>
+    </div>
+
+    <!-- ══════════ STEP 4 — Documentos e endereço ══════════ -->
+    <div class="screen" id="step4">
+        <div class="hero-row" style="margin-bottom:20px;">
+            <div class="hero-text">
+                <h1>Endereço da <span>empresa</span></h1>
+                <p>Endereço registrado no<br>Cartão CNPJ da Receita Federal.</p>
+            </div>
+            <div class="hero-visual">📍</div>
+        </div>
+
+        <div class="form-card">
+            <div class="form-card-title">Endereço da empresa</div>
+
+            <div class="field">
+                <label>CEP</label>
+                <div class="input-icon-wrap">
+                    <input type="text" id="cep" placeholder="00000-000" maxlength="9">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+            <div class="field">
+                <label>Endereço</label>
+                <input type="text" id="endereco" placeholder="Av. Paulista, 1000 - Bela Vista">
+            </div>
+            <div class="grid2">
+                <div class="field" style="margin-bottom:0;">
+                    <label>Cidade</label>
+                    <input type="text" id="cidade" placeholder="São Paulo">
+                </div>
+                <div class="field" style="margin-bottom:0;">
+                    <label>Estado</label>
+                    <select id="estado">
+                        <option value="" disabled selected>UF</option>
+                        <option>SP</option><option>RJ</option><option>MG</option>
+                        <option>RS</option><option>PR</option><option>SC</option>
+                        <option>BA</option><option>PE</option><option>CE</option>
+                        <option>GO</option><option>DF</option><option>AM</option>
+                        <option>PA</option><option>MT</option><option>MS</option>
+                        <option>ES</option><option>RN</option><option>PB</option>
+                        <option>AL</option><option>SE</option><option>PI</option>
+                        <option>MA</option><option>TO</option><option>RO</option>
+                        <option>AC</option><option>RR</option><option>AP</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card" style="margin-top:4px;">
+            <div class="form-card-title">Documentos</div>
+            <div class="field">
+                <label>Contrato social ou MEI</label>
+                <div style="background:var(--surface2); border:2px dashed var(--border); border-radius:12px; padding:20px; text-align:center; cursor:pointer; transition:border-color 0.2s;" onmouseover="this.style.borderColor='#2563EB'" onmouseout="this.style.borderColor='var(--border)'">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:24px; color:var(--text3); margin-bottom:8px; display:block;"></i>
+                    <div style="font-size:13px; font-weight:700; color:var(--text2); margin-bottom:4px;">Clique para enviar o documento</div>
+                    <div style="font-size:11px; color:var(--text3); font-weight:500;">PDF, JPG ou PNG · Máx. 10MB</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="irPara(5)">Continuar</button>
+        <button class="btn-ghost" onclick="irPara(3)">Voltar</button>
+    </div>
+
+    <!-- ══════════ STEP 5 — Revisão ══════════ -->
+    <div class="screen" id="step5">
+        <div style="margin-bottom:24px;">
+            <h1 style="font-size:26px; font-weight:800; letter-spacing:-0.5px; margin-bottom:6px;">Revisão e <span style="color:var(--accent-light);">confirmação</span></h1>
+            <p style="font-size:14px; color:var(--text2); font-weight:500;">Confira os dados da sua empresa antes de finalizar o cadastro.</p>
+        </div>
+
+        <!-- Dados da empresa -->
+        <div class="review-section">
+            <div class="review-section-header">
+                <div class="review-section-title">Dados da empresa</div>
+                <button class="btn-edit" onclick="irPara(1)">Editar</button>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-building"></i> Razão social</span>
+                <span class="review-val" id="rev-razao">Pague Junto Soluções LTDA</span>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-tag"></i> Nome fantasia</span>
+                <span class="review-val" id="rev-fantasia">Pague Junto</span>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-id-card"></i> CNPJ</span>
+                <span class="review-val" id="rev-cnpj">12.345.678/0001-90</span>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-briefcase"></i> Segmento</span>
+                <span class="review-val"><span class="badge-segmento" id="rev-segmento">Serviços Financeiros</span></span>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-calendar"></i> Data abertura</span>
+                <span class="review-val" id="rev-data">15/03/2024</span>
+            </div>
+        </div>
+
+        <!-- Dados do responsável -->
+        <div class="review-section">
+            <div class="review-section-header">
+                <div class="review-section-title">Dados do responsável</div>
+                <button class="btn-edit" onclick="irPara(2)">Editar</button>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-user"></i> Nome completo</span>
+                <span class="review-val" id="rev-nome">João da Silva Santos</span>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-envelope"></i> E-mail</span>
+                <span class="review-val" id="rev-email">joao@paguejunto.com.br</span>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-phone"></i> Telefone</span>
+                <span class="review-val" id="rev-tel">(11) 98765-4321</span>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-id-badge"></i> Cargo</span>
+                <span class="review-val" id="rev-cargo">Sócio Administrador</span>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-fingerprint"></i> CPF</span>
+                <span class="review-val" id="rev-cpf">123.456.789-00</span>
+            </div>
+        </div>
+
+        <!-- Conta bancária -->
+        <div class="review-section">
+            <div class="review-section-header">
+                <div class="review-section-title">Conta bancária</div>
+                <button class="btn-edit" onclick="irPara(3)">Editar</button>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-university"></i> Banco</span>
+                <span class="review-val" id="rev-banco">Banco do Brasil (001)</span>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-code-branch"></i> Agência</span>
+                <span class="review-val" id="rev-agencia">1234-5</span>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-wallet"></i> Conta</span>
+                <span class="review-val" id="rev-conta">12345-6</span>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-credit-card"></i> Tipo</span>
+                <span class="review-val" id="rev-tipo">Conta Corrente</span>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-user-tie"></i> Titular</span>
+                <span class="review-val" id="rev-titular">Pague Junto Soluções LTDA</span>
+            </div>
+        </div>
+
+        <!-- Endereço -->
+        <div class="review-section">
+            <div class="review-section-header">
+                <div class="review-section-title">Endereço da empresa</div>
+                <button class="btn-edit" onclick="irPara(4)">Editar</button>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-map-marker-alt"></i> Endereço</span>
+                <span class="review-val" id="rev-end">Av. Paulista, 1000 - Bela Vista</span>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-mail-bulk"></i> CEP</span>
+                <span class="review-val" id="rev-cep">01310-100</span>
+            </div>
+            <div class="review-row">
+                <span class="review-label"><i class="fas fa-city"></i> Cidade / Estado</span>
+                <span class="review-val" id="rev-cidade">São Paulo / SP</span>
+            </div>
+        </div>
+
+        <!-- Confirm checkbox -->
+        <div class="confirm-row" id="confirmRow" onclick="toggleConfirm()">
+            <div class="confirm-check" id="confirmCheck"></div>
+            <p class="confirm-text">Confirmo que todas as informações acima estão corretas e estou ciente dos <strong style="color:var(--accent-light);">Termos de Uso</strong> da Pague Junto.</p>
+        </div>
+
+        <button class="btn-primary" id="btnFinalizar" onclick="finalizar()" style="opacity:0.5;cursor:not-allowed;">
+            <i class="fas fa-user-plus"></i> Finalizar cadastro
+        </button>
+        <div class="secure-footer"><i class="fas fa-lock"></i> Ambiente 100% seguro e criptografado</div>
+    </div>
+
+    <!-- ══════════ STEP 6 — Sucesso ══════════ -->
+    <div class="screen" id="step6">
+        <div style="text-align:center; padding:20px 0 32px;">
+            <div style="width:80px;height:80px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px;color:var(--green);animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);">
+                <i class="fas fa-check"></i>
+            </div>
+            <h1 style="font-size:26px;font-weight:800;letter-spacing:-0.5px;margin-bottom:8px;">Cadastro <span style="color:var(--accent-light);">enviado!</span></h1>
+            <p style="font-size:14px;color:var(--text2);font-weight:500;line-height:1.6;max-width:300px;margin:0 auto 32px;">Seus dados estão em análise. Você receberá um e-mail de confirmação em até <strong style="color:var(--text);">24 horas</strong>.</p>
+
+            <div style="background:var(--surface);border-radius:18px;padding:20px;margin-bottom:20px;border:1px solid var(--border);text-align:left;">
+                <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.05em;">Próximos passos</div>
+                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">
+                    <div style="width:28px;height:28px;background:rgba(37,99,235,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:var(--accent2);">1</div>
+                    <div><div style="font-size:13px;font-weight:700;margin-bottom:2px;">Análise dos documentos</div><div style="font-size:12px;color:var(--text2);font-weight:500;">Nossa equipe verifica os dados enviados</div></div>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">
+                    <div style="width:28px;height:28px;background:rgba(37,99,235,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:var(--accent2);">2</div>
+                    <div><div style="font-size:13px;font-weight:700;margin-bottom:2px;">Confirmação por e-mail</div><div style="font-size:12px;color:var(--text2);font-weight:500;">Você será notificado sobre a aprovação</div></div>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:12px;">
+                    <div style="width:28px;height:28px;background:rgba(16,185,129,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:var(--green);">✓</div>
+                    <div><div style="font-size:13px;font-weight:700;margin-bottom:2px;">Conta ativa</div><div style="font-size:12px;color:var(--text2);font-weight:500;">Comece a criar rateios entre empresas</div></div>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="location.href='dashboard.html'">Ir para o início</button>
+        </div>
+    </div>
+
+</div>
+
+<style>
+@keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+</style>
+
+<script>
+    let stepAtual = 1;
+    let confirmado = false;
+
+    // Máscaras
+    document.getElementById('cnpj').addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g,'');
+        v = v.replace(/^(\d{2})(\d)/, '$1.$2');
+        v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+        v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
+        v = v.replace(/(\d{4})(\d)/, '$1-$2');
+        e.target.value = v;
+    });
+    document.getElementById('dataAbertura').addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g,'');
+        v = v.replace(/(\d{2})(\d)/, '$1/$2').replace(/(\d{2})\/(\d{2})(\d)/, '$1/$2/$3');
+        e.target.value = v;
+    });
+    document.getElementById('cpfResp').addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g,'');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/(\d{3})\.(\d{3})\.(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+        e.target.value = v;
+    });
+    document.getElementById('telefoneResp').addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g,'');
+        v = v.replace(/^(\d{2})(\d)/, '($1) $2');
+        v = v.replace(/(\d{5})(\d{1,4})$/, '$1-$2');
+        e.target.value = v;
+    });
+    document.getElementById('cep').addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g,'');
+        v = v.replace(/(\d{5})(\d)/, '$1-$2');
+        e.target.value = v;
+    });
+
+    function atualizarStepper(atual) {
+        for (let i = 1; i <= 5; i++) {
+            const circle = document.getElementById('sc' + i);
+            const label = document.getElementById('sl' + i);
+            const num = document.getElementById('sn' + i);
+            const icon = document.getElementById('si' + i);
+
+            circle.className = 'step-circle';
+            label.className = 'step-label';
+
+            if (i < atual) {
+                circle.classList.add('done');
+                label.classList.add('done');
+                if (icon) { icon.style.display = 'inline'; num.style.display = 'none'; }
+            } else if (i === atual) {
+                circle.classList.add('active');
+                label.classList.add('active');
+                if (icon) { icon.style.display = 'none'; num.style.display = 'inline'; }
+            } else {
+                circle.classList.add('inactive');
+                label.classList.add('inactive');
+                if (icon) { icon.style.display = 'none'; num.style.display = 'inline'; }
+            }
+        }
+        for (let i = 1; i <= 4; i++) {
+            const con = document.getElementById('con' + i);
+            con.className = 'step-connector ' + (i < atual ? 'done' : 'inactive');
+        }
+    }
+
+    function irPara(step) {
+        // Sai da tela atual
+        document.getElementById('step' + stepAtual).classList.remove('active');
+
+        // Vai para nova tela
+        stepAtual = step;
+        const el = document.getElementById('step' + step);
+        el.classList.add('active');
+
+        // Atualiza stepper (só para steps 1-5)
+        if (step <= 5) atualizarStepper(step);
+
+        // Atualiza revisão se for step 5
+        if (step === 5) preencherRevisao();
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function preencherRevisao() {
+        const g = (id) => document.getElementById(id)?.value || '—';
+        document.getElementById('rev-razao').textContent = g('razaoSocial') !== '—' ? g('razaoSocial') : 'Pague Junto Soluções LTDA';
+        document.getElementById('rev-fantasia').textContent = g('nomeFantasia') !== '—' ? g('nomeFantasia') : 'Pague Junto';
+        document.getElementById('rev-cnpj').textContent = g('cnpj') !== '—' ? g('cnpj') : '12.345.678/0001-90';
+        document.getElementById('rev-segmento').textContent = g('segmento') !== '—' ? g('segmento') : 'Serviços Financeiros';
+        document.getElementById('rev-data').textContent = g('dataAbertura') !== '—' ? g('dataAbertura') : '15/03/2024';
+        document.getElementById('rev-nome').textContent = g('nomeResp') !== '—' ? g('nomeResp') : 'João da Silva Santos';
+        document.getElementById('rev-email').textContent = g('emailResp') !== '—' ? g('emailResp') : 'joao@paguejunto.com.br';
+        document.getElementById('rev-tel').textContent = g('telefoneResp') !== '—' ? g('telefoneResp') : '(11) 98765-4321';
+        document.getElementById('rev-cargo').textContent = g('cargoResp') !== '—' ? g('cargoResp') : 'Sócio Administrador';
+        document.getElementById('rev-cpf').textContent = g('cpfResp') !== '—' ? g('cpfResp') : '123.456.789-00';
+        document.getElementById('rev-banco').textContent = g('banco') !== '—' ? g('banco') : 'Banco do Brasil (001)';
+        document.getElementById('rev-agencia').textContent = g('agencia') !== '—' ? g('agencia') : '1234-5';
+        document.getElementById('rev-conta').textContent = g('conta') !== '—' ? g('conta') : '12345-6';
+        document.getElementById('rev-tipo').textContent = g('tipoConta') !== '—' ? g('tipoConta') : 'Conta Corrente';
+        document.getElementById('rev-titular').textContent = g('titular') !== '—' ? g('titular') : 'Pague Junto Soluções LTDA';
+        document.getElementById('rev-end').textContent = g('endereco') !== '—' ? g('endereco') : 'Av. Paulista, 1000 - Bela Vista';
+        document.getElementById('rev-cep').textContent = g('cep') !== '—' ? g('cep') : '01310-100';
+        const cid = g('cidade') !== '—' ? g('cidade') : 'São Paulo';
+        const est = g('estado') !== '—' ? g('estado') : 'SP';
+        document.getElementById('rev-cidade').textContent = cid + ' / ' + est;
+    }
+
+    function toggleConfirm() {
+        confirmado = !confirmado;
+        const check = document.getElementById('confirmCheck');
+        const btn = document.getElementById('btnFinalizar');
+        check.className = 'confirm-check' + (confirmado ? ' checked' : '');
+        btn.style.opacity = confirmado ? '1' : '0.5';
+        btn.style.cursor = confirmado ? 'pointer' : 'not-allowed';
+    }
+
+    function finalizar() {
+        if (!confirmado) return;
+        document.getElementById('step5').classList.remove('active');
+        document.getElementById('stepper').style.display = 'none';
+        document.getElementById('step6').classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function voltarOuSair() {
+        if (stepAtual > 1 && stepAtual <= 5) irPara(stepAtual - 1);
+        else location.href = 'dashboard.html';
+    }
+</script>
+</body>
+</html>

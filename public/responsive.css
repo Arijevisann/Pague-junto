@@ -1,0 +1,80 @@
+/* ═══════════════════════════════════════════════
+   PAGUE JUNTO — Layout Desktop
+   No PC: sidebar + conteúdo centralizado
+   No celular: layout mobile normal
+═══════════════════════════════════════════════ */
+
+@media (min-width: 768px) {
+
+    /* Fundo do desktop igual ao app */
+    html, body {
+        background: #0B0F1A !important;
+        min-height: 100vh;
+    }
+
+    /* Layout com sidebar */
+    body {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: flex-start !important;
+        padding: 0 !important;
+        min-height: 100vh !important;
+    }
+
+    /* ── SIDEBAR INJETADA ── */
+    body::before {
+        content: '';
+        display: block;
+        width: 220px;
+        min-height: 100vh;
+        background: #0D1422;
+        border-right: 1px solid #1A2535;
+        flex-shrink: 0;
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        z-index: 100;
+    }
+
+    /* Sidebar HTML injetada via JS */
+    #app-sidebar {
+        width: 220px;
+        min-height: 100vh;
+        background: #0D1422;
+        border-right: 1px solid #1A2535;
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+    }
+
+    /* Conteúdo empurrado pela sidebar */
+    body > *:not(#app-sidebar) {
+        margin-left: 220px;
+        max-width: 600px;
+        min-height: 100vh;
+    }
+
+    /* Navbar sticky respeitando sidebar */
+    .navbar {
+        left: 220px !important;
+        right: 0 !important;
+        max-width: 600px !important;
+        width: auto !important;
+    }
+
+    /* Footer nav some no desktop */
+    .footer, .footer-nav {
+        display: none !important;
+    }
+
+    /* Padding bottom some pois nav sumiu */
+    body { padding-bottom: 0 !important; }
+    .content { padding-bottom: 40px !important; }
+
+    /* Modal centralizado na área de conteúdo */
+    .modal-overlay {
+        left: 220px !important;
+    }
+}

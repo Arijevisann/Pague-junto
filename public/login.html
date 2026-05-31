@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar - Pague Junto</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #0B0F1A;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background atmosphere */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -30%;
+            left: -20%;
+            width: 70%;
+            height: 70%;
+            background: radial-gradient(ellipse, rgba(99,102,241,0.12) 0%, transparent 65%);
+            pointer-events: none;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -20%;
+            right: -10%;
+            width: 50%;
+            height: 60%;
+            background: radial-gradient(ellipse, rgba(16,185,129,0.08) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            z-index: 1;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Logo */
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+        .logo-mark {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 800; color: #fff;
+            box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+        }
+        .logo-name { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
+        .logo-name span { color: #6366F1; }
+
+        h1 { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 8px; letter-spacing: -0.5px; }
+        .subtitle { font-size: 15px; color: #4B5563; font-weight: 500; margin-bottom: 36px; }
+
+        /* Inputs */
+        .input-group { position: relative; margin-bottom: 14px; }
+        .input-group i.icon-left {
+            position: absolute; left: 18px; top: 50%;
+            transform: translateY(-50%);
+            color: #374151; font-size: 16px; pointer-events: none;
+            transition: color 0.2s;
+        }
+        .input-group:focus-within i.icon-left { color: #6366F1; }
+        .input-group i.toggle-senha {
+            position: absolute; right: 18px; top: 50%;
+            transform: translateY(-50%);
+            color: #374151; font-size: 15px; cursor: pointer;
+            transition: color 0.2s;
+        }
+        .input-group i.toggle-senha:hover { color: #6366F1; }
+
+        .input-group input {
+            width: 100%;
+            padding: 17px 50px;
+            background: #141824;
+            border: 1.5px solid #1F2533;
+            border-radius: 14px;
+            font-size: 15px; font-weight: 600; color: #F9FAFB;
+            outline: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+        }
+        .input-group input::placeholder { color: #2D3748; font-weight: 500; }
+        .input-group input:focus {
+            border-color: #6366F1;
+            background: #161B2B;
+            box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+        }
+
+        .forgot-link { text-align: right; margin-bottom: 24px; }
+        .forgot-link a { font-size: 14px; color: #6366F1; font-weight: 600; text-decoration: none; }
+        .forgot-link a:hover { color: #818CF8; }
+
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
+            color: #fff;
+            font-size: 16px; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 18px;
+            border-radius: 14px; border: none;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 8px 24px rgba(99,102,241,0.3);
+            letter-spacing: -0.2px;
+        }
+        .btn-primary:hover { opacity: 0.92; box-shadow: 0 12px 32px rgba(99,102,241,0.4); }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+
+        .divider {
+            display: flex; align-items: center; gap: 14px;
+            margin: 22px 0;
+            color: #1F2533; font-size: 12px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em;
+        }
+        .divider::before, .divider::after {
+            content: ''; flex: 1; height: 1px; background: #1F2533;
+        }
+
+        .btn-google {
+            width: 100%; background: #141824;
+            border: 1.5px solid #1F2533; border-radius: 14px; padding: 15px;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            font-size: 15px; font-weight: 600;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #D1D5DB; cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .btn-google:hover { background: #1A2032; border-color: #2D3748; }
+        .btn-google img { width: 20px; }
+
+        .footer-link {
+            text-align: center; margin-top: 28px;
+            font-size: 14px; color: #374151; font-weight: 600;
+        }
+        .footer-link a { color: #6366F1; font-weight: 700; text-decoration: none; }
+        .footer-link a:hover { color: #818CF8; }
+
+        .error-msg {
+            background: rgba(239,68,68,0.08);
+            color: #F87171;
+            border: 1px solid rgba(239,68,68,0.2);
+            border-radius: 12px; padding: 13px 16px;
+            font-size: 13px; font-weight: 600;
+            margin-bottom: 16px; display: none;
+        }
+        .success-msg {
+            background: rgba(16,185,129,0.08);
+            color: #34D399;
+            border: 1px solid rgba(16,185,129,0.2);
+            border-radius: 12px; padding: 13px 16px;
+            font-size: 13px; font-weight: 600;
+            margin-bottom: 16px; display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <div class="logo-area">
+        <img src="logo_cadastro.png" alt="Pague Junto" style="height:48px;width:auto;object-fit:contain;">
+    </div>
+
+    <h1>Bem-vindo de volta</h1>
+    <p class="subtitle">Entre na sua conta para continuar</p>
+
+    <div class="error-msg" id="erroMsg"></div>
+    <div class="success-msg" id="successMsg"></div>
+
+    <form id="formLogin">
+        <div class="input-group">
+            <i class="fas fa-envelope icon-left"></i>
+            <input type="email" id="email" placeholder="Seu e-mail" required autocomplete="email">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-lock icon-left"></i>
+            <input type="password" id="senha" placeholder="Sua senha" required autocomplete="current-password">
+            <i class="fas fa-eye toggle-senha" id="toggleSenha"></i>
+        </div>
+
+        <div class="forgot-link">
+            <a href="#" id="forgotLink">Esqueci minha senha</a>
+        </div>
+
+        <button type="submit" class="btn-primary" id="btnEntrar">Entrar</button>
+    </form>
+
+    <div class="divider">ou</div>
+
+    <button class="btn-google" id="btnGoogle">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
+        Continuar com Google
+    </button>
+
+    <div class="footer-link">
+        Não tem conta? <a href="cadastro.html">Criar conta grátis</a>
+    </div>
+
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import firebaseConfig from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const conviteId = urlParams.get('convite') || localStorage.getItem('rateioConvite');
+
+    function mostrarErro(msg) {
+        document.getElementById('successMsg').style.display = 'none';
+        const el = document.getElementById('erroMsg');
+        el.textContent = msg; el.style.display = 'block';
+    }
+    function mostrarSucesso(msg) {
+        document.getElementById('erroMsg').style.display = 'none';
+        const el = document.getElementById('successMsg');
+        el.textContent = msg; el.style.display = 'block';
+    }
+    function esconderMensagens() {
+        document.getElementById('erroMsg').style.display = 'none';
+        document.getElementById('successMsg').style.display = 'none';
+    }
+
+    function redirecionar() {
+        if (conviteId) {
+            localStorage.removeItem('rateioConvite');
+            window.location.assign(`pagamento.html?id=${conviteId}`);
+        } else {
+            window.location.assign('dashboard.html');
+        }
+    }
+
+    document.getElementById('toggleSenha').addEventListener('click', () => {
+        const input = document.getElementById('senha');
+        const icon = document.getElementById('toggleSenha');
+        if (input.type === 'password') {
+            input.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    });
+
+    document.getElementById('formLogin').addEventListener('submit', async (e) => {
+        e.preventDefault(); esconderMensagens();
+        const btn = document.getElementById('btnEntrar');
+        btn.textContent = "Entrando..."; btn.disabled = true;
+        const email = document.getElementById('email').value.trim();
+        const senha = document.getElementById('senha').value;
+        try {
+            await signInWithEmailAndPassword(auth, email, senha);
+            redirecionar();
+        } catch (error) {
+            const msgs = {
+                'auth/user-not-found': 'E-mail não encontrado.',
+                'auth/wrong-password': 'Senha incorreta.',
+                'auth/invalid-credential': 'E-mail ou senha incorretos.',
+                'auth/invalid-email': 'E-mail inválido.',
+                'auth/too-many-requests': 'Muitas tentativas. Tente mais tarde.',
+            };
+            mostrarErro(msgs[error.code] || 'Erro: ' + error.message);
+            btn.textContent = "Entrar"; btn.disabled = false;
+        }
+    });
+
+    document.getElementById('btnGoogle').addEventListener('click', async () => {
+        try {
+            await signInWithPopup(auth, new GoogleAuthProvider());
+            redirecionar();
+        } catch (error) {
+            mostrarErro('Erro ao entrar com Google: ' + error.message);
+        }
+    });
+
+    document.getElementById('forgotLink').addEventListener('click', async (e) => {
+        e.preventDefault(); esconderMensagens();
+        const email = document.getElementById('email').value.trim();
+        if (!email) {
+            mostrarErro('Digite seu e-mail acima para redefinir a senha.');
+            document.getElementById('email').focus();
+            return;
+        }
+        try {
+            await sendPasswordResetEmail(auth, email);
+            mostrarSucesso('E-mail enviado! Verifique sua caixa de entrada.');
+        } catch (error) {
+            const msgs = {
+                'auth/user-not-found': 'Nenhuma conta encontrada com este e-mail.',
+                'auth/invalid-email': 'E-mail inválido.',
+            };
+            mostrarErro(msgs[error.code] || 'Erro ao enviar e-mail: ' + error.message);
+        }
+    });
+</script>
+</body>
+</html>

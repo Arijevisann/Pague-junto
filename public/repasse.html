@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="responsive.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repasse - Pague Junto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Nunito', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #0A1628; color: #fff; min-height: 100vh; padding-bottom: 120px; }
+
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 20px 20px 16px;
+            position: sticky; top: 0; background: #0A1628; z-index: 10;
+        }
+        .header-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.07); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; }
+        .header-title { font-size: 17px; font-weight: 900; }
+
+        .content { padding: 0 16px; max-width: 480px; margin: 0 auto; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: fadeUp 0.4s ease both; }
+
+        /* Status card */
+        .status-card {
+            border-radius: 24px; padding: 24px; margin-bottom: 16px;
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .status-card.aguardando { background: linear-gradient(135deg, #1a2a45, #1e3a6e); border: 1px solid rgba(37,99,235,0.3); }
+        .status-card.pronto { background: linear-gradient(135deg, #14532d, #166534); border: 1px solid rgba(34,197,94,0.3); }
+        .status-card.solicitado { background: linear-gradient(135deg, #1a1a2e, #312e81); border: 1px solid rgba(99,102,241,0.3); }
+
+        .status-icon { font-size: 40px; margin-bottom: 12px; }
+        .status-title { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+        .status-desc { font-size: 14px; color: rgba(255,255,255,0.6); font-weight: 600; line-height: 1.5; }
+
+        /* Card valores */
+        .card { background: #131F35; border-radius: 20px; padding: 18px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.06); }
+        .card-title { font-size: 15px; font-weight: 900; margin-bottom: 14px; }
+
+        .row { display: flex; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+        .row:last-of-type { border-bottom: none; }
+        .row-label { color: rgba(255,255,255,0.45); font-weight: 600; }
+        .row-val { font-weight: 800; }
+        .row-val.green { color: #22C55E; }
+        .row-val.red { color: #F87171; }
+        .row-val.blue { color: #3B82F6; }
+        .row-val.yellow { color: #F59E0B; }
+
+        /* Progress participantes */
+        .progress-bar { background: rgba(255,255,255,0.08); border-radius: 99px; height: 10px; margin: 12px 0 6px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #2563EB, #22C55E); border-radius: 99px; transition: width 0.6s ease; }
+        .progress-info { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+        /* Participantes lista */
+        .part-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .part-item:last-child { border-bottom: none; }
+        .part-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #1e3a6e, #2563EB); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; flex-shrink: 0; }
+        .part-nome { flex: 1; font-size: 14px; font-weight: 700; }
+        .part-status { font-size: 12px; font-weight: 800; }
+        .part-status.pago { color: #22C55E; }
+        .part-status.pendente { color: #F59E0B; }
+
+        /* Chave pix destino */
+        .pix-destino { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+        .pix-destino-label { font-size: 12px; font-weight: 800; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+        .pix-destino-val { font-size: 16px; font-weight: 900; color: #22C55E; display: flex; align-items: center; gap: 8px; }
+
+        /* Botão */
+        .btn-fixed-wrap { position: fixed; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, #0A1628 70%, transparent); padding: 16px 20px 32px; z-index: 20; }
+        .btn-solicitar {
+            width: 100%; max-width: 480px; margin: 0 auto; display: flex;
+            background: #22C55E; color: #000;
+            font-size: 17px; font-weight: 900; font-family: 'Nunito', sans-serif;
+            padding: 19px; border-radius: 16px; border: none;
+            cursor: pointer; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 8px 24px rgba(34,197,94,0.3);
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn-solicitar:hover { background: #16a34a; }
+        .btn-solicitar:active { transform: scale(0.98); }
+        .btn-solicitar:disabled { opacity: 0.5; cursor: not-allowed; background: #22C55E; }
+        .btn-hint { text-align: center; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.3); margin-top: 8px; }
+
+        /* Aviso */
+        .aviso { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); border-radius: 14px; padding: 14px 16px; display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+        .aviso i { color: #F59E0B; font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+        .aviso p { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.6); line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <button class="header-btn" onclick="location.href='detalhes-rateio.html?id=' + getRateioId()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <span class="header-title">Solicitar repasse</span>
+        <div style="width:40px;"></div>
+    </div>
+
+    <div class="content animate-in">
+
+        <!-- Status -->
+        <div class="status-card aguardando" id="statusCard">
+            <div class="status-icon" id="statusIcon">⏳</div>
+            <div class="status-title" id="statusTitle">Aguardando pagamentos</div>
+            <div class="status-desc" id="statusDesc">O repasse será liberado quando todos os participantes pagarem.</div>
+        </div>
+
+        <!-- Resumo financeiro -->
+        <div class="card">
+            <div class="card-title">Resumo financeiro</div>
+            <div class="row">
+                <span class="row-label">Total do rateio</span>
+                <span class="row-val blue">R$ <span id="totalRateio">0,00</span></span>
+            </div>
+            <div class="row">
+                <span class="row-label">Total arrecadado</span>
+                <span class="row-val green">R$ <span id="totalArrecadado">0,00</span></span>
+            </div>
+            <div class="row">
+                <span class="row-label">Taxa Pague Junto (1%)</span>
+                <span class="row-val red">- R$ <span id="totalTaxa">0,00</span></span>
+            </div>
+            <div class="row" style="padding-top:14px;">
+                <span style="font-size:15px; font-weight:900;">Você vai receber</span>
+                <span style="font-size:18px; font-weight:900; color:#22C55E;">R$ <span id="totalRepasse">0,00</span></span>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width:0%"></div>
+            </div>
+            <div class="progress-info">
+                <span id="progressText">0 de 0 pagos</span>
+                <span id="progressPct">0%</span>
+            </div>
+        </div>
+
+        <!-- Chave pix destino -->
+        <div class="pix-destino">
+            <div class="pix-destino-label">Chave Pix para recebimento</div>
+            <div class="pix-destino-val">
+                <i class="fas fa-key"></i>
+                <span id="chavePix">—</span>
+            </div>
+        </div>
+
+        <!-- Aviso -->
+        <div class="aviso" id="avisoEl">
+            <i class="fas fa-info-circle"></i>
+            <p id="avisoTxt">Ainda faltam participantes pagarem. O repasse só pode ser solicitado quando 100% dos pagamentos forem confirmados.</p>
+        </div>
+
+        <!-- Lista participantes -->
+        <div class="card">
+            <div class="card-title">Status dos participantes</div>
+            <div id="listaPart">
+                <p style="text-align:center; color:rgba(255,255,255,0.3); font-size:14px; padding:20px 0; font-weight:700;">Carregando...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Botão fixo -->
+    <div class="btn-fixed-wrap">
+        <div style="max-width:480px; margin:0 auto;">
+            <button class="btn-solicitar" id="btnSolicitar" onclick="solicitarRepasse()" disabled>
+                <i class="fas fa-paper-plane"></i> Solicitar repasse
+            </button>
+            <div class="btn-hint" id="btnHint">Disponível quando todos pagarem</div>
+        </div>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import firebaseConfig from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const rateioId = urlParams.get('id');
+
+    window.getRateioId = () => rateioId;
+
+    function fmt(v) { return Number(v).toFixed(2).replace('.', ','); }
+    function iniciais(n) { const p = (n || '?').trim().split(' '); return (p[0][0] + (p[1] ? p[1][0] : '')).toUpperCase(); }
+
+    onAuthStateChanged(auth, (user) => {
+        if (!user) { window.location.href = 'login.html'; return; }
+        carregarDados(user.email);
+    });
+
+    async function carregarDados(email) {
+        if (!rateioId) return;
+
+        const snap = await getDoc(doc(db, "rateios", rateioId));
+        if (!snap.exists()) return;
+        const r = snap.data();
+
+        // Só o criador acessa
+        if (r.criadorEmail !== email) {
+            alert('Acesso negado.'); history.back(); return;
+        }
+
+        document.getElementById('totalRateio').textContent = fmt(r.valorTotal);
+        document.getElementById('chavePix').textContent = r.pix || '—';
+
+        // Pagamentos
+        const q = query(collection(db, "pagamentos"), where("rateioId", "==", rateioId));
+        const pSnap = await getDocs(q);
+        const pagamentos = [];
+        pSnap.forEach(d => pagamentos.push(d.data()));
+
+        const pagos = pagamentos.filter(p => p.status === 'pago').length;
+        const total = r.qtdPessoas || 0;
+        const pct = total > 0 ? Math.round((pagos / total) * 100) : 0;
+        const arrecadado = pagos * r.valorIndividual;
+        const taxa = arrecadado * 0.01;
+        const repasse = arrecadado - taxa;
+        const todosPageram = pagos >= total && total > 0;
+
+        document.getElementById('totalArrecadado').textContent = fmt(arrecadado);
+        document.getElementById('totalTaxa').textContent = fmt(taxa);
+        document.getElementById('totalRepasse').textContent = fmt(repasse);
+        document.getElementById('progressFill').style.width = pct + '%';
+        document.getElementById('progressText').textContent = `${pagos} de ${total} pagos`;
+        document.getElementById('progressPct').textContent = pct + '%';
+
+        // Status card
+        const card = document.getElementById('statusCard');
+        if (todosPageram) {
+            card.className = 'status-card pronto animate-in';
+            document.getElementById('statusIcon').textContent = '✅';
+            document.getElementById('statusTitle').textContent = 'Pronto para repasse!';
+            document.getElementById('statusDesc').textContent = 'Todos os participantes pagaram. Você já pode solicitar o repasse.';
+            document.getElementById('btnSolicitar').disabled = false;
+            document.getElementById('btnHint').textContent = 'O valor será enviado em até 1 dia útil';
+            document.getElementById('avisoEl').style.display = 'none';
+        } else {
+            document.getElementById('avisoTxt').textContent =
+                `Ainda faltam ${total - pagos} participante(s) pagar. O repasse será liberado quando 100% dos pagamentos forem confirmados.`;
+        }
+
+        // Lista participantes
+        const lista = document.getElementById('listaPart');
+        if (pagamentos.length === 0) {
+            lista.innerHTML = `<p style="text-align:center; color:rgba(255,255,255,0.3); font-size:14px; padding:20px 0; font-weight:700;">Nenhum pagamento ainda.</p>`;
+        } else {
+            lista.innerHTML = pagamentos.map(p => `
+                <div class="part-item">
+                    <div class="part-avatar">${iniciais(p.nomeParticipante)}</div>
+                    <div class="part-nome">${p.nomeParticipante}</div>
+                    <div class="part-status ${p.status === 'pago' ? 'pago' : 'pendente'}">
+                        ${p.status === 'pago' ? '<i class="fas fa-check-circle"></i> Pago' : '<i class="fas fa-clock"></i> Pendente'}
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    window.solicitarRepasse = () => {
+        const btn = document.getElementById('btnSolicitar');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Solicitando...';
+        btn.disabled = true;
+
+        // Aqui será integrado o Mercado Pago para o repasse automático
+        setTimeout(() => {
+            const card = document.getElementById('statusCard');
+            card.className = 'status-card solicitado animate-in';
+            document.getElementById('statusIcon').textContent = '🚀';
+            document.getElementById('statusTitle').textContent = 'Repasse solicitado!';
+            document.getElementById('statusDesc').textContent = 'Seu repasse foi solicitado com sucesso. O valor chegará em até 1 dia útil na sua chave Pix.';
+            btn.innerHTML = '<i class="fas fa-check"></i> Repasse solicitado';
+            document.getElementById('btnHint').textContent = 'O valor chegará em até 1 dia útil';
+        }, 2000);
+    };
+</script>
+</body>
+</html>

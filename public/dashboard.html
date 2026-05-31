@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pague Junto</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #060D1C; --sidebar-bg: #07101F; --surface: #0C1628;
+            --surface2: #101E36; --surface3: #162440;
+            --border: #1A2E50; --border2: #0D1C34;
+            --text: #EEF4FF; --text2: #6A88B8; --text3: #344E78;
+            --accent: #1A5FFF; --accent2: #3B7FFF; --accent-light: #60A0FF;
+            --green: #10C878; --green2: #00E890; --amber: #FF9820; --red: #FF4060; --purple: #8060FF;
+        }
+        html, body { background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* ════ LAYOUT DESKTOP ════ */
+        .app-layout { display: flex; min-height: 100vh; }
+
+        /* ════ SIDEBAR ════ */
+        .sidebar {
+            width: 210px; min-height: 100vh; background: var(--sidebar-bg);
+            border-right: 1px solid var(--border2);
+            display: flex; flex-direction: column;
+            position: fixed; top: 0; left: 0; bottom: 0; z-index: 30;
+            transition: transform 0.3s ease;
+        }
+        .sidebar-logo { display: flex; align-items: center; gap: 9px; padding: 18px 16px 16px; border-bottom: 1px solid var(--border2); }
+        .logo-icon { width: 32px; height: 32px; border-radius: 9px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; color: #fff; flex-shrink: 0; }
+        .logo-txt { font-size: 16px; font-weight: 800; } .logo-txt span { color: var(--accent-light); }
+        .sidebar-section { font-size: 9px; font-weight: 800; color: var(--text3); text-transform: uppercase; letter-spacing: 0.12em; padding: 16px 16px 6px; }
+        .nav-link { display: flex; align-items: center; gap: 10px; padding: 9px 14px; margin: 0 6px 1px; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text2); transition: all 0.18s; text-decoration: none; }
+        .nav-link:hover { background: var(--surface2); color: var(--text); }
+        .nav-link.active { background: rgba(26,95,255,0.14); color: var(--accent-light); font-weight: 700; }
+        .nav-link i { width: 16px; text-align: center; font-size: 14px; color: var(--text3); flex-shrink: 0; }
+        .nav-link.active i { color: var(--accent2); }
+        .nav-link:hover i { color: var(--text2); }
+        .nav-new { background: var(--accent); color: #fff; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 20px; margin-left: auto; }
+        .nav-badge-count { background: var(--red); color: #fff; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 20px; margin-left: auto; }
+        .sidebar-bottom { margin-top: auto; padding: 12px; border-top: 1px solid var(--border2); }
+        .security-card { background: rgba(26,95,255,0.07); border: 1px solid rgba(26,95,255,0.15); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+        .sec-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .sec-icon { width: 28px; height: 28px; border-radius: 8px; background: rgba(26,95,255,0.12); display: flex; align-items: center; justify-content: center; color: var(--accent-light); font-size: 13px; }
+        .sec-title { font-size: 12px; font-weight: 800; }
+        .sec-desc { font-size: 11px; color: var(--text2); font-weight: 500; line-height: 1.4; margin-bottom: 8px; }
+        .sec-link { font-size: 11px; font-weight: 700; color: var(--accent-light); cursor: pointer; display: flex; align-items: center; gap: 4px; }
+        .user-row { display: flex; align-items: center; gap: 9px; padding: 9px 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; transition: background 0.2s; }
+        .user-row:hover { background: var(--surface3); }
+        .user-av { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #fff; overflow: hidden; flex-shrink: 0; }
+        .user-av img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+        .user-id { font-size: 10px; color: var(--text3); font-weight: 600; }
+        .btn-logout { width: 100%; background: rgba(255,64,96,0.08); color: var(--red); font-size: 12px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; padding: 9px; border-radius: 9px; border: 1px solid rgba(255,64,96,0.15); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px; transition: background 0.2s; }
+        .btn-logout:hover { background: rgba(255,64,96,0.14); }
+
+        /* ════ MAIN ════ */
+        .main { margin-left: 210px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* TOPBAR */
+        .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; background: rgba(6,13,28,0.9); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border2); position: sticky; top: 0; z-index: 20; gap: 16px; }
+        .topbar-left {}
+        .topbar-greeting { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 2px; }
+        .topbar-sub { font-size: 13px; color: var(--text2); font-weight: 500; }
+        .topbar-right { display: flex; align-items: center; gap: 10px; }
+        .search-box { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; min-width: 200px; }
+        .search-box i { color: var(--text3); font-size: 13px; }
+        .search-box input { background: none; border: none; outline: none; font-size: 13px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; width: 100%; }
+        .search-box input::placeholder { color: var(--text3); }
+        .top-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 15px; transition: all 0.2s; position: relative; }
+        .top-btn:hover { background: var(--surface2); color: var(--text); }
+        .notif-dot { position: absolute; top: 1px; right: 1px; width: 17px; height: 17px; border-radius: 50%; background: var(--red); color: #fff; font-size: 9px; font-weight: 800; display: none; align-items: center; justify-content: center; border: 2px solid var(--bg); }
+        .notif-dot.show { display: flex; }
+        .topbar-user { display: flex; align-items: center; gap: 9px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 6px 10px; cursor: pointer; transition: background 0.2s; }
+        .topbar-user:hover { background: var(--surface2); }
+        .topbar-av { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; overflow: hidden; }
+        .topbar-av img { width: 100%; height: 100%; object-fit: cover; }
+        .topbar-info {}
+        .topbar-name { font-size: 13px; font-weight: 700; }
+        .topbar-role { font-size: 11px; color: var(--text2); font-weight: 500; }
+
+        /* ════ CONTENT ════ */
+        .content { padding: 20px 24px; flex: 1; }
+        .content-inner { display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
+
+        /* STATS */
+        .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; transition: all 0.2s; cursor: pointer; }
+        .stat-card:hover { background: var(--surface2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+        .stat-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
+        .si-blue { background: rgba(26,95,255,0.12); color: var(--accent-light); }
+        .si-green { background: rgba(16,200,120,0.1); color: var(--green2); }
+        .si-purple { background: rgba(128,96,255,0.1); color: #A080FF; }
+        .si-amber { background: rgba(255,152,32,0.1); color: var(--amber); }
+        .stat-label { font-size: 11px; font-weight: 600; color: var(--text2); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .stat-val { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 4px; }
+        .stat-change { font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        .stat-change.up { color: var(--green2); }
+        .stat-change.down { color: var(--red); }
+        .stat-change.neutral { color: var(--text2); }
+
+        /* ACTION BTNS */
+        .action-row { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-criar { background: var(--accent); color: #fff; font-size: 14px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; padding: 12px 22px; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 6px 20px rgba(26,95,255,0.3); transition: all 0.2s; }
+        .btn-criar:hover { background: #1450e8; }
+        .btn-empresarial { background: var(--surface); color: var(--text2); font-size: 14px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .btn-empresarial:hover { background: var(--surface2); color: var(--text); }
+
+        /* RATEIOS SECTION */
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .section-title { font-size: 16px; font-weight: 800; letter-spacing: -0.2px; }
+        .ver-todos { font-size: 13px; font-weight: 700; color: var(--accent-light); cursor: pointer; }
+
+        /* Filtros tabs */
+        .filtros { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px; margin-bottom: 14px; width: fit-content; }
+        .filtro-btn { padding: 7px 16px; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; color: var(--text2); border: none; background: none; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .filtro-btn.active { background: var(--accent); color: #fff; box-shadow: 0 3px 10px rgba(26,95,255,0.3); }
+
+        /* Rateio card */
+        .rateio-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 16px; cursor: pointer; transition: all 0.2s; }
+        .rateio-card:hover { background: var(--surface2); border-color: rgba(26,95,255,0.3); }
+        .rateio-img { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; flex-shrink: 0; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+        .rateio-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+        .rateio-main { flex: 1; min-width: 0; }
+        .rateio-nome-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
+        .rateio-nome { font-size: 15px; font-weight: 800; }
+        .badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+        .b-criador { background: rgba(26,95,255,0.1); color: var(--accent-light); border: 1px solid rgba(26,95,255,0.2); }
+        .b-andamento { background: rgba(255,152,32,0.1); color: var(--amber); border: 1px solid rgba(255,152,32,0.2); }
+        .b-ativo { background: rgba(16,200,120,0.1); color: var(--green2); border: 1px solid rgba(16,200,120,0.2); }
+        .b-repasse { background: rgba(128,96,255,0.1); color: #A080FF; border: 1px solid rgba(128,96,255,0.2); }
+        .rateio-meta { font-size: 12px; color: var(--text2); font-weight: 500; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .rateio-meta span { display: flex; align-items: center; gap: 4px; }
+        .avatares { display: flex; align-items: center; }
+        .av-mini { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--surface); margin-right: -6px; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: #fff; }
+        .av-mais { background: var(--surface3); border: 2px solid var(--surface); color: var(--text2); font-size: 9px; font-weight: 800; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 0; }
+        .rateio-stats { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; flex-shrink: 0; min-width: 110px; }
+        .rateio-pct { font-size: 18px; font-weight: 900; color: var(--accent-light); letter-spacing: -0.5px; }
+        .rateio-pct-label { font-size: 10px; color: var(--text3); font-weight: 600; }
+        .rateio-restante { font-size: 13px; font-weight: 700; color: var(--text); }
+        .rateio-restante-label { font-size: 10px; color: var(--text3); font-weight: 600; }
+        .progress-bar { height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; margin: 6px 0 3px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-light)); border-radius: 99px; transition: width 0.5s; }
+        .vence-txt { font-size: 11px; font-weight: 700; }
+        .vence-urgente { color: var(--amber); }
+        .vence-normal { color: var(--text3); }
+
+        .rateio-actions { display: flex; gap: 6px; margin-top: 10px; }
+        .btn-abrir { flex: 1; background: rgba(26,95,255,0.08); color: var(--accent-light); font-size: 12px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; padding: 9px; border-radius: 9px; border: 1px solid rgba(26,95,255,0.15); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: all 0.2s; }
+        .btn-abrir:hover { background: rgba(26,95,255,0.15); }
+        .btn-share { width: 34px; height: 34px; border-radius: 9px; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 13px; transition: all 0.2s; }
+        .btn-share:hover { background: var(--surface3); color: var(--text); }
+        .btn-more { width: 34px; height: 34px; border-radius: 9px; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 14px; letter-spacing: 1px; transition: all 0.2s; }
+
+        /* Empty */
+        .empty { text-align: center; padding: 48px 20px; color: var(--text3); }
+        .empty i { font-size: 36px; display: block; margin-bottom: 12px; opacity: 0.5; }
+        .empty p { font-size: 14px; font-weight: 600; }
+
+        /* ════ COLUNA DIREITA ════ */
+        .right-col { display: flex; flex-direction: column; gap: 16px; }
+
+        /* Atividade recente */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .card-title { font-size: 14px; font-weight: 800; }
+        .card-link { font-size: 12px; font-weight: 700; color: var(--accent-light); cursor: pointer; }
+
+        .ativ-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border2); }
+        .ativ-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .ativ-item:first-child { padding-top: 0; }
+        .ativ-av { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0; overflow: hidden; }
+        .ativ-av img { width: 100%; height: 100%; object-fit: cover; }
+        .ativ-info { flex: 1; min-width: 0; }
+        .ativ-desc { font-size: 12px; font-weight: 600; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ativ-desc strong { font-weight: 800; }
+        .ativ-rateio { font-size: 11px; color: var(--text2); font-weight: 500; }
+        .ativ-time { font-size: 11px; color: var(--text3); font-weight: 600; flex-shrink: 0; }
+        .ativ-icon { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+        .ai-green { background: rgba(16,200,120,0.12); color: var(--green2); }
+        .ai-blue { background: rgba(26,95,255,0.12); color: var(--accent-light); }
+        .ai-amber { background: rgba(255,152,32,0.1); color: var(--amber); }
+
+        /* Gráfico */
+        .chart-val { font-size: 24px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 4px; }
+        .chart-change { font-size: 12px; font-weight: 700; color: var(--green2); margin-bottom: 12px; }
+        .chart-wrap { height: 100px; position: relative; }
+
+        /* Dica */
+        .dica-card { background: rgba(26,95,255,0.06); border: 1px solid rgba(26,95,255,0.15); border-radius: 16px; padding: 14px; }
+        .dica-header { font-size: 13px; font-weight: 800; color: var(--accent-light); margin-bottom: 8px; }
+        .dica-body { display: flex; gap: 12px; align-items: flex-start; }
+        .dica-img { font-size: 32px; flex-shrink: 0; }
+        .dica-txt { font-size: 12px; color: var(--text2); font-weight: 500; line-height: 1.5; }
+        .dica-link { font-size: 12px; font-weight: 700; color: var(--accent-light); cursor: pointer; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+
+        /* ════ BOTTOM NAV MOBILE ════ */
+        .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(6,13,28,0.97); backdrop-filter: blur(20px); border-top: 1px solid var(--border); padding: 10px 0 22px; z-index: 40; }
+        .bn-inner { display: flex; justify-content: space-around; align-items: center; }
+        .bn-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; font-size: 10px; font-weight: 700; padding: 0 16px; }
+        .bn-item i { font-size: 20px; }
+        .bn-item.active { color: var(--accent-light); }
+        .bn-item:not(.active) { color: var(--text3); }
+        .bn-plus { width: 54px; height: 54px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; box-shadow: 0 6px 20px rgba(26,95,255,0.45); margin-top: -20px; border: 3px solid var(--bg); }
+
+        /* Modal simulador */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 50; display: none; align-items: flex-end; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: var(--surface); border-radius: 24px 24px 0 0; padding: 24px 20px 40px; width: 100%; max-width: 480px; animation: slideUp 0.3s ease; border: 1px solid var(--border); border-bottom: none; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 99px; margin: 0 auto 20px; }
+        .sim-title { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+        .sim-sub { font-size: 13px; color: var(--text2); margin-bottom: 14px; }
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .tag { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text2); }
+        .tag:hover { border-color: var(--accent); color: var(--accent-light); }
+        .sim-input { width: 100%; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 12px; padding: 13px 16px; font-size: 14px; font-weight: 600; color: var(--text); outline: none; font-family: 'Plus Jakarta Sans', sans-serif; margin-bottom: 12px; }
+        .sim-input:focus { border-color: var(--accent2); }
+        .btn-sim-add { width: 100%; background: var(--accent); color: #fff; font-size: 15px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; padding: 15px; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-sim-add:disabled { opacity: 0.5; }
+        .sim-item { background: rgba(16,200,120,0.08); border: 1px solid rgba(16,200,120,0.15); border-radius: 10px; padding: 10px 14px; margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--green2); display: flex; align-items: center; gap: 8px; }
+
+        /* ════ RESPONSIVO MOBILE ════ */
+        @media (max-width: 768px) {
+            html, body { overflow-x: hidden; overflow-y: auto; }
+            .app-layout { flex-direction: column; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .bottom-nav { display: block; }
+            .content { padding: 14px 14px 100px; }
+            .content-inner { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: repeat(2,1fr); gap: 10px; }
+            .topbar { padding: 12px 16px; }
+            .topbar-greeting { font-size: 18px; }
+            .topbar-sub { font-size: 12px; }
+            .search-box { display: none; }
+            .topbar-info { display: none; }
+            .right-col { display: none; }
+
+            /* Cards de rateio no mobile — empilha vertical */
+            .rateio-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .rateio-img { width: 52px; height: 52px; }
+            .rateio-stats {
+                flex-direction: row !important;
+                align-items: center !important;
+                width: 100%;
+                min-width: unset;
+                gap: 0;
+                background: var(--surface2);
+                border-radius: 10px;
+                padding: 10px 14px;
+                border: 1px solid var(--border);
+            }
+            .rateio-pct { font-size: 20px; }
+            .rateio-stats > * { flex: 1; text-align: center; }
+            .rateio-stats > * + * { border-left: 1px solid var(--border); }
+            .rateio-main { width: 100%; }
+            .progress-bar { width: 100%; }
+
+            /* Topbar no mobile só avatar e sino */
+            .topbar-left .topbar-sub { display: none; }
+        }
+        @media (max-width: 480px) {
+            .stats-row { grid-template-columns: repeat(2,1fr); }
+            .stat-val { font-size: 18px; }
+        }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+        .animate { animation: fadeUp 0.35s ease both; }
+        .d1 { animation-delay: 0.05s; } .d2 { animation-delay: 0.1s; } .d3 { animation-delay: 0.15s; }
+    </style>
+</head>
+<body>
+<div class="app-layout">
+
+<!-- ════ SIDEBAR ════ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo" style="cursor:pointer;" onclick="location.href='dashboard.html'">
+        <img src="logo.png" alt="Pague Junto" style="height:32px;width:auto;object-fit:contain;">
+    </div>
+    <a href="dashboard.html" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="dashboard.html" class="nav-link"><i class="fas fa-layer-group"></i> Meus rateios</a>
+    <a href="dashboard.html" class="nav-link"><i class="fas fa-users"></i> Participo</a>
+    <a href="dashboard.html" class="nav-link"><i class="fas fa-clock"></i> Depois</a>
+    <div class="sidebar-section">Empresarial</div>
+    <a href="dashboard-corporativo.html" class="nav-link"><i class="fas fa-building"></i> Área empresarial <span class="nav-new">Novo</span></a>
+    <div class="sidebar-section">Ferramentas</div>
+    <a href="pagamento.html" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Cobranças</a>
+    <a href="convite.html" class="nav-link"><i class="fas fa-user-plus"></i> Convites</a>
+    <a href="repasse.html" class="nav-link"><i class="fas fa-chart-bar"></i> Relatórios</a>
+    <a href="comprovante.html" class="nav-link"><i class="fas fa-receipt"></i> Extrato</a>
+    <a href="perfil.html" class="nav-link"><i class="fas fa-gear"></i> Configurações</a>
+    <div class="sidebar-bottom">
+        <div class="security-card">
+            <div class="sec-head">
+                <div class="sec-icon"><i class="fas fa-shield-halved"></i></div>
+                <span class="sec-title">Pagamentos protegidos</span>
+            </div>
+            <div class="sec-desc">Seus pagamentos são 100% seguros com criptografia de ponta e proteção de dados.</div>
+            <div class="sec-link">Saiba mais <i class="fas fa-chevron-right" style="font-size:9px;"></i></div>
+        </div>
+        <div class="user-row" onclick="location.href='perfil.html'">
+            <div class="user-av" id="sidebarAv">?</div>
+            <div style="flex:1;min-width:0;">
+                <div class="user-name" id="sidebarNome">Usuário</div>
+                <div class="user-id" id="sidebarId">@—</div>
+            </div>
+            <i class="fas fa-chevron-right" style="color:var(--text3);font-size:10px;"></i>
+        </div>
+        <button class="btn-logout" id="btnLogout"><i class="fas fa-sign-out-alt"></i> Sair</button>
+    </div>
+</aside>
+
+<!-- ════ MAIN ════ -->
+<main class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <div class="topbar-greeting" id="topGreeting">Olá! 👋</div>
+            <div class="topbar-sub">Aqui está o resumo dos seus rateios e pagamentos</div>
+        </div>
+        <div class="topbar-right">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Buscar rateios..." id="searchInput" oninput="buscarRateios()">
+            </div>
+            <button class="top-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">
+                <i class="fas fa-bars"></i>
+            </button>
+            <button class="top-btn" onclick="location.href='notificacoes.html'">
+                <i class="fas fa-bell"></i>
+                <div class="notif-dot" id="bellBadge">3</div>
+            </button>
+            <div class="topbar-user" onclick="location.href='perfil.html'">
+                <div class="topbar-av" id="topbarAv">?</div>
+                <div class="topbar-info">
+                    <div class="topbar-name" id="topbarNome">Usuário</div>
+                    <div class="topbar-role">Conta pessoal</div>
+                </div>
+                <i class="fas fa-chevron-down" style="font-size:10px;color:var(--text3);margin-left:4px;"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- STATS -->
+        <div class="stats-row animate">
+            <div class="stat-card">
+                <div class="stat-icon si-blue"><i class="fas fa-wallet"></i></div>
+                <div class="stat-label">Total arrecadado</div>
+                <div class="stat-val">R$ <span id="statTotal">0,00</span></div>
+                <div class="stat-change up" id="statTotalChange"><i class="fas fa-arrow-up"></i> este mês</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon si-green"><i class="fas fa-circle-dollar-sign"></i></div>
+                <div class="stat-label">Pendente total</div>
+                <div class="stat-val">R$ <span id="statPendente">0,00</span></div>
+                <div class="stat-change down" id="statPendenteChange"><i class="fas fa-arrow-down"></i> este mês</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon si-purple"><i class="fas fa-users"></i></div>
+                <div class="stat-label">Rateios ativos</div>
+                <div class="stat-val" id="statAtivos">0</div>
+                <div class="stat-change neutral" id="statAtivosChange"><i class="fas fa-plus"></i> novos esta semana</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon si-amber"><i class="fas fa-calendar-check"></i></div>
+                <div class="stat-label">Próximo vencimento</div>
+                <div class="stat-val" style="font-size:16px;" id="statVenc">—</div>
+                <div class="stat-change neutral" id="statVencSub">—</div>
+            </div>
+        </div>
+
+        <!-- AÇÕES -->
+        <div class="action-row animate d1">
+            <button class="btn-criar" onclick="location.href='criar-rateio.html'">
+                <i class="fas fa-plus"></i> Criar rateio
+            </button>
+            <button class="btn-empresarial" onclick="location.href='dashboard-corporativo.html'">
+                <i class="fas fa-building"></i> Área empresarial
+            </button>
+        </div>
+
+        <!-- GRID PRINCIPAL -->
+        <div class="content-inner">
+
+            <!-- COLUNA ESQUERDA -->
+            <div>
+                <div class="section-header animate d2">
+                    <span class="section-title">Meus rateios</span>
+                    <span class="ver-todos">Ver todos</span>
+                </div>
+
+                <!-- Filtros -->
+                <div class="filtros animate d2">
+                    <button class="filtro-btn active" onclick="filtrar('todos',this)">Todos</button>
+                    <button class="filtro-btn" onclick="filtrar('ativos',this)">Ativos</button>
+                    <button class="filtro-btn" onclick="filtrar('aguardando',this)">Aguardando</button>
+                    <button class="filtro-btn" onclick="filtrar('concluidos',this)">Concluídos</button>
+                </div>
+
+                <div id="listaRateios">
+                    <div id="skeletonList">
+                        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;display:flex;gap:16px;align-items:center;">
+                            <div style="width:64px;height:64px;border-radius:12px;background:var(--surface2);animation:pulse 1.5s ease infinite;flex-shrink:0;"></div>
+                            <div style="flex:1;">
+                                <div style="width:60%;height:14px;background:var(--surface2);border-radius:7px;margin-bottom:10px;animation:pulse 1.5s ease infinite;"></div>
+                                <div style="width:40%;height:10px;background:var(--surface2);border-radius:5px;margin-bottom:8px;animation:pulse 1.5s ease infinite;"></div>
+                                <div style="width:80%;height:4px;background:var(--surface2);border-radius:99px;animation:pulse 1.5s ease infinite;"></div>
+                            </div>
+                            <div style="width:80px;display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+                                <div style="width:50px;height:20px;background:var(--surface2);border-radius:7px;animation:pulse 1.5s ease infinite;"></div>
+                                <div style="width:70px;height:10px;background:var(--surface2);border-radius:5px;animation:pulse 1.5s ease infinite;"></div>
+                            </div>
+                        </div>
+                        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;display:flex;gap:16px;align-items:center;">
+                            <div style="width:64px;height:64px;border-radius:12px;background:var(--surface2);animation:pulse 1.5s ease infinite;flex-shrink:0;"></div>
+                            <div style="flex:1;">
+                                <div style="width:50%;height:14px;background:var(--surface2);border-radius:7px;margin-bottom:10px;animation:pulse 1.5s ease infinite;"></div>
+                                <div style="width:35%;height:10px;background:var(--surface2);border-radius:5px;margin-bottom:8px;animation:pulse 1.5s ease infinite;"></div>
+                                <div style="width:70%;height:4px;background:var(--surface2);border-radius:99px;animation:pulse 1.5s ease infinite;"></div>
+                            </div>
+                            <div style="width:80px;display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+                                <div style="width:50px;height:20px;background:var(--surface2);border-radius:7px;animation:pulse 1.5s ease infinite;"></div>
+                                <div style="width:70px;height:10px;background:var(--surface2);border-radius:5px;animation:pulse 1.5s ease infinite;"></div>
+                            </div>
+                        </div>
+                        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;display:flex;gap:16px;align-items:center;">
+                            <div style="width:64px;height:64px;border-radius:12px;background:var(--surface2);animation:pulse 1.5s ease infinite;flex-shrink:0;"></div>
+                            <div style="flex:1;">
+                                <div style="width:70%;height:14px;background:var(--surface2);border-radius:7px;margin-bottom:10px;animation:pulse 1.5s ease infinite;"></div>
+                                <div style="width:45%;height:10px;background:var(--surface2);border-radius:5px;margin-bottom:8px;animation:pulse 1.5s ease infinite;"></div>
+                                <div style="width:90%;height:4px;background:var(--surface2);border-radius:99px;animation:pulse 1.5s ease infinite;"></div>
+                            </div>
+                            <div style="width:80px;display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+                                <div style="width:50px;height:20px;background:var(--surface2);border-radius:7px;animation:pulse 1.5s ease infinite;"></div>
+                                <div style="width:70px;height:10px;background:var(--surface2);border-radius:5px;animation:pulse 1.5s ease infinite;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUNA DIREITA -->
+            <div class="right-col animate d3">
+
+                <!-- Atividade recente -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Atividade recente</span>
+                        <span class="card-link">Ver todas</span>
+                    </div>
+                    <div id="listaAtividades">
+                        <div style="text-align:center;padding:20px;color:var(--text3);">
+                            <i class="fas fa-spinner fa-spin" style="color:var(--accent2);"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Gráfico de arrecadação</span>
+                        <span class="card-link" style="font-size:11px;">Este mês ▾</span>
+                    </div>
+                    <div class="chart-val">R$ <span id="chartTotal">0,00</span></div>
+                    <div class="chart-change" id="chartChange">Carregando...</div>
+                    <div class="chart-wrap"><canvas id="myChart"></canvas></div>
+                </div>
+
+                <!-- Dica -->
+                <div class="dica-card">
+                    <div class="dica-header">💡 Dica da Pague Junto</div>
+                    <div class="dica-body">
+                        <div class="dica-img">📣</div>
+                        <div>
+                            <div class="dica-txt">Envie lembretes amigáveis para os participantes que ainda não pagaram. Isso aumenta em até 40% as chances de recebimento! 🚀</div>
+                            <div class="dica-link">Enviar lembretes <i class="fas fa-chevron-right" style="font-size:9px;"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+
+<!-- BOTTOM NAV MOBILE -->
+<nav class="bottom-nav">
+    <div class="bn-inner">
+        <div class="bn-item active"><i class="fas fa-home"></i><span>Dashboard</span></div>
+        <div class="bn-item" onclick="location.href='dashboard.html'"><i class="fas fa-layer-group"></i><span>Meus rateios</span></div>
+        <div class="bn-item" onclick="location.href='criar-rateio.html'">
+            <div class="bn-plus"><i class="fas fa-plus"></i></div>
+        </div>
+        <div class="bn-item" onclick="location.href='notificacoes.html'"><i class="fas fa-users"></i><span>Participar</span></div>
+        <div class="bn-item" onclick="location.href='perfil.html'"><i class="fas fa-user"></i><span>Perfil</span></div>
+    </div>
+</nav>
+
+<!-- Modal simulador -->
+<div class="modal-overlay" id="modalSim" onclick="fecharSim(event)">
+    <div class="modal">
+        <div class="modal-handle"></div>
+        <div class="sim-title">🧪 Simular participante</div>
+        <div class="sim-sub" id="simNomeRateio">—</div>
+        <div class="tags">
+            <div class="tag" onclick="usarNome('João Silva')">João Silva</div>
+            <div class="tag" onclick="usarNome('Maria Costa')">Maria Costa</div>
+            <div class="tag" onclick="usarNome('Pedro Almeida')">Pedro Almeida</div>
+            <div class="tag" onclick="usarNome('Ana Souza')">Ana Souza</div>
+        </div>
+        <input class="sim-input" id="simNomeInput" type="text" placeholder="Nome do participante">
+        <button class="btn-sim-add" id="btnAdicionarSim" onclick="adicionarSim()">
+            <i class="fas fa-user-plus"></i> Adicionar participante
+        </button>
+        <div id="simAdicionados"></div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import firebaseConfig from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let usuarioLogado = null;
+    let todosRateios = [];
+    let filtroAtual = 'todos';
+    let rateioSimAtual = null;
+    let simAdicionados = [];
+
+    function fmt(v) { return Number(v).toFixed(2).replace('.', ','); }
+    function saudacao() { const h = new Date().getHours(); return h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'; }
+
+    function setAvatar(id, user) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (user.photoURL) el.innerHTML = `<img src="${user.photoURL}" alt="">`;
+        else el.textContent = (user.displayName || 'U').charAt(0).toUpperCase();
+    }
+
+    const cores = ['#3080FF','#20C090','#FF8040','#C060FF','#FF6080','#00C4A3','#FF9820'];
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) { window.location.href = 'index.html'; return; }
+        usuarioLogado = user;
+        const nome = user.displayName || 'Usuário';
+        const primeiroNome = nome.split(' ')[0];
+
+        document.getElementById('topGreeting').textContent = `${saudacao()}, ${primeiroNome}! 👋`;
+        document.getElementById('topbarNome').textContent = nome;
+        document.getElementById('sidebarNome').textContent = nome;
+        setAvatar('topbarAv', user);
+        setAvatar('sidebarAv', user);
+
+        try {
+            const snap = await getDoc(doc(db, "usuarios", user.uid));
+            if (snap.exists()) {
+                const u = snap.data();
+                document.getElementById('sidebarId').textContent = '@' + (u.username || '—');
+            }
+        } catch(e) {}
+
+        carregarTudo();
+    });
+
+    async function carregarTudo() {
+        await Promise.all([carregarRateios(), carregarAtividades()]);
+    }
+
+    async function carregarRateios() {
+        const lista = document.getElementById('listaRateios');
+        try {
+            const q = query(collection(db, "rateios"), where("criadorEmail", "==", usuarioLogado.email));
+            const snap = await getDocs(q);
+            todosRateios = [];
+
+            let totalArrecadado = 0, totalPendente = 0, ativos = 0;
+
+            // Busca paralela — muito mais rápido
+            const rateiosBase = snap.docs.slice(0, 20); // limite inicial
+            const resultados = await Promise.all(rateiosBase.map(async (d) => {
+                const r = d.data();
+                const pq = query(collection(db, "pagamentos"), where("rateioId", "==", d.id));
+                const ps = await getDocs(pq);
+                const pagos = ps.size;
+                const total = r.qtdPessoas || 0;
+                const valorPago = pagos * (r.valorIndividual || 0);
+                const valorPendente = (r.valorTotal || 0) - valorPago;
+                const pct = total > 0 ? Math.round((pagos / total) * 100) : 0;
+                const concluido = pagos >= total && total > 0;
+                return { id: d.id, ...r, pagos, pct, valorPago, valorPendente, concluido };
+            }));
+            resultados.forEach(r => {
+                totalArrecadado += r.valorPago;
+                totalPendente += r.valorPendente;
+                if (!r.concluido) ativos++;
+                todosRateios.push(r);
+            });
+
+            window._totalArrecadado = totalArrecadado;
+            document.getElementById('statTotal').textContent = fmt(totalArrecadado);
+            document.getElementById('statPendente').textContent = fmt(totalPendente);
+            document.getElementById('statAtivos').textContent = ativos;
+            document.getElementById('chartTotal').textContent = fmt(totalArrecadado);
+            document.getElementById('chartChange').textContent = totalArrecadado > 0 ? '+12% em relação ao mês passado' : 'Sem dados ainda';
+
+            // Próximo vencimento
+            const comPrazo = todosRateios.filter(r => r.prazo && !r.concluido);
+            if (comPrazo.length > 0) {
+                document.getElementById('statVenc').textContent = 'Amanhã';
+                document.getElementById('statVencSub').textContent = `${comPrazo.length} rateios vencem`;
+            } else {
+                document.getElementById('statVenc').textContent = '—';
+                document.getElementById('statVencSub').textContent = 'Sem vencimentos';
+            }
+
+            renderRateios(todosRateios);
+            renderGrafico(totalArrecadado);
+
+        } catch(e) {
+            console.error(e);
+            lista.innerHTML = `<div class="empty"><i class="fas fa-exclamation-triangle" style="color:var(--red);"></i><p>Erro ao carregar.</p></div>`;
+        }
+    }
+
+    function renderRateios(rateios) {
+        const lista = document.getElementById('listaRateios');
+        if (rateios.length === 0) {
+            lista.innerHTML = `<div class="empty"><i class="fas fa-layer-group"></i><p>Nenhum rateio encontrado.</p></div>`;
+            return;
+        }
+
+        const emojis = ['🎂','🍕','📚','☕','🚌','✈️','🏠','⚽','💍','🎸'];
+
+        lista.innerHTML = rateios.map((r, i) => {
+            const emoji = emojis[i % emojis.length];
+            const statusBadge = r.concluido
+                ? '<span class="badge b-repasse">REPASSE</span>'
+                : r.pagos > 0 ? '<span class="badge b-andamento">EM ANDAMENTO</span>'
+                : '<span class="badge b-ativo">ATIVO</span>';
+
+            const venceClass = r.prazo ? 'vence-urgente' : 'vence-normal';
+            const venceTxt = r.prazo ? `Vence em 3 dias` : 'Vence em 10 dias';
+
+            // Avatares mini
+            const nomes = ['T','M','J','A','L','B','R','C'];
+            const coresAv = ['#3080FF','#20C090','#FF8040','#C060FF','#FF6080'];
+            let avatares = '';
+            const qtdAv = Math.min(r.pagos || 3, 5);
+            for (let j = 0; j < qtdAv; j++) {
+                avatares += `<div class="av-mini" style="background:${coresAv[j%coresAv.length]};">${nomes[j]}</div>`;
+            }
+            const extras = (r.qtdPessoas || 0) - qtdAv;
+            if (extras > 0) avatares += `<div class="av-mini av-mais">+${extras}</div>`;
+
+            return `
+            <div class="rateio-card animate" style="animation-delay:${i*0.05}s" onclick="location.href='detalhes-rateio.html?id=${r.id}'">
+                <div class="rateio-img">${emoji}</div>
+                <div class="rateio-main">
+                    <div class="rateio-nome-row">
+                        <span class="rateio-nome">${r.nome}</span>
+                        <span class="badge b-criador">CRIADOR</span>
+                        ${statusBadge}
+                    </div>
+                    <div class="rateio-meta">
+                        <span><i class="fas fa-users" style="font-size:10px;"></i> ${r.qtdPessoas || 0} participantes</span>
+                        <span><i class="fas fa-calendar-alt" style="font-size:10px;"></i> ${r.dataCriacao?.toDate?.()?.toLocaleDateString('pt-BR') || '—'}</span>
+                    </div>
+                    <div class="avatares">${avatares}</div>
+                    <div class="rateio-actions">
+                        <button class="btn-abrir" onclick="event.stopPropagation();location.href='detalhes-rateio.html?id=${r.id}'">
+                            <i class="fas fa-eye"></i> Abrir
+                        </button>
+                        <button class="btn-share" onclick="event.stopPropagation();compartilhar('${r.id}','${r.nome.replace(/'/g,"\\'")}',${r.valorIndividual})">
+                            <i class="fas fa-share-nodes"></i>
+                        </button>
+                        <button class="btn-more" onclick="event.stopPropagation();abrirSim('${r.id}','${r.nome.replace(/'/g,"\\'")}')">···</button>
+                    </div>
+                </div>
+                <div class="rateio-stats">
+                    <div class="rateio-pct">${r.pct}%</div>
+                    <div class="rateio-pct-label">arrecadado</div>
+                    <div style="width:100%;">
+                        <div class="progress-bar"><div class="progress-fill" style="width:${r.pct}%"></div></div>
+                    </div>
+                    <div class="rateio-restante">R$ ${fmt(r.valorPendente)}</div>
+                    <div class="rateio-restante-label">restantes</div>
+                    <div class="${venceClass}">${venceTxt}</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    async function carregarAtividades() {
+        const lista = document.getElementById('listaAtividades');
+        try {
+            const q = query(collection(db, "rateios"), where("criadorEmail", "==", usuarioLogado.email));
+            const snap = await getDocs(q);
+            let ativs = [];
+            await Promise.all(snap.docs.slice(0,10).map(async (d) => {
+                const pq = query(collection(db, "pagamentos"), where("rateioId", "==", d.id));
+                const ps = await getDocs(pq);
+                ps.forEach(p => {
+                    const pd = p.data();
+                    if (pd.status === 'pago') ativs.push({ nome: pd.nomeParticipante, rateio: d.data().nome, valor: pd.valor || 0, data: pd.dataPagamento?.toDate?.() || new Date(), tipo: 'pago' });
+                });
+            }));
+            ativs.sort((a,b) => b.data - a.data);
+            ativs = ativs.slice(0, 5);
+
+            if (ativs.length === 0) { lista.innerHTML = `<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;font-weight:600;">Sem atividades recentes</div>`; return; }
+
+            lista.innerHTML = ativs.map((a, i) => {
+                const agora = new Date();
+                const diff = Math.floor((agora - a.data) / 60000);
+                const tempo = diff < 1 ? 'Agora' : diff < 60 ? `Há ${diff} min` : diff < 1440 ? `Há ${Math.floor(diff/60)}h` : `Há ${Math.floor(diff/1440)}d`;
+                return `
+                <div class="ativ-item">
+                    <div class="ativ-icon ai-green"><i class="fas fa-check" style="font-size:11px;"></i></div>
+                    <div class="ativ-av" style="background:${cores[i%cores.length]};">${(a.nome||'U').charAt(0).toUpperCase()}</div>
+                    <div class="ativ-info">
+                        <div class="ativ-desc"><strong>${a.nome}</strong> pagou R$ ${fmt(a.valor)}</div>
+                        <div class="ativ-rateio">${a.rateio}</div>
+                    </div>
+                    <div class="ativ-time">${tempo}</div>
+                </div>`;
+            }).join('');
+        } catch(e) {}
+    }
+
+    function renderGrafico(total) {
+        const ctx = document.getElementById('myChart');
+        if (!ctx) return;
+        const labels = ['01','05','10','15','20','25','30'];
+        const data = [0, total*0.1, total*0.25, total*0.45, total*0.6, total*0.8, total];
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    data,
+                    borderColor: '#3B7FFF',
+                    backgroundColor: 'rgba(59,127,255,0.08)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0,
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { enabled: true } },
+                scales: {
+                    x: { grid: { color: 'rgba(26,46,80,0.5)' }, ticks: { color: '#344E78', font: { size: 10 } } },
+                    y: { grid: { color: 'rgba(26,46,80,0.5)' }, ticks: { color: '#344E78', font: { size: 10 }, callback: v => 'R$' + (v/1000).toFixed(0) + 'k' } }
+                }
+            }
+        });
+    }
+
+    window.filtrar = (tipo, btn) => {
+        filtroAtual = tipo;
+        document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        let filtrados = todosRateios;
+        if (tipo === 'ativos') filtrados = todosRateios.filter(r => !r.concluido && r.pagos > 0);
+        else if (tipo === 'aguardando') filtrados = todosRateios.filter(r => r.pagos === 0);
+        else if (tipo === 'concluidos') filtrados = todosRateios.filter(r => r.concluido);
+        renderRateios(filtrados);
+    };
+
+    window.buscarRateios = () => {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        const filtrados = todosRateios.filter(r => r.nome.toLowerCase().includes(q));
+        renderRateios(filtrados);
+    };
+
+    window.abrirSim = (id, nome) => {
+        rateioSimAtual = id; simAdicionados = [];
+        document.getElementById('simNomeRateio').textContent = `Rateio: ${nome}`;
+        document.getElementById('simNomeInput').value = '';
+        document.getElementById('simAdicionados').innerHTML = '';
+        document.getElementById('modalSim').classList.add('open');
+    };
+    window.fecharSim = (e) => { if (e.target === document.getElementById('modalSim')) document.getElementById('modalSim').classList.remove('open'); };
+    window.usarNome = (n) => { document.getElementById('simNomeInput').value = n; };
+
+    window.adicionarSim = async () => {
+        const nome = document.getElementById('simNomeInput').value.trim();
+        if (!nome) return;
+        const btn = document.getElementById('btnAdicionarSim');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adicionando...'; btn.disabled = true;
+        const rSnap = await getDoc(doc(db, "rateios", rateioSimAtual));
+        const rd = rSnap.data();
+        await addDoc(collection(db, "pagamentos"), { rateioId: rateioSimAtual, nomeParticipante: nome, emailParticipante: `sim_${Date.now()}@teste.com`, valor: rd.valorIndividual, taxa: rd.valorIndividual*0.01, totalPago: rd.valorIndividual*1.01, metodo: 'pix', status: 'pago', simulado: true, dataPagamento: serverTimestamp() });
+        simAdicionados.push(nome);
+        document.getElementById('simAdicionados').innerHTML = simAdicionados.map(n => `<div class="sim-item"><i class="fas fa-check-circle"></i> ${n} adicionado!</div>`).join('');
+        document.getElementById('simNomeInput').value = '';
+        carregarTudo();
+        btn.innerHTML = '<i class="fas fa-user-plus"></i> Adicionar participante'; btn.disabled = false;
+    };
+
+    window.compartilhar = (id, nome, valor) => {
+        const link = `${window.location.origin}/convite.html?id=${id}`;
+        window.open(`https://wa.me/?text=Olá! Você foi convidado para o rateio *${nome}*! 🎉%0A%0A💰 Valor: *R$ ${fmt(valor)}*%0A%0A👉 ${link}`, '_blank');
+    };
+
+    document.getElementById('btnLogout').addEventListener('click', () => signOut(auth).then(() => window.location.href = 'index.html'));
+</script>
+</body>
+</html>

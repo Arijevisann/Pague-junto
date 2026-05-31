@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Participar do Rateio - Pague Junto</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #070C18;
+            --sidebar: #0B1120;
+            --surface: #0E1829;
+            --surface2: #131F35;
+            --surface3: #1A2845;
+            --border: #1A2B45;
+            --border2: #0F1E36;
+            --text: #EEF2FF;
+            --text2: #7A93BF;
+            --text3: #3D567A;
+            --accent: #2563EB;
+            --accent2: #3B82F6;
+            --accent-light: #60A5FA;
+            --green: #10B981;
+            --green2: #34D399;
+            --amber: #F59E0B;
+            --red: #EF4444;
+            --purple: #8B5CF6;
+        }
+
+        body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+
+        /* ════════ SIDEBAR ════════ */
+        .sidebar {
+            width: 220px; min-height: 100vh;
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            position: fixed; top: 0; left: 0; bottom: 0;
+            z-index: 30; transition: transform 0.3s ease;
+        }
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 20px 18px 18px; border-bottom: 1px solid var(--border2); }
+        .logo-mark { width: 34px; height: 34px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; color: #fff; }
+        .logo-text { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
+        .logo-text span { color: var(--accent-light); }
+        .sidebar-section-label { font-size: 10px; font-weight: 800; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; padding: 18px 18px 8px; }
+        .nav-item { display: flex; align-items: center; gap: 11px; padding: 10px 16px; margin: 0 8px 2px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text2); transition: all 0.2s; text-decoration: none; }
+        .nav-item:hover { background: var(--surface2); color: var(--text); }
+        .nav-item.active { background: rgba(37,99,235,0.15); color: var(--accent-light); font-weight: 700; }
+        .nav-item i { width: 18px; text-align: center; font-size: 15px; color: var(--text3); transition: color 0.2s; }
+        .nav-item.active i { color: var(--accent2); }
+        .nav-item:hover i { color: var(--text2); }
+        .nav-badge { margin-left: auto; background: var(--accent); color: #fff; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 20px; }
+        .nav-item.danger { color: var(--red); }
+        .nav-item.danger i { color: var(--red); }
+        .nav-item.danger:hover { background: rgba(239,68,68,0.08); }
+
+        .sidebar-bottom { margin-top: auto; padding: 16px; border-top: 1px solid var(--border2); }
+        .help-row { display: flex; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: background 0.2s; margin-bottom: 10px; }
+        .help-row:hover { background: var(--surface3); }
+        .help-icon { width: 30px; height: 30px; border-radius: 8px; background: rgba(37,99,235,0.1); display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--accent-light); flex-shrink: 0; }
+        .help-text { font-size: 12px; font-weight: 700; }
+        .help-sub { font-size: 11px; color: var(--text2); font-weight: 500; }
+        .company-card-sm { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; }
+        .company-card-sm:hover { background: var(--surface3); }
+        .co-avatar { width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(135deg,#6366F1,#8B5CF6); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #fff; flex-shrink: 0; }
+        .co-name { font-size: 12px; font-weight: 700; }
+        .co-type { font-size: 10px; color: var(--text3); font-weight: 500; }
+        .co-chevron { color: var(--text3); font-size: 10px; margin-left: auto; }
+
+        /* ════════ MAIN ════════ */
+        .main { margin-left: 220px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* Topbar */
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 28px;
+            border-bottom: 1px solid var(--border2);
+            background: rgba(7,12,24,0.85);
+            backdrop-filter: blur(12px);
+            position: sticky; top: 0; z-index: 20;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 12px; }
+        .back-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 14px; transition: all 0.2s; }
+        .back-btn:hover { background: var(--surface3); color: var(--text); }
+        .topbar-right { display: flex; align-items: center; gap: 10px; }
+        .top-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 14px; transition: all 0.2s; position: relative; }
+        .top-btn:hover { background: var(--surface3); color: var(--text); }
+        .notif-dot { position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--red); color: #fff; font-size: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 2px solid var(--bg); }
+        .user-chip { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 6px 10px; cursor: pointer; transition: background 0.2s; }
+        .user-chip:hover { background: var(--surface3); }
+        .chip-avatar { width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(135deg,#6366F1,#8B5CF6); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; }
+        .chip-name { font-size: 12px; font-weight: 700; }
+        .chip-role { font-size: 10px; color: var(--text2); font-weight: 500; }
+        .btn-detalhes { background: transparent; color: var(--accent-light); font-size: 13px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(37,99,235,0.25); cursor: pointer; transition: all 0.2s; }
+        .btn-detalhes:hover { background: rgba(37,99,235,0.08); }
+
+        /* ════════ CONTENT ════════ */
+        .content { padding: 24px 28px; flex: 1; }
+
+        /* Page header */
+        .page-header { margin-bottom: 20px; }
+        .page-title { font-size: 28px; font-weight: 800; letter-spacing: -0.6px; margin-bottom: 6px; }
+        .rateio-name { font-size: 16px; color: var(--text2); font-weight: 600; margin-bottom: 10px; }
+        .badge-ativo { background: rgba(37,99,235,0.12); color: var(--accent-light); border: 1px solid rgba(37,99,235,0.2); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; }
+        .badge-ativo::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); }
+        .page-meta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 8px; }
+        .meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text2); font-weight: 500; }
+        .meta-item i { font-size: 11px; color: var(--text3); }
+
+        /* Métricas */
+        .metricas-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+        .metrica-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px 18px; }
+        .metrica-icon-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .metrica-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .metrica-icon.blue { background: rgba(37,99,235,0.12); color: var(--accent2); }
+        .metrica-icon.green { background: rgba(16,185,129,0.1); color: var(--green2); }
+        .metrica-icon.amber { background: rgba(245,158,11,0.1); color: var(--amber); }
+        .metrica-icon.purple { background: rgba(139,92,246,0.1); color: #A78BFA; }
+        .metrica-label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+        .metrica-valor { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px; }
+        .metrica-sub { font-size: 11px; color: var(--text3); font-weight: 600; }
+
+        /* Two col */
+        .two-col { display: grid; grid-template-columns: 1fr 340px; gap: 16px; margin-bottom: 16px; }
+
+        /* Card */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 20px; }
+        .card-title { font-size: 15px; font-weight: 800; letter-spacing: -0.2px; margin-bottom: 16px; }
+
+        /* Minha parte */
+        .minha-parte-label { font-size: 12px; color: var(--text2); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+        .minha-parte-valor { font-size: 36px; font-weight: 800; letter-spacing: -1px; margin-bottom: 10px; }
+        .status-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .status-pendente-badge { background: rgba(245,158,11,0.1); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); font-size: 12px; font-weight: 800; padding: 5px 14px; border-radius: 20px; }
+        .parte-bar { background: var(--border); border-radius: 99px; height: 5px; margin-bottom: 5px; overflow: hidden; }
+        .parte-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); border-radius: 99px; }
+        .parte-bar-labels { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--text3); margin-bottom: 14px; }
+
+        .aviso-box { background: rgba(99,102,241,0.06); border: 1px solid rgba(99,102,241,0.15); border-radius: 12px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; }
+        .aviso-box i { color: var(--accent2); font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+        .aviso-box p { font-size: 12px; font-weight: 500; color: var(--text2); line-height: 1.5; }
+
+        /* Detalhamento cobrança */
+        .det-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border2); font-size: 14px; }
+        .det-row:last-of-type { border-bottom: none; }
+        .det-label { color: var(--text2); font-weight: 500; }
+        .det-val { font-weight: 700; }
+        .det-total { display: flex; justify-content: space-between; padding: 14px 0 0; font-size: 17px; font-weight: 800; border-top: 1px solid var(--border2); margin-top: 2px; }
+        .det-total span:last-child { color: var(--accent-light); }
+
+        .taxa-info { background: rgba(37,99,235,0.06); border: 1px solid rgba(37,99,235,0.12); border-radius: 12px; padding: 12px 14px; margin-top: 14px; display: flex; align-items: flex-start; gap: 10px; }
+        .taxa-info i { color: var(--accent2); font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+        .taxa-info p { font-size: 12px; color: var(--text2); font-weight: 500; line-height: 1.4; }
+
+        /* Pagamento coluna direita */
+        .pag-label { font-size: 11px; color: var(--text2); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+        .pag-valor { font-size: 30px; font-weight: 800; color: var(--text); letter-spacing: -1px; margin-bottom: 16px; }
+
+        .metodo { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 12px; padding: 13px 16px; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+        .metodo.selected { border-color: var(--accent); background: rgba(37,99,235,0.06); }
+        .metodo-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .metodo-icon.pix { background: rgba(0,196,163,0.12); color: #00C4A3; }
+        .metodo-icon.credit { background: rgba(99,102,241,0.12); color: #A78BFA; }
+        .metodo-icon.boleto { background: rgba(245,158,11,0.1); color: var(--amber); }
+        .metodo-info { flex: 1; }
+        .metodo-nome { font-size: 13px; font-weight: 700; margin-bottom: 1px; }
+        .metodo-desc { font-size: 11px; color: var(--text2); font-weight: 500; }
+        .radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .radio.checked { border-color: var(--accent); }
+        .radio.checked::after { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+        .card-flags { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+        .flag { background: #fff; border-radius: 4px; padding: 2px 5px; font-size: 9px; font-weight: 800; }
+        .flag.visa { color: #1a1f71; }
+        .flag.master { color: #eb001b; }
+        .flag.elo { color: #000; }
+        .flag.hiper { color: #e2001a; }
+        .flag.amex { color: #2e77bc; }
+
+        .btn-pagar { width: 100%; background: var(--accent); color: #fff; font-size: 15px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; padding: 16px; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 14px; transition: background 0.2s, box-shadow 0.2s; box-shadow: 0 6px 20px rgba(37,99,235,0.3); }
+        .btn-pagar:hover { background: #1d4ed8; box-shadow: 0 8px 28px rgba(37,99,235,0.4); }
+        .seguro-txt { text-align: center; font-size: 11px; font-weight: 600; color: var(--text3); display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: 8px; }
+
+        /* Empresas participantes */
+        .emp-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border2); cursor: pointer; transition: background 0.15s; }
+        .emp-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .emp-row:first-child { padding-top: 0; }
+        .emp-avatar { width: 38px; height: 38px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0; }
+        .emp-info { flex: 1; }
+        .emp-name { font-size: 13px; font-weight: 700; margin-bottom: 1px; display: flex; align-items: center; gap: 6px; }
+        .badge-voce { background: rgba(37,99,235,0.12); color: var(--accent-light); font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 20px; border: 1px solid rgba(37,99,235,0.2); }
+        .emp-tipo { font-size: 11px; color: var(--text3); font-weight: 500; }
+        .emp-valor { font-size: 13px; font-weight: 700; text-align: right; flex-shrink: 0; min-width: 80px; }
+        .status-pago-sm { color: var(--green2); font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        .status-pago-sm::before { content: '●'; font-size: 7px; }
+        .status-pendente-sm { color: var(--amber); font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        .status-pendente-sm::before { content: '●'; font-size: 7px; }
+
+        /* Histórico / Atividade */
+        .hist-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border2); }
+        .hist-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .hist-icon { width: 30px; height: 30px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+        .hist-icon.green { background: rgba(16,185,129,0.1); color: var(--green2); }
+        .hist-icon.amber { background: rgba(245,158,11,0.1); color: var(--amber); }
+        .hist-icon.blue { background: rgba(37,99,235,0.1); color: var(--accent-light); }
+        .hist-desc { flex: 1; }
+        .hist-title { font-size: 13px; font-weight: 700; margin-bottom: 1px; }
+        .hist-sub { font-size: 11px; color: var(--text2); font-weight: 500; }
+        .hist-right { text-align: right; flex-shrink: 0; }
+        .hist-data { font-size: 11px; color: var(--text3); font-weight: 600; }
+        .hist-hora { font-size: 10px; color: var(--text3); font-weight: 500; margin-top: 1px; }
+
+        /* Detalhes do rateio */
+        .det-info-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border2); font-size: 13px; }
+        .det-info-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .det-info-label { color: var(--text2); font-weight: 500; flex-shrink: 0; min-width: 120px; }
+        .det-info-val { font-weight: 700; text-align: right; }
+        .badge-cat { background: rgba(139,92,246,0.1); color: #A78BFA; border: 1px solid rgba(139,92,246,0.2); font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 20px; }
+
+        /* Ações rápidas */
+        .acao-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border2); cursor: pointer; border-radius: 8px; transition: all 0.15s; }
+        .acao-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .acao-row:hover { background: var(--surface2); padding-left: 8px; }
+        .acao-icon { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+        .acao-icon.blue { background: rgba(37,99,235,0.1); color: var(--accent-light); }
+        .acao-icon.green { background: rgba(16,185,129,0.1); color: var(--green2); }
+        .acao-icon.red { background: rgba(239,68,68,0.1); color: var(--red); }
+        .acao-text { flex: 1; }
+        .acao-title { font-size: 13px; font-weight: 700; margin-bottom: 1px; }
+        .acao-desc { font-size: 11px; color: var(--text2); font-weight: 500; }
+        .acao-chevron { color: var(--text3); font-size: 11px; }
+
+        /* Bottom two col */
+        .bottom-two-col { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
+
+        /* Bottom nav */
+        .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(11,17,32,0.97); backdrop-filter: blur(16px); border-top: 1px solid var(--border); padding: 10px 0 20px; z-index: 40; }
+        .bottom-nav-inner { display: flex; justify-content: space-around; align-items: center; }
+        .bn-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px 16px; }
+        .bn-item i { font-size: 20px; }
+        .bn-item span { font-size: 10px; font-weight: 700; }
+        .bn-item.active { color: var(--accent-light); }
+        .bn-item:not(.active) { color: var(--text3); }
+        .bn-plus { width: 52px; height: 52px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 22px; color: #fff; box-shadow: 0 6px 20px rgba(37,99,235,0.4); margin-top: -18px; }
+
+        /* Modal Pix */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(5px); z-index: 50; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.open { display: flex; }
+        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 28px 24px; width: 100%; max-width: 400px; animation: popIn 0.3s cubic-bezier(0.175,0.885,0.32,1.275); }
+        @keyframes popIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-close-row { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+        .modal-close { width: 32px; height: 32px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 14px; }
+        .modal-close:hover { background: var(--surface3); color: var(--text); }
+        .qr-wrap { background: #fff; border-radius: 16px; padding: 18px; display: flex; align-items: center; justify-content: center; width: 180px; height: 180px; margin: 0 auto 16px; }
+        .qr-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+        .codigo-pix { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+        .codigo-pix span { flex: 1; font-size: 11px; font-weight: 600; color: var(--text2); word-break: break-all; line-height: 1.4; }
+        .btn-copiar { width: 32px; height: 32px; border-radius: 9px; background: var(--accent); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; flex-shrink: 0; }
+        .pix-timer { text-align: center; font-size: 13px; font-weight: 700; color: var(--amber); display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 14px; }
+        .btn-modal-primary { width: 100%; background: var(--accent); color: #fff; font-size: 15px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; padding: 15px; border-radius: 12px; border: none; cursor: pointer; transition: background 0.2s; box-shadow: 0 6px 20px rgba(37,99,235,0.3); }
+        .btn-modal-primary:hover { background: #1d4ed8; }
+
+        /* Modal sucesso pagamento */
+        .modal-sucesso { text-align: center; }
+        .sucesso-circle { width: 72px; height: 72px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 28px; color: var(--green2); animation: popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+
+        @media (max-width: 1100px) {
+            .two-col, .bottom-two-col { grid-template-columns: 1fr; }
+            .metricas-grid { grid-template-columns: repeat(2,1fr); }
+        }
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .bottom-nav { display: block; }
+            .content { padding: 16px; padding-bottom: 90px; }
+        }
+        @media (max-width: 600px) {
+            .topbar { padding: 12px 16px; }
+            .page-title { font-size: 22px; }
+            .chip-name, .chip-role { display: none; }
+        }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate { animation: fadeUp 0.35s ease both; }
+        .d1 { animation-delay: 0.05s; }
+        .d2 { animation-delay: 0.1s; }
+        .d3 { animation-delay: 0.15s; }
+        .d4 { animation-delay: 0.2s; }
+    </style>
+</head>
+<body>
+
+<!-- ════════ SIDEBAR ════════ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <img src="logo.png" alt="Pague Junto" style="height:32px;width:auto;object-fit:contain;">
+    </div>
+    <div class="sidebar-section-label">Principal</div>
+    <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i> Início</a>
+    <a href="dashboard.html" class="nav-item active"><i class="fas fa-layer-group"></i> Meus rateios</a>
+    <a href="dashboard-corporativo.html" class="nav-item"><i class="fas fa-wallet"></i> Carteira corporativa</a>
+    <a href="buscar-empresas.html" class="nav-item"><i class="fas fa-grid-2"></i> Empresas</a>
+    <a href="rateio-empresas.html" class="nav-item"><i class="fas fa-credit-card"></i> Pagamentos</a>
+    <a href="#" class="nav-item"><i class="fas fa-chart-bar"></i> Relatórios</a>
+    <div class="sidebar-section-label">Outros</div>
+    <a href="notificacoes.html" class="nav-item"><i class="fas fa-bell"></i> Notificações <span class="nav-badge">3</span></a>
+    <a href="perfil.html" class="nav-item"><i class="fas fa-gear"></i> Configurações</a>
+    <a href="index.html" class="nav-item danger"><i class="fas fa-arrow-right-from-bracket"></i> Sair</a>
+
+    <div class="sidebar-bottom">
+        <div class="help-row">
+            <div class="help-icon"><i class="fas fa-headset"></i></div>
+            <div><div class="help-text">Precisa de ajuda?</div><div class="help-sub">Fale com nosso suporte</div></div>
+        </div>
+        <div class="company-card-sm">
+            <div class="co-avatar">AC</div>
+            <div><div class="co-name">Agência Criativa</div><div class="co-type">Empresa participante</div></div>
+            <i class="fas fa-chevron-down co-chevron"></i>
+        </div>
+    </div>
+</aside>
+
+<!-- ════════ MAIN ════════ -->
+<main class="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="back-btn" onclick="history.back()"><i class="fas fa-arrow-left"></i></button>
+            <span style="font-size:14px;font-weight:700;color:var(--text2);">← Voltar</span>
+        </div>
+        <div class="topbar-right">
+            <button class="top-btn" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+            <button class="top-btn"><i class="fas fa-bell"></i><div class="notif-dot">3</div></button>
+            <div class="user-chip">
+                <div class="chip-avatar">AC</div>
+                <div><div class="chip-name">Agência Criativa</div><div class="chip-role">Empresa participante</div></div>
+                <i class="fas fa-chevron-down" style="font-size:10px;color:var(--text3);margin-left:4px;"></i>
+            </div>
+            <button class="btn-detalhes" onclick="abrirDetalhes()">Ver detalhes do rateio</button>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content">
+
+        <!-- Page header -->
+        <div class="page-header animate">
+            <div class="page-title">Rateio</div>
+            <div class="rateio-name">Campanha de Marketing – Junho/2024</div>
+            <div class="page-meta">
+                <span class="badge-ativo">Ativo</span>
+                <span class="meta-item"><i class="fas fa-user"></i> Criado por Agência Criativa</span>
+                <span class="meta-item"><i class="fas fa-calendar-alt"></i> Prazo: 20/06/2024</span>
+            </div>
+        </div>
+
+        <!-- Métricas -->
+        <div class="metricas-grid animate d1">
+            <div class="metrica-card">
+                <div class="metrica-icon-row"><div class="metrica-icon blue"><i class="fas fa-circle-dollar-sign"></i></div><span class="metrica-label">Valor total do rateio</span></div>
+                <div class="metrica-valor">R$ 12.000,00</div>
+                <div class="metrica-sub">100% — Total do custo</div>
+            </div>
+            <div class="metrica-card">
+                <div class="metrica-icon-row"><div class="metrica-icon green"><i class="fas fa-circle-check"></i></div><span class="metrica-label">Total pago</span></div>
+                <div class="metrica-valor" style="color:var(--green2);">R$ 5.400,00</div>
+                <div class="metrica-sub">45% — Já recebido</div>
+            </div>
+            <div class="metrica-card">
+                <div class="metrica-icon-row"><div class="metrica-icon amber"><i class="fas fa-clock"></i></div><span class="metrica-label">Total pendente</span></div>
+                <div class="metrica-valor" style="color:var(--amber);">R$ 6.600,00</div>
+                <div class="metrica-sub">55% — A receber</div>
+            </div>
+            <div class="metrica-card">
+                <div class="metrica-icon-row"><div class="metrica-icon purple"><i class="fas fa-building"></i></div><span class="metrica-label">Sua parte</span></div>
+                <div class="metrica-valor" style="color:#A78BFA;">R$ 4.000,00</div>
+                <div class="metrica-sub">33,33% do valor total</div>
+            </div>
+        </div>
+
+        <!-- Two col principal -->
+        <div class="two-col animate d2">
+
+            <!-- Esquerda -->
+            <div style="display:flex;flex-direction:column;gap:16px;">
+
+                <!-- Minha parte -->
+                <div class="card">
+                    <div class="card-title">Sua parte no rateio</div>
+                    <div class="minha-parte-label">Valor que você deve pagar</div>
+                    <div class="status-row">
+                        <div class="minha-parte-valor">R$ 4.000,00</div>
+                        <span class="status-pendente-badge">Pendente</span>
+                    </div>
+                    <div class="parte-bar"><div class="parte-bar-fill" style="width:0%;"></div></div>
+                    <div class="parte-bar-labels"><span>0% pago</span><span>100%</span></div>
+                    <div class="aviso-box">
+                        <i class="fas fa-circle-info"></i>
+                        <p>Seu pagamento é muito importante para que o rateio seja concluído. Pague até 20/06/2024 para evitar cobranças adicionais.</p>
+                    </div>
+                </div>
+
+                <!-- Detalhamento da cobrança -->
+                <div class="card">
+                    <div class="card-title">Detalhamento da cobrança</div>
+                    <div class="det-row"><span class="det-label">Valor do rateio</span><span class="det-val">R$ 12.000,00</span></div>
+                    <div class="det-row"><span class="det-label">Sua participação (33,33%)</span><span class="det-val">R$ 4.000,00</span></div>
+                    <div class="det-row"><span class="det-label">Taxa da Pague Junto (4%)</span><span class="det-val" style="color:var(--accent-light);">R$ 160,00</span></div>
+                    <div class="det-total"><span>Total a pagar</span><span>R$ 4.160,00</span></div>
+                    <div class="taxa-info">
+                        <i class="fas fa-circle-info"></i>
+                        <p>A taxa da Pague Junto nos ajuda a manter a plataforma segura e oferecer o melhor serviço para você.</p>
+                    </div>
+                </div>
+
+                <!-- Empresas participantes -->
+                <div class="card">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                        <div class="card-title" style="margin-bottom:0;">Empresas participantes</div>
+                        <span style="font-size:12px;font-weight:700;color:var(--accent-light);cursor:pointer;">Ver todas (4)</span>
+                    </div>
+
+                    <div class="emp-row">
+                        <div class="emp-avatar" style="background:linear-gradient(135deg,#6366F1,#8B5CF6);">AC</div>
+                        <div class="emp-info">
+                            <div class="emp-name">Agência Criativa <span class="badge-voce">Você</span></div>
+                            <div class="emp-tipo">Sua empresa</div>
+                        </div>
+                        <div class="emp-valor">
+                            <div style="text-align:right;font-size:13px;font-weight:700;">R$ 4.000,00</div>
+                            <div class="status-pendente-sm" style="justify-content:flex-end;">Pendente</div>
+                        </div>
+                    </div>
+                    <div class="emp-row">
+                        <div class="emp-avatar" style="background:linear-gradient(135deg,#10B981,#059669);">MD</div>
+                        <div class="emp-info">
+                            <div class="emp-name">Mídia Digital LTDA</div>
+                            <div class="emp-tipo">Marketing Digital</div>
+                        </div>
+                        <div class="emp-valor">
+                            <div style="text-align:right;font-size:13px;font-weight:700;">R$ 3.000,00</div>
+                            <div class="status-pago-sm" style="justify-content:flex-end;">Pago</div>
+                        </div>
+                    </div>
+                    <div class="emp-row">
+                        <div class="emp-avatar" style="background:linear-gradient(135deg,#F59E0B,#D97706);">BR</div>
+                        <div class="emp-info">
+                            <div class="emp-name">Brand Solutions</div>
+                            <div class="emp-tipo">Design e Branding</div>
+                        </div>
+                        <div class="emp-valor">
+                            <div style="text-align:right;font-size:13px;font-weight:700;">R$ 2.500,00</div>
+                            <div class="status-pendente-sm" style="justify-content:flex-end;">Pendente</div>
+                        </div>
+                    </div>
+                    <div class="emp-row">
+                        <div class="emp-avatar" style="background:linear-gradient(135deg,#EF4444,#DC2626);">VB</div>
+                        <div class="emp-info">
+                            <div class="emp-name">Vibe Comunicação</div>
+                            <div class="emp-tipo">Comunicação</div>
+                        </div>
+                        <div class="emp-valor">
+                            <div style="text-align:right;font-size:13px;font-weight:700;">R$ 2.500,00</div>
+                            <div class="status-pago-sm" style="justify-content:flex-end;">Pago</div>
+                        </div>
+                    </div>
+
+                    <button style="width:100%;background:transparent;color:var(--text2);font-size:13px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;padding:12px;border-radius:10px;border:1px solid var(--border);cursor:pointer;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
+                        Ver todos os participantes <i class="fas fa-chevron-right" style="font-size:10px;"></i>
+                    </button>
+                </div>
+
+                <!-- Detalhes do rateio -->
+                <div class="card">
+                    <div class="card-title">Detalhes do rateio</div>
+                    <div class="det-info-row"><span class="det-info-label">Nome do rateio</span><span class="det-info-val">Campanha de Marketing – Junho/2024</span></div>
+                    <div class="det-info-row"><span class="det-info-label">Descrição</span><span class="det-info-val">Divisão dos custos da campanha de marketing digital.</span></div>
+                    <div class="det-info-row"><span class="det-info-label">Categoria</span><span class="det-info-val"><span class="badge-cat">Marketing</span></span></div>
+                    <div class="det-info-row"><span class="det-info-label">Data de criação</span><span class="det-info-val">10/06/2024 às 14:20</span></div>
+                    <div class="det-info-row"><span class="det-info-label">Prazo final</span><span class="det-info-val">20/06/2024</span></div>
+                </div>
+            </div>
+
+            <!-- Coluna direita — Realizar pagamento + histórico + ações -->
+            <div style="display:flex;flex-direction:column;gap:16px;">
+
+                <!-- Realizar pagamento -->
+                <div class="card">
+                    <div class="card-title">Realizar pagamento</div>
+                    <div class="pag-label">Valor a pagar</div>
+                    <div class="pag-valor">R$ 4.000,00</div>
+
+                    <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Escolha a forma de pagamento</div>
+
+                    <div class="metodo selected" onclick="selecionarMetodo(this)">
+                        <div class="metodo-icon pix">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6.5 2.5L2.5 6.5L6.5 10.5L10.5 6.5L6.5 2.5Z" fill="#00C4A3"/><path d="M17.5 2.5L13.5 6.5L17.5 10.5L21.5 6.5L17.5 2.5Z" fill="#00C4A3"/><path d="M6.5 13.5L2.5 17.5L6.5 21.5L10.5 17.5L6.5 13.5Z" fill="#00C4A3"/><path d="M17.5 13.5L13.5 17.5L17.5 21.5L21.5 17.5L17.5 13.5Z" fill="#00C4A3"/></svg>
+                        </div>
+                        <div class="metodo-info"><div class="metodo-nome">Pix</div><div class="metodo-desc">Aprovação imediata</div></div>
+                        <div class="radio checked"></div>
+                    </div>
+
+                    <div class="metodo" onclick="selecionarMetodo(this)">
+                        <div class="metodo-icon credit"><i class="fas fa-credit-card"></i></div>
+                        <div class="metodo-info">
+                            <div class="metodo-nome">Cartão de crédito</div>
+                            <div class="metodo-desc">Até 12x com juros</div>
+                            <div class="card-flags">
+                                <span class="flag visa">VISA</span><span class="flag master">master</span>
+                                <span class="flag elo">elo</span><span class="flag hiper">Hiper</span><span class="flag amex">AMEX</span>
+                            </div>
+                        </div>
+                        <div class="radio"></div>
+                    </div>
+
+                    <div class="metodo" onclick="selecionarMetodo(this)">
+                        <div class="metodo-icon boleto"><i class="fas fa-barcode"></i></div>
+                        <div class="metodo-info"><div class="metodo-nome">Boleto bancário</div><div class="metodo-desc">Compensação em até 2 dias úteis</div></div>
+                        <div class="radio"></div>
+                    </div>
+
+                    <button class="btn-pagar" onclick="abrirPix()">
+                        <i class="fas fa-lock"></i> Pagar agora
+                    </button>
+                    <div class="seguro-txt"><i class="fas fa-shield-halved"></i> Ambiente 100% seguro e criptografado</div>
+                </div>
+
+                <!-- Histórico de pagamentos -->
+                <div class="card">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                        <div class="card-title" style="margin-bottom:0;">Histórico de pagamentos</div>
+                        <span style="font-size:12px;font-weight:700;color:var(--accent-light);cursor:pointer;">Ver todos</span>
+                    </div>
+
+                    <div class="hist-item">
+                        <div class="hist-icon green"><i class="fas fa-check"></i></div>
+                        <div class="hist-desc">
+                            <div class="hist-title">Mídia Digital LTDA pagou via Pix</div>
+                            <div class="hist-sub" style="color:var(--green2);font-weight:700;">R$ 3.000,00</div>
+                        </div>
+                        <div class="hist-right"><div class="hist-data">16/06/2024</div><div class="hist-hora">09:15</div></div>
+                    </div>
+                    <div class="hist-item">
+                        <div class="hist-icon green"><i class="fas fa-check"></i></div>
+                        <div class="hist-desc">
+                            <div class="hist-title">Vibe Comunicação pagou via Cartão</div>
+                            <div class="hist-sub" style="color:var(--green2);font-weight:700;">R$ 2.500,00</div>
+                        </div>
+                        <div class="hist-right"><div class="hist-data">16/06/2024</div><div class="hist-hora">11:32</div></div>
+                    </div>
+                    <div class="hist-item">
+                        <div class="hist-icon amber"><i class="fas fa-clock"></i></div>
+                        <div class="hist-desc">
+                            <div class="hist-title">Aguardando seu pagamento</div>
+                            <div class="hist-sub">R$ 4.000,00</div>
+                        </div>
+                        <div class="hist-right"><div class="hist-data" style="color:var(--amber);">Pendente</div></div>
+                    </div>
+                    <div class="hist-item">
+                        <div class="hist-icon amber"><i class="fas fa-clock"></i></div>
+                        <div class="hist-desc">
+                            <div class="hist-title">Brand Solutions ainda não pagou</div>
+                            <div class="hist-sub">R$ 2.500,00</div>
+                        </div>
+                        <div class="hist-right"><div class="hist-data" style="color:var(--amber);">Pendente</div></div>
+                    </div>
+                </div>
+
+                <!-- Ações rápidas -->
+                <div class="card">
+                    <div class="card-title">Ações rápidas</div>
+                    <div class="acao-row">
+                        <div class="acao-icon blue"><i class="fas fa-bell"></i></div>
+                        <div class="acao-text"><div class="acao-title">Lembrar empresas</div><div class="acao-desc">Enviar lembrete de pagamento</div></div>
+                        <i class="fas fa-chevron-right acao-chevron"></i>
+                    </div>
+                    <div class="acao-row">
+                        <div class="acao-icon green"><i class="fas fa-download"></i></div>
+                        <div class="acao-text"><div class="acao-title">Baixar comprovante</div><div class="acao-desc">O comprovante ficará disponível aqui</div></div>
+                        <i class="fas fa-chevron-right acao-chevron"></i>
+                    </div>
+                    <div class="acao-row">
+                        <div class="acao-icon red"><i class="fas fa-arrow-right-from-bracket"></i></div>
+                        <div class="acao-text"><div class="acao-title" style="color:var(--red);">Sair do rateio</div><div class="acao-desc">Você não fará mais parte deste rateio</div></div>
+                        <i class="fas fa-chevron-right acao-chevron"></i>
+                    </div>
+                </div>
+
+            </div><!-- /col direita -->
+        </div>
+
+    </div><!-- /content -->
+</main>
+
+<!-- Bottom nav mobile -->
+<nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+        <div class="bn-item"><i class="fas fa-home"></i><span>Início</span></div>
+        <div class="bn-item active"><i class="fas fa-layer-group"></i><span>Rateios</span></div>
+        <div class="bn-item"><div class="bn-plus"><i class="fas fa-plus"></i></div></div>
+        <div class="bn-item"><i class="fas fa-wallet"></i><span>Carteira</span></div>
+        <div class="bn-item"><i class="fas fa-user"></i><span>Perfil</span></div>
+    </div>
+</nav>
+
+<!-- Modal Pix -->
+<div class="modal-overlay" id="modalPix">
+    <div class="modal-box">
+        <div class="modal-close-row">
+            <button class="modal-close" onclick="fecharModal('modalPix')"><i class="fas fa-times"></i></button>
+        </div>
+        <div style="text-align:center;margin-bottom:20px;">
+            <div style="font-size:18px;font-weight:800;letter-spacing:-0.3px;margin-bottom:4px;">Pagamento via Pix</div>
+            <div style="font-size:13px;color:var(--text2);font-weight:500;">Escaneie o QR Code com o app do seu banco</div>
+        </div>
+        <div class="qr-wrap">
+            <div class="qr-placeholder">
+                <i class="fas fa-qrcode" style="font-size:80px;color:#E5E7EB;"></i>
+                <p style="font-size:10px;color:#9CA3AF;text-align:center;font-weight:600;">QR Code integrado<br>com gateway de pagamento</p>
+            </div>
+        </div>
+        <div class="codigo-pix">
+            <span id="codigoPix">00020126580014BR.GOV.BCB.PIX0136a1b2c3d4-e5f6-7890-ab12-34567890abcd52040000</span>
+            <button class="btn-copiar" onclick="copiarPix()"><i class="fas fa-copy"></i></button>
+        </div>
+        <div class="pix-timer"><i class="fas fa-clock"></i> Expira em <span id="timerPix">29:59</span></div>
+        <button class="btn-modal-primary" onclick="simularPagamento()">
+            <i class="fas fa-check"></i> Confirmar pagamento (simulação)
+        </button>
+    </div>
+</div>
+
+<!-- Modal sucesso pagamento -->
+<div class="modal-overlay" id="modalSucesso">
+    <div class="modal-box modal-sucesso">
+        <div class="sucesso-circle"><i class="fas fa-check"></i></div>
+        <div style="font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-bottom:8px;">Pagamento confirmado!</div>
+        <div style="font-size:13px;color:var(--text2);font-weight:500;line-height:1.6;margin-bottom:8px;">Seu pagamento de <strong style="color:var(--text);">R$ 4.000,00</strong> foi processado com sucesso.</div>
+        <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.15);border-radius:12px;padding:12px 16px;margin:16px 0 24px;">
+            <div style="font-size:12px;color:var(--green2);font-weight:700;margin-bottom:2px;">Comprovante gerado</div>
+            <div style="font-size:11px;color:var(--text2);font-weight:500;">Disponível na seção de ações rápidas</div>
+        </div>
+        <button class="btn-modal-primary" onclick="fecharModal('modalSucesso')">Concluído</button>
+    </div>
+</div>
+
+<!-- Modal detalhes -->
+<div class="modal-overlay" id="modalDetalhes">
+    <div class="modal-box">
+        <div class="modal-close-row">
+            <button class="modal-close" onclick="fecharModal('modalDetalhes')"><i class="fas fa-times"></i></button>
+        </div>
+        <div style="font-size:18px;font-weight:800;margin-bottom:16px;letter-spacing:-0.3px;">Detalhes do rateio</div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
+            <div style="font-size:15px;font-weight:800;color:var(--accent-light);margin-bottom:4px;">Campanha de Marketing – Junho/2024</div>
+            <div style="font-size:12px;color:var(--text2);font-weight:500;">Criado por Agência Criativa · 10/06/2024</div>
+        </div>
+        <div style="font-size:13px;color:var(--text2);font-weight:500;line-height:1.6;margin-bottom:16px;">Divisão dos custos da campanha de marketing digital realizada em junho/2024. Todas as empresas participantes concordaram com os valores definidos no momento da criação do rateio.</div>
+        <div style="display:flex;gap:10px;">
+            <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;">
+                <div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;margin-bottom:4px;">Empresas</div>
+                <div style="font-size:20px;font-weight:800;">4</div>
+            </div>
+            <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;">
+                <div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;margin-bottom:4px;">Prazo</div>
+                <div style="font-size:16px;font-weight:800;">20/06</div>
+            </div>
+            <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;">
+                <div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;margin-bottom:4px;">Total</div>
+                <div style="font-size:14px;font-weight:800;color:var(--accent-light);">R$12k</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let timerInterval = null;
+
+    function selecionarMetodo(el) {
+        document.querySelectorAll('.metodo').forEach(m => {
+            m.classList.remove('selected');
+            const r = m.querySelector('.radio');
+            r.classList.remove('checked');
+            r.innerHTML = '';
+        });
+        el.classList.add('selected');
+        el.querySelector('.radio').classList.add('checked');
+    }
+
+    function abrirPix() {
+        document.getElementById('modalPix').classList.add('open');
+        iniciarTimer();
+    }
+
+    function iniciarTimer() {
+        let seg = 30 * 60 - 1;
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            seg--;
+            const m = String(Math.floor(seg / 60)).padStart(2, '0');
+            const s = String(seg % 60).padStart(2, '0');
+            const el = document.getElementById('timerPix');
+            if (el) el.textContent = `${m}:${s}`;
+            if (seg <= 0) clearInterval(timerInterval);
+        }, 1000);
+    }
+
+    function copiarPix() {
+        navigator.clipboard.writeText(document.getElementById('codigoPix').textContent).then(() => {
+            const btn = document.querySelector('.btn-copiar');
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            btn.style.background = 'var(--green)';
+            setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i>'; btn.style.background = 'var(--accent)'; }, 2000);
+        });
+    }
+
+    function simularPagamento() {
+        clearInterval(timerInterval);
+        fecharModal('modalPix');
+        setTimeout(() => document.getElementById('modalSucesso').classList.add('open'), 300);
+    }
+
+    function abrirDetalhes() {
+        document.getElementById('modalDetalhes').classList.add('open');
+    }
+
+    function fecharModal(id) {
+        document.getElementById(id).classList.remove('open');
+    }
+
+    document.querySelectorAll('.modal-overlay').forEach(m => {
+        m.addEventListener('click', e => { if (e.target === m) { clearInterval(timerInterval); m.classList.remove('open'); } });
+    });
+</script>
+</body>
+</html>

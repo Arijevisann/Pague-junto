@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rateio entre Empresas - Pague Junto</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #070C18;
+            --sidebar: #0B1120;
+            --surface: #0E1829;
+            --surface2: #131F35;
+            --surface3: #1A2845;
+            --border: #1A2B45;
+            --border2: #0F1E36;
+            --text: #EEF2FF;
+            --text2: #7A93BF;
+            --text3: #3D567A;
+            --accent: #2563EB;
+            --accent2: #3B82F6;
+            --accent-light: #60A5FA;
+            --green: #10B981;
+            --green2: #34D399;
+            --amber: #F59E0B;
+            --red: #EF4444;
+            --purple: #8B5CF6;
+        }
+
+        body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+
+        /* ════════ SIDEBAR ════════ */
+        .sidebar {
+            width: 220px; min-height: 100vh;
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            position: fixed; top: 0; left: 0; bottom: 0;
+            z-index: 30; transition: transform 0.3s ease;
+        }
+        .sidebar-logo {
+            display: flex; align-items: center; gap: 10px;
+            padding: 20px 18px 18px;
+            border-bottom: 1px solid var(--border2);
+        }
+        .logo-mark { width: 34px; height: 34px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; color: #fff; }
+        .logo-text { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
+        .logo-text span { color: var(--accent-light); }
+        .sidebar-section-label { font-size: 10px; font-weight: 800; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; padding: 18px 18px 8px; }
+        .nav-item { display: flex; align-items: center; gap: 11px; padding: 10px 16px; margin: 0 8px 2px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text2); transition: all 0.2s; text-decoration: none; }
+        .nav-item:hover { background: var(--surface2); color: var(--text); }
+        .nav-item.active { background: rgba(37,99,235,0.15); color: var(--accent-light); font-weight: 700; }
+        .nav-item i { width: 18px; text-align: center; font-size: 15px; color: var(--text3); transition: color 0.2s; }
+        .nav-item.active i { color: var(--accent2); }
+        .nav-item:hover i { color: var(--text2); }
+        .nav-badge { margin-left: auto; background: var(--accent); color: #fff; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 20px; }
+        .sidebar-bottom { margin-top: auto; padding: 16px; border-top: 1px solid var(--border2); }
+        .company-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; cursor: pointer; transition: background 0.2s; }
+        .company-card:hover { background: var(--surface3); }
+        .company-avatar { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #6366F1, #8B5CF6); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+        .company-name { font-size: 13px; font-weight: 800; margin-bottom: 2px; }
+        .company-type { font-size: 11px; color: var(--text3); font-weight: 600; margin-bottom: 8px; }
+        .company-link { font-size: 12px; color: var(--accent-light); font-weight: 700; display: flex; align-items: center; gap: 4px; }
+
+        /* ════════ MAIN ════════ */
+        .main { margin-left: 220px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* Topbar */
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 28px;
+            border-bottom: 1px solid var(--border2);
+            background: rgba(7,12,24,0.85);
+            backdrop-filter: blur(12px);
+            position: sticky; top: 0; z-index: 20;
+            gap: 16px;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 14px; }
+        .back-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 14px; transition: all 0.2s; flex-shrink: 0; }
+        .back-btn:hover { background: var(--surface3); color: var(--text); }
+        .topbar-right { display: flex; align-items: center; gap: 10px; }
+        .top-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 14px; transition: all 0.2s; position: relative; }
+        .top-btn:hover { background: var(--surface3); color: var(--text); }
+        .notif-dot { position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--red); color: #fff; font-size: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 2px solid var(--bg); }
+        .user-chip { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 6px 10px; cursor: pointer; transition: background 0.2s; }
+        .user-chip:hover { background: var(--surface3); }
+        .chip-avatar { width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(135deg, #6366F1, #8B5CF6); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; }
+        .chip-name { font-size: 12px; font-weight: 700; }
+        .chip-role { font-size: 10px; color: var(--text2); font-weight: 500; }
+        .btn-editar { background: transparent; color: var(--text2); font-size: 13px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 7px; transition: all 0.2s; }
+        .btn-editar:hover { background: var(--surface2); color: var(--text); }
+        .btn-menu { width: 36px; height: 36px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 16px; transition: all 0.2s; letter-spacing: 1px; }
+        .btn-menu:hover { background: var(--surface3); color: var(--text); }
+
+        /* ════════ CONTENT ════════ */
+        .content { padding: 24px 28px; flex: 1; }
+
+        /* Page header */
+        .page-header { margin-bottom: 20px; }
+        .page-title { font-size: 28px; font-weight: 800; letter-spacing: -0.6px; margin-bottom: 4px; }
+        .page-subtitle { font-size: 14px; color: var(--text2); font-weight: 500; margin-bottom: 12px; }
+        .page-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .badge-ativo { background: rgba(37,99,235,0.12); color: var(--accent-light); border: 1px solid rgba(37,99,235,0.2); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; }
+        .badge-ativo::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); }
+        .meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text2); font-weight: 500; }
+        .meta-item i { font-size: 12px; color: var(--text3); }
+
+        /* Métricas 4 cards */
+        .metricas-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+        .metrica-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px 18px; transition: background 0.2s; }
+        .metrica-card:hover { background: var(--surface2); }
+        .metrica-icon-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .metrica-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .metrica-icon.blue { background: rgba(37,99,235,0.12); color: var(--accent2); }
+        .metrica-icon.green { background: rgba(16,185,129,0.1); color: var(--green2); }
+        .metrica-icon.amber { background: rgba(245,158,11,0.1); color: var(--amber); }
+        .metrica-icon.purple { background: rgba(139,92,246,0.1); color: #A78BFA; }
+        .metrica-label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+        .metrica-valor { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px; }
+        .metrica-sub { font-size: 11px; color: var(--text3); font-weight: 600; }
+
+        /* Two column layout */
+        .two-col { display: grid; grid-template-columns: 1fr 340px; gap: 16px; margin-bottom: 16px; }
+
+        /* Cards base */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 20px; }
+        .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .card-title { font-size: 15px; font-weight: 800; letter-spacing: -0.2px; }
+        .btn-convidar { background: rgba(37,99,235,0.12); color: var(--accent-light); font-size: 12px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(37,99,235,0.2); cursor: pointer; display: flex; align-items: center; gap: 7px; transition: all 0.2s; }
+        .btn-convidar:hover { background: rgba(37,99,235,0.18); }
+
+        /* Empresa participante */
+        .empresa-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 0; border-bottom: 1px solid var(--border2);
+            transition: background 0.15s; cursor: pointer;
+        }
+        .empresa-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .empresa-row:first-child { padding-top: 0; }
+        .empresa-avatar { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0; }
+        .emp-info { flex: 1; min-width: 0; }
+        .emp-name-row { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+        .emp-name { font-size: 14px; font-weight: 700; }
+        .emp-tipo { font-size: 11px; color: var(--text2); font-weight: 500; }
+        .badge-voce { background: rgba(37,99,235,0.12); color: var(--accent-light); font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 20px; border: 1px solid rgba(37,99,235,0.2); }
+        .badge-criador { background: rgba(16,185,129,0.1); color: var(--green2); font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 20px; border: 1px solid rgba(16,185,129,0.2); }
+        .emp-valor-col { text-align: right; flex-shrink: 0; }
+        .emp-valor-label { font-size: 10px; color: var(--text3); font-weight: 600; text-transform: uppercase; margin-bottom: 3px; }
+        .emp-valor { font-size: 14px; font-weight: 800; }
+        .emp-status-col { flex-shrink: 0; min-width: 90px; text-align: right; }
+        .status-pago { background: rgba(16,185,129,0.08); color: var(--green2); border: 1px solid rgba(16,185,129,0.15); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; }
+        .status-pago::before { content: '●'; font-size: 6px; }
+        .status-pendente { background: rgba(245,158,11,0.08); color: var(--amber); border: 1px solid rgba(245,158,11,0.15); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; }
+        .status-pendente::before { content: '●'; font-size: 6px; }
+        .emp-data { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 3px; }
+        .row-chevron { color: var(--text3); font-size: 11px; flex-shrink: 0; margin-left: 8px; }
+
+        .btn-ver-todos { width: 100%; background: transparent; color: var(--text2); font-size: 13px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; padding: 12px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; margin-top: 14px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-ver-todos:hover { background: var(--surface2); color: var(--text); }
+
+        /* Resumo do rateio */
+        .resumo-row { display: flex; justify-content: space-around; align-items: center; gap: 8px; padding: 14px 0; border-bottom: 1px solid var(--border2); }
+        .resumo-item { text-align: center; }
+        .resumo-item-label { font-size: 10px; color: var(--text3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+        .resumo-item-val { font-size: 16px; font-weight: 800; }
+
+        /* Pagamento lado direito */
+        .pag-label { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+        .pag-valor { font-size: 28px; font-weight: 800; color: var(--text); letter-spacing: -1px; margin-bottom: 16px; }
+        .pag-status-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+        .pag-status-box { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); border-radius: 10px; padding: 8px 14px; display: flex; align-items: center; gap: 8px; flex: 1; }
+        .pag-status-box i { color: var(--green2); font-size: 14px; }
+        .pag-status-box span { font-size: 12px; font-weight: 700; color: var(--green2); }
+        .pag-data { font-size: 11px; color: var(--text2); font-weight: 500; margin-top: 2px; }
+
+        /* Métodos de pagamento */
+        .metodo {
+            background: var(--surface2); border: 1.5px solid var(--border);
+            border-radius: 12px; padding: 13px 16px;
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 8px; cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .metodo.selected { border-color: var(--accent); background: rgba(37,99,235,0.06); }
+        .metodo-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .metodo-icon.pix { background: rgba(0,196,163,0.12); color: #00C4A3; }
+        .metodo-icon.credit { background: rgba(99,102,241,0.12); color: #A78BFA; }
+        .metodo-icon.boleto { background: rgba(245,158,11,0.1); color: var(--amber); }
+        .metodo-info { flex: 1; }
+        .metodo-nome { font-size: 13px; font-weight: 700; margin-bottom: 1px; }
+        .metodo-desc { font-size: 11px; color: var(--text2); font-weight: 500; }
+        .radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .radio.checked { border-color: var(--accent); }
+        .radio.checked::after { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+        .card-flags { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+        .flag { background: #fff; border-radius: 4px; padding: 2px 5px; font-size: 9px; font-weight: 800; }
+        .flag.visa { color: #1a1f71; }
+        .flag.master { color: #eb001b; }
+        .flag.elo { color: #000; }
+        .flag.hiper { color: #e2001a; }
+        .flag.amex { color: #2e77bc; }
+
+        .btn-pagar {
+            width: 100%; background: var(--accent); color: #fff;
+            font-size: 15px; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 16px; border-radius: 12px; border: none;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 9px;
+            margin-top: 14px; transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 6px 20px rgba(37,99,235,0.3);
+        }
+        .btn-pagar:hover { background: #1d4ed8; box-shadow: 0 8px 28px rgba(37,99,235,0.4); }
+        .seguro-txt { text-align: center; font-size: 11px; font-weight: 600; color: var(--text3); display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: 8px; }
+
+        /* Seção inferior 2 colunas */
+        .bottom-two-col { display: grid; grid-template-columns: 1fr 340px; gap: 16px; margin-bottom: 16px; }
+
+        /* Detalhes do rateio */
+        .det-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border2); font-size: 13px; }
+        .det-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .det-label { color: var(--text2); font-weight: 500; }
+        .det-val { font-weight: 700; text-align: right; max-width: 55%; }
+        .badge-categoria { background: rgba(139,92,246,0.1); color: #A78BFA; border: 1px solid rgba(139,92,246,0.2); font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 20px; }
+
+        /* Histórico */
+        .hist-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border2); }
+        .hist-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .hist-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+        .hist-icon.green { background: rgba(16,185,129,0.1); color: var(--green2); }
+        .hist-icon.amber { background: rgba(245,158,11,0.1); color: var(--amber); }
+        .hist-icon.blue { background: rgba(37,99,235,0.1); color: var(--accent-light); }
+        .hist-desc { flex: 1; }
+        .hist-title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+        .hist-sub { font-size: 11px; color: var(--text2); font-weight: 500; }
+        .hist-right { text-align: right; flex-shrink: 0; }
+        .hist-data { font-size: 11px; color: var(--text3); font-weight: 600; }
+        .hist-hora { font-size: 10px; color: var(--text3); font-weight: 500; margin-top: 2px; }
+
+        /* Ações rápidas */
+        .acao-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border2); cursor: pointer; transition: background 0.15s; border-radius: 8px; }
+        .acao-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .acao-row:hover { background: var(--surface2); padding-left: 8px; }
+        .acao-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .acao-icon.blue { background: rgba(37,99,235,0.1); color: var(--accent-light); }
+        .acao-icon.green { background: rgba(16,185,129,0.1); color: var(--green2); }
+        .acao-icon.red { background: rgba(239,68,68,0.1); color: var(--red); }
+        .acao-info { flex: 1; }
+        .acao-title { font-size: 13px; font-weight: 700; margin-bottom: 1px; }
+        .acao-desc { font-size: 11px; color: var(--text2); font-weight: 500; }
+        .acao-chevron { color: var(--text3); font-size: 11px; }
+
+        /* Bottom nav mobile */
+        .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(11,17,32,0.97); backdrop-filter: blur(16px); border-top: 1px solid var(--border); padding: 10px 0 20px; z-index: 40; }
+        .bottom-nav-inner { display: flex; justify-content: space-around; align-items: center; }
+        .bn-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px 16px; }
+        .bn-item i { font-size: 20px; }
+        .bn-item span { font-size: 10px; font-weight: 700; }
+        .bn-item.active { color: var(--accent-light); }
+        .bn-item:not(.active) { color: var(--text3); }
+        .bn-plus { width: 52px; height: 52px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 22px; color: #fff; box-shadow: 0 6px 20px rgba(37,99,235,0.4); margin-top: -18px; }
+
+        @media (max-width: 1100px) {
+            .two-col, .bottom-two-col { grid-template-columns: 1fr; }
+            .metricas-grid { grid-template-columns: repeat(2,1fr); }
+        }
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .main { margin-left: 0; }
+            .bottom-nav { display: block; }
+            .content { padding: 16px; padding-bottom: 90px; }
+        }
+        @media (max-width: 600px) {
+            .topbar { padding: 12px 16px; }
+            .page-title { font-size: 22px; }
+            .chip-name, .chip-role { display: none; }
+        }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate { animation: fadeUp 0.35s ease both; }
+        .d1 { animation-delay: 0.05s; }
+        .d2 { animation-delay: 0.1s; }
+        .d3 { animation-delay: 0.15s; }
+        .d4 { animation-delay: 0.2s; }
+    </style>
+</head>
+<body>
+
+<!-- ════════ SIDEBAR ════════ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <img src="logo.png" alt="Pague Junto" style="height:32px;width:auto;object-fit:contain;">
+    </div>
+    <div class="sidebar-section-label">Principal</div>
+    <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i> Início</a>
+    <a href="dashboard.html" class="nav-item active"><i class="fas fa-layer-group"></i> Meus rateios</a>
+    <a href="dashboard-corporativo.html" class="nav-item"><i class="fas fa-wallet"></i> Carteira corporativa</a>
+    <a href="buscar-empresas.html" class="nav-item"><i class="fas fa-grid-2"></i> Empresas</a>
+    <a href="rateio-empresas.html" class="nav-item"><i class="fas fa-credit-card"></i> Pagamentos</a>
+    <a href="#" class="nav-item"><i class="fas fa-chart-bar"></i> Relatórios</a>
+    <div class="sidebar-section-label">Outros</div>
+    <a href="notificacoes.html" class="nav-item"><i class="fas fa-bell"></i> Notificações <span class="nav-badge">3</span></a>
+    <a href="perfil.html" class="nav-item"><i class="fas fa-gear"></i> Configurações</a>
+    <div class="sidebar-bottom">
+        <div class="company-card">
+            <div class="company-avatar">AC</div>
+            <div class="company-name">Agência Criativa</div>
+            <div class="company-type">Empresa participante</div>
+            <div class="company-link">Ver meu perfil <i class="fas fa-chevron-right" style="font-size:10px;"></i></div>
+        </div>
+    </div>
+</aside>
+
+<!-- ════════ MAIN ════════ -->
+<main class="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="back-btn" onclick="history.back()"><i class="fas fa-arrow-left"></i></button>
+            <button class="top-btn" onclick="document.getElementById('sidebar').classList.toggle('open')" style="display:none;" id="menuBtn"><i class="fas fa-bars"></i></button>
+        </div>
+        <div class="topbar-right">
+            <button class="top-btn"><i class="fas fa-bell"></i><div class="notif-dot">3</div></button>
+            <div class="user-chip">
+                <div class="chip-avatar">AC</div>
+                <div><div class="chip-name">Agência Criativa</div><div class="chip-role">Empresa</div></div>
+                <i class="fas fa-chevron-down" style="font-size:10px;color:var(--text3);margin-left:4px;"></i>
+            </div>
+            <button class="btn-editar"><i class="fas fa-pen"></i> Editar rateio</button>
+            <button class="btn-menu">···</button>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content">
+
+        <!-- Page header -->
+        <div class="page-header animate">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+                <div>
+                    <div class="page-title">Rateio entre empresas</div>
+                    <div class="page-subtitle">Compartilhamento de custos – Campanha de Marketing</div>
+                    <div class="page-meta">
+                        <span class="badge-ativo">Ativo</span>
+                        <span class="meta-item"><i class="fas fa-calendar-alt"></i> Prazo: 20/06/2024</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4 métricas -->
+        <div class="metricas-grid animate d1">
+            <div class="metrica-card">
+                <div class="metrica-icon-row">
+                    <div class="metrica-icon blue"><i class="fas fa-circle-dollar-sign"></i></div>
+                    <span class="metrica-label">Valor total do rateio</span>
+                </div>
+                <div class="metrica-valor">R$ 12.000,00</div>
+                <div class="metrica-sub">100% — Total do custo</div>
+            </div>
+            <div class="metrica-card">
+                <div class="metrica-icon-row">
+                    <div class="metrica-icon green"><i class="fas fa-circle-check"></i></div>
+                    <span class="metrica-label">Total pago</span>
+                </div>
+                <div class="metrica-valor" style="color:var(--green2);">R$ 5.400,00</div>
+                <div class="metrica-sub">45% — Já recebido</div>
+            </div>
+            <div class="metrica-card">
+                <div class="metrica-icon-row">
+                    <div class="metrica-icon amber"><i class="fas fa-clock"></i></div>
+                    <span class="metrica-label">Total pendente</span>
+                </div>
+                <div class="metrica-valor" style="color:var(--amber);">R$ 6.600,00</div>
+                <div class="metrica-sub">55% — A receber</div>
+            </div>
+            <div class="metrica-card">
+                <div class="metrica-icon-row">
+                    <div class="metrica-icon purple"><i class="fas fa-building"></i></div>
+                    <span class="metrica-label">Sua empresa recebe</span>
+                </div>
+                <div class="metrica-valor" style="color:#A78BFA;">R$ 0,60</div>
+                <div class="metrica-sub">Taxa Pague Junto (5%)</div>
+            </div>
+        </div>
+
+        <!-- Duas colunas principais -->
+        <div class="two-col animate d2">
+
+            <!-- Coluna esquerda — Empresas participantes -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Empresas participantes</span>
+                    <button class="btn-convidar" onclick="abrirModalConvite()">
+                        <i class="fas fa-user-plus"></i> Convidar empresa
+                    </button>
+                </div>
+
+                <!-- Header da tabela -->
+                <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:12px;padding:8px 0;border-bottom:1px solid var(--border2);margin-bottom:2px;">
+                    <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;">Empresa</div>
+                    <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;text-align:right;">Valor</div>
+                    <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;text-align:right;min-width:90px;">Status</div>
+                    <div style="width:16px;"></div>
+                </div>
+
+                <div class="empresa-row">
+                    <div class="empresa-avatar" style="background:linear-gradient(135deg,#6366F1,#8B5CF6);">AC</div>
+                    <div class="emp-info">
+                        <div class="emp-name-row">
+                            <span class="emp-name">Agência Criativa</span>
+                            <span class="badge-voce">Você</span>
+                            <span class="badge-criador">Criador</span>
+                        </div>
+                        <div class="emp-tipo">Sua empresa</div>
+                    </div>
+                    <div class="emp-valor-col">
+                        <div class="emp-valor-label">Valor</div>
+                        <div class="emp-valor">R$ 4.000,00</div>
+                    </div>
+                    <div class="emp-status-col">
+                        <span class="status-pago">Pago</span>
+                        <div class="emp-data">Pago em 15/06/2024</div>
+                    </div>
+                    <i class="fas fa-chevron-right row-chevron"></i>
+                </div>
+
+                <div class="empresa-row">
+                    <div class="empresa-avatar" style="background:linear-gradient(135deg,#10B981,#059669);">MD</div>
+                    <div class="emp-info">
+                        <div class="emp-name-row"><span class="emp-name">Mídia Digital LTDA</span></div>
+                        <div class="emp-tipo">Marketing Digital</div>
+                    </div>
+                    <div class="emp-valor-col">
+                        <div class="emp-valor-label">Valor</div>
+                        <div class="emp-valor">R$ 3.000,00</div>
+                    </div>
+                    <div class="emp-status-col">
+                        <span class="status-pago">Pago</span>
+                        <div class="emp-data">Pago em 16/06/2024</div>
+                    </div>
+                    <i class="fas fa-chevron-right row-chevron"></i>
+                </div>
+
+                <div class="empresa-row">
+                    <div class="empresa-avatar" style="background:linear-gradient(135deg,#F59E0B,#D97706);">BR</div>
+                    <div class="emp-info">
+                        <div class="emp-name-row"><span class="emp-name">Brand Solutions</span></div>
+                        <div class="emp-tipo">Design e Branding</div>
+                    </div>
+                    <div class="emp-valor-col">
+                        <div class="emp-valor-label">Valor</div>
+                        <div class="emp-valor">R$ 2.500,00</div>
+                    </div>
+                    <div class="emp-status-col">
+                        <span class="status-pendente">Pendente</span>
+                        <div class="emp-data">Vence em 20/06/2024</div>
+                    </div>
+                    <i class="fas fa-chevron-right row-chevron"></i>
+                </div>
+
+                <div class="empresa-row">
+                    <div class="empresa-avatar" style="background:linear-gradient(135deg,#EF4444,#DC2626);">VB</div>
+                    <div class="emp-info">
+                        <div class="emp-name-row"><span class="emp-name">Vibe Comunicação</span></div>
+                        <div class="emp-tipo">Comunicação</div>
+                    </div>
+                    <div class="emp-valor-col">
+                        <div class="emp-valor-label">Valor</div>
+                        <div class="emp-valor">R$ 2.500,00</div>
+                    </div>
+                    <div class="emp-status-col">
+                        <span class="status-pendente">Pendente</span>
+                        <div class="emp-data">Vence em 20/06/2024</div>
+                    </div>
+                    <i class="fas fa-chevron-right row-chevron"></i>
+                </div>
+
+                <button class="btn-ver-todos">Ver todos os participantes <i class="fas fa-chevron-right" style="font-size:10px;"></i></button>
+
+                <!-- Resumo do rateio -->
+                <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border2);">
+                    <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Resumo do rateio</div>
+                    <div class="resumo-row">
+                        <div class="resumo-item">
+                            <div class="resumo-item-label">Empresas</div>
+                            <div class="resumo-item-val">4</div>
+                        </div>
+                        <div style="width:1px;height:36px;background:var(--border2);"></div>
+                        <div class="resumo-item">
+                            <div class="resumo-item-label">Valor total</div>
+                            <div class="resumo-item-val" style="color:var(--accent-light);">R$ 12.000</div>
+                        </div>
+                        <div style="width:1px;height:36px;background:var(--border2);"></div>
+                        <div class="resumo-item">
+                            <div class="resumo-item-label">Total pago</div>
+                            <div class="resumo-item-val" style="color:var(--green2);">R$ 5.400</div>
+                        </div>
+                        <div style="width:1px;height:36px;background:var(--border2);"></div>
+                        <div class="resumo-item">
+                            <div class="resumo-item-label">Pendente</div>
+                            <div class="resumo-item-val" style="color:var(--amber);">R$ 6.600</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coluna direita — Pagamento -->
+            <div style="display:flex;flex-direction:column;gap:16px;">
+                <div class="card">
+                    <div class="card-title" style="margin-bottom:14px;">Pagamento da sua parte</div>
+
+                    <div class="pag-label">Valor devido</div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                        <div class="pag-valor" style="margin-bottom:0;">R$ 4.000,00</div>
+                        <span class="status-pago">Pago</span>
+                    </div>
+                    <div style="font-size:12px;color:var(--text2);font-weight:500;margin-bottom:18px;">Pago em 15/06/2024 – 10:32</div>
+
+                    <div style="font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Escolha a forma de pagamento</div>
+
+                    <div class="metodo selected" onclick="selecionarMetodo(this)">
+                        <div class="metodo-icon pix">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6.5 2.5L2.5 6.5L6.5 10.5L10.5 6.5L6.5 2.5Z" fill="#00C4A3"/><path d="M17.5 2.5L13.5 6.5L17.5 10.5L21.5 6.5L17.5 2.5Z" fill="#00C4A3"/><path d="M6.5 13.5L2.5 17.5L6.5 21.5L10.5 17.5L6.5 13.5Z" fill="#00C4A3"/><path d="M17.5 13.5L13.5 17.5L17.5 21.5L21.5 17.5L17.5 13.5Z" fill="#00C4A3"/></svg>
+                        </div>
+                        <div class="metodo-info">
+                            <div class="metodo-nome">Pix</div>
+                            <div class="metodo-desc">Aprovação imediata</div>
+                        </div>
+                        <div class="radio checked"></div>
+                    </div>
+
+                    <div class="metodo" onclick="selecionarMetodo(this)">
+                        <div class="metodo-icon credit"><i class="fas fa-credit-card"></i></div>
+                        <div class="metodo-info">
+                            <div class="metodo-nome">Cartão de crédito</div>
+                            <div class="metodo-desc">Até 12x com juros</div>
+                            <div class="card-flags">
+                                <span class="flag visa">VISA</span>
+                                <span class="flag master">master</span>
+                                <span class="flag elo">elo</span>
+                                <span class="flag hiper">Hiper</span>
+                                <span class="flag amex">AMEX</span>
+                            </div>
+                        </div>
+                        <div class="radio"></div>
+                    </div>
+
+                    <div class="metodo" onclick="selecionarMetodo(this)">
+                        <div class="metodo-icon boleto"><i class="fas fa-barcode"></i></div>
+                        <div class="metodo-info">
+                            <div class="metodo-nome">Boleto bancário</div>
+                            <div class="metodo-desc">Compensação em até 2 dias úteis</div>
+                        </div>
+                        <div class="radio"></div>
+                    </div>
+
+                    <button class="btn-pagar"><i class="fas fa-lock"></i> Pagar agora</button>
+                    <div class="seguro-txt"><i class="fas fa-shield-halved"></i> Ambiente 100% seguro e criptografado</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Duas colunas inferiores -->
+        <div class="bottom-two-col animate d3">
+
+            <!-- Detalhes do rateio -->
+            <div style="display:flex;flex-direction:column;gap:16px;">
+                <div class="card">
+                    <div class="card-title" style="margin-bottom:16px;">Detalhes do rateio</div>
+                    <div class="det-row"><span class="det-label">Nome do rateio</span><span class="det-val">Compartilhamento de custos – Campanha de Marketing</span></div>
+                    <div class="det-row"><span class="det-label">Descrição</span><span class="det-val">Divisão dos custos da campanha de marketing digital realizada em junho/2024.</span></div>
+                    <div class="det-row"><span class="det-label">Criado por</span><span class="det-val">Agência Criativa</span></div>
+                    <div class="det-row"><span class="det-label">Data de criação</span><span class="det-val">10/06/2024 às 14:20</span></div>
+                    <div class="det-row"><span class="det-label">Prazo final</span><span class="det-val">20/06/2024</span></div>
+                    <div class="det-row"><span class="det-label">Categoria</span><span class="det-val"><span class="badge-categoria">Marketing</span></span></div>
+                </div>
+
+                <!-- Ações rápidas -->
+                <div class="card">
+                    <div class="card-title" style="margin-bottom:14px;">Ações rápidas</div>
+                    <div class="acao-row">
+                        <div class="acao-icon blue"><i class="fas fa-bell"></i></div>
+                        <div class="acao-info">
+                            <div class="acao-title">Lembrar empresas</div>
+                            <div class="acao-desc">Enviar lembrete de pagamento</div>
+                        </div>
+                        <i class="fas fa-chevron-right acao-chevron"></i>
+                    </div>
+                    <div class="acao-row">
+                        <div class="acao-icon green"><i class="fas fa-download"></i></div>
+                        <div class="acao-info">
+                            <div class="acao-title">Baixar comprovante</div>
+                            <div class="acao-desc">O comprovante ficará disponível aqui</div>
+                        </div>
+                        <i class="fas fa-chevron-right acao-chevron"></i>
+                    </div>
+                    <div class="acao-row">
+                        <div class="acao-icon red"><i class="fas fa-arrow-right-from-bracket"></i></div>
+                        <div class="acao-info">
+                            <div class="acao-title" style="color:var(--red);">Sair do rateio</div>
+                            <div class="acao-desc">Você não fará mais parte deste rateio</div>
+                        </div>
+                        <i class="fas fa-chevron-right acao-chevron"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Histórico de pagamentos -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Histórico de pagamentos</span>
+                    <span style="font-size:13px;font-weight:700;color:var(--accent-light);cursor:pointer;">Ver todos</span>
+                </div>
+
+                <div class="hist-item">
+                    <div class="hist-icon green"><i class="fas fa-check"></i></div>
+                    <div class="hist-desc">
+                        <div class="hist-title">Mídia Digital LTDA pagou via Pix</div>
+                        <div class="hist-sub" style="color:var(--green2);font-weight:700;">R$ 3.000,00</div>
+                    </div>
+                    <div class="hist-right">
+                        <div class="hist-data">16/06/2024</div>
+                        <div class="hist-hora">09:15</div>
+                    </div>
+                </div>
+
+                <div class="hist-item">
+                    <div class="hist-icon green"><i class="fas fa-check"></i></div>
+                    <div class="hist-desc">
+                        <div class="hist-title">Vibe Comunicação pagou via Cartão</div>
+                        <div class="hist-sub" style="color:var(--green2);font-weight:700;">R$ 2.500,00</div>
+                    </div>
+                    <div class="hist-right">
+                        <div class="hist-data">16/06/2024</div>
+                        <div class="hist-hora">11:32</div>
+                    </div>
+                </div>
+
+                <div class="hist-item">
+                    <div class="hist-icon amber"><i class="fas fa-clock"></i></div>
+                    <div class="hist-desc">
+                        <div class="hist-title">Aguardando seu pagamento</div>
+                        <div class="hist-sub">R$ 4.000,00</div>
+                    </div>
+                    <div class="hist-right">
+                        <div class="hist-data" style="color:var(--amber);">Pendente</div>
+                    </div>
+                </div>
+
+                <div class="hist-item">
+                    <div class="hist-icon amber"><i class="fas fa-clock"></i></div>
+                    <div class="hist-desc">
+                        <div class="hist-title">Brand Solutions ainda não pagou</div>
+                        <div class="hist-sub">R$ 2.500,00</div>
+                    </div>
+                    <div class="hist-right">
+                        <div class="hist-data" style="color:var(--amber);">Pendente</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /content -->
+</main>
+
+<!-- Bottom nav mobile -->
+<nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+        <div class="bn-item"><i class="fas fa-home"></i><span>Início</span></div>
+        <div class="bn-item active"><i class="fas fa-layer-group"></i><span>Rateios</span></div>
+        <div class="bn-item"><div class="bn-plus"><i class="fas fa-plus"></i></div></div>
+        <div class="bn-item"><i class="fas fa-wallet"></i><span>Carteira</span></div>
+        <div class="bn-item"><i class="fas fa-user"></i><span>Perfil</span></div>
+    </div>
+</nav>
+
+<!-- Modal convidar empresa -->
+<div id="modalConvite" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:50;align-items:flex-end;justify-content:center;" onclick="fecharModalConvite(event)">
+    <div style="background:var(--surface);border-radius:24px 24px 0 0;padding:24px 20px 40px;width:100%;max-width:480px;border:1px solid var(--border);border-bottom:none;animation:slideUp 0.3s ease;">
+        <div style="width:36px;height:4px;background:var(--border);border-radius:99px;margin:0 auto 20px;"></div>
+        <div style="text-align:center;margin-bottom:20px;">
+            <div style="width:60px;height:60px;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:22px;color:var(--accent-light);"><i class="fas fa-building"></i></div>
+            <div style="font-size:18px;font-weight:800;letter-spacing:-0.3px;margin-bottom:4px;">Convidar empresa</div>
+            <div style="font-size:13px;color:var(--text2);font-weight:500;">Compartilhe o link ou busque pelo CNPJ</div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:16px;">
+            <div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Link do convite</div>
+            <div style="display:flex;align-items:center;gap:10px;background:var(--surface3);border:1px solid var(--border);border-radius:10px;padding:11px 14px;cursor:pointer;" onclick="copiarLink()">
+                <i class="fas fa-link" style="color:var(--accent-light);flex-shrink:0;"></i>
+                <span style="flex:1;font-size:12px;font-weight:600;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">pague-junto.web.app/convite/rat-2024-001</span>
+                <span id="copiadoBadge" style="display:none;background:rgba(16,185,129,0.1);color:var(--green2);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;flex-shrink:0;">Copiado!</span>
+                <i class="fas fa-copy" style="color:var(--text3);flex-shrink:0;"></i>
+            </div>
+        </div>
+        <button style="width:100%;background:#10B981;color:#fff;font-size:15px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;padding:16px;border-radius:12px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;" onclick="fecharModalConvite({target:document.getElementById('modalConvite')})">
+            <i class="fab fa-whatsapp" style="font-size:18px;"></i> Enviar pelo WhatsApp
+        </button>
+        <button style="width:100%;background:transparent;color:var(--text2);font-size:14px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;padding:14px;border-radius:12px;border:1px solid var(--border);cursor:pointer;" onclick="fecharModalConvite({target:document.getElementById('modalConvite')})">
+            Buscar empresa por CNPJ
+        </button>
+    </div>
+</div>
+
+<style>
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+</style>
+
+<script>
+    function selecionarMetodo(el) {
+        document.querySelectorAll('.metodo').forEach(m => {
+            m.classList.remove('selected');
+            m.querySelector('.radio').classList.remove('checked');
+            m.querySelector('.radio').innerHTML = '';
+        });
+        el.classList.add('selected');
+        el.querySelector('.radio').classList.add('checked');
+    }
+
+    function abrirModalConvite() {
+        const m = document.getElementById('modalConvite');
+        m.style.display = 'flex';
+    }
+    function fecharModalConvite(e) {
+        const m = document.getElementById('modalConvite');
+        if (e.target === m) m.style.display = 'none';
+    }
+    function copiarLink() {
+        const b = document.getElementById('copiadoBadge');
+        b.style.display = 'inline-block';
+        setTimeout(() => b.style.display = 'none', 2000);
+    }
+</script>
+</body>
+</html>

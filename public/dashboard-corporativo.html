@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carteira Corporativa - Pague Junto</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #070C18;
+            --sidebar: #0B1120;
+            --surface: #0E1829;
+            --surface2: #131F35;
+            --surface3: #1A2845;
+            --border: #1A2B45;
+            --border2: #0F1E36;
+            --text: #EEF2FF;
+            --text2: #7A93BF;
+            --text3: #3D567A;
+            --accent: #2563EB;
+            --accent2: #3B82F6;
+            --accent-light: #60A5FA;
+            --green: #10B981;
+            --green2: #34D399;
+            --amber: #F59E0B;
+            --red: #EF4444;
+            --purple: #8B5CF6;
+        }
+
+        body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+
+        /* ════════ SIDEBAR ════════ */
+        .sidebar {
+            width: 220px;
+            min-height: 100vh;
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            z-index: 30;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-logo {
+            display: flex; align-items: center; gap: 10px;
+            padding: 20px 18px 18px;
+            border-bottom: 1px solid var(--border2);
+        }
+        .logo-mark {
+            width: 34px; height: 34px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 900; color: #fff;
+            flex-shrink: 0;
+        }
+        .logo-text { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
+        .logo-text span { color: var(--accent-light); }
+
+        .sidebar-section-label {
+            font-size: 10px; font-weight: 800;
+            color: var(--text3);
+            text-transform: uppercase; letter-spacing: 0.1em;
+            padding: 18px 18px 8px;
+        }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 11px;
+            padding: 10px 16px;
+            margin: 0 8px 2px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px; font-weight: 600;
+            color: var(--text2);
+            transition: all 0.2s;
+            position: relative;
+            text-decoration: none;
+        }
+        .nav-item:hover { background: var(--surface2); color: var(--text); }
+        .nav-item.active { background: rgba(37,99,235,0.15); color: var(--accent-light); font-weight: 700; }
+        .nav-item.active i { color: var(--accent2); }
+        .nav-item i { width: 18px; text-align: center; font-size: 15px; color: var(--text3); transition: color 0.2s; }
+        .nav-item:hover i { color: var(--text2); }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--accent);
+            color: #fff; font-size: 10px; font-weight: 800;
+            padding: 2px 7px; border-radius: 20px;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding: 16px;
+            border-top: 1px solid var(--border2);
+        }
+        .company-card {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .company-card:hover { background: var(--surface3); }
+        .company-avatar {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 800; color: #fff;
+            margin-bottom: 8px;
+        }
+        .company-name { font-size: 13px; font-weight: 800; margin-bottom: 2px; }
+        .company-type { font-size: 11px; color: var(--text3); font-weight: 600; margin-bottom: 8px; }
+        .company-link { font-size: 12px; color: var(--accent-light); font-weight: 700; display: flex; align-items: center; gap: 4px; }
+
+        .sidebar-help {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 14px; padding: 14px;
+            margin-bottom: 12px;
+        }
+        .help-visual { font-size: 36px; margin-bottom: 8px; }
+        .help-title { font-size: 13px; font-weight: 800; margin-bottom: 4px; line-height: 1.3; }
+        .help-desc { font-size: 11px; color: var(--text2); font-weight: 500; margin-bottom: 12px; line-height: 1.4; }
+        .btn-help {
+            width: 100%; background: var(--accent); color: #fff;
+            font-size: 12px; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 10px; border-radius: 10px; border: none;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
+            transition: background 0.2s;
+        }
+        .btn-help:hover { background: #1d4ed8; }
+
+        /* ════════ MAIN ════════ */
+        .main {
+            margin-left: 220px;
+            flex: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 28px;
+            border-bottom: 1px solid var(--border2);
+            background: rgba(7,12,24,0.8);
+            backdrop-filter: blur(12px);
+            position: sticky; top: 0; z-index: 20;
+        }
+        .topbar-title { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+        .topbar-sub { font-size: 13px; color: var(--text2); font-weight: 500; margin-top: 2px; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        .top-btn {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: var(--text2); font-size: 15px;
+            transition: all 0.2s; position: relative;
+        }
+        .top-btn:hover { background: var(--surface2); color: var(--text); }
+        .notif-dot {
+            position: absolute; top: 2px; right: 2px;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: var(--red); color: #fff;
+            font-size: 9px; font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid var(--bg);
+        }
+        .user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 6px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); transition: background 0.2s; }
+        .user-info:hover { background: var(--surface2); }
+        .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #4F46E5, #7C3AED); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; overflow: hidden; }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 13px; font-weight: 700; }
+        .user-role { font-size: 11px; color: var(--text2); font-weight: 500; }
+
+        /* ════════ CONTENT ════════ */
+        .content { padding: 24px 28px; flex: 1; }
+
+        /* Saldo card */
+        .saldo-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 22px 24px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 20px;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .saldo-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse 60% 80% at 0% 50%, rgba(37,99,235,0.06) 0%, transparent 65%);
+            pointer-events: none;
+        }
+        .saldo-label { font-size: 12px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+        .saldo-valor { font-size: 36px; font-weight: 800; color: var(--green2); letter-spacing: -1px; margin-bottom: 10px; }
+        .saldo-bar-wrap { display: flex; align-items: center; gap: 12px; }
+        .saldo-bar { flex: 1; background: var(--border); border-radius: 99px; height: 6px; overflow: hidden; }
+        .saldo-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); border-radius: 99px; }
+        .saldo-pct { font-size: 12px; font-weight: 700; color: var(--text2); white-space: nowrap; }
+        .saldo-total { font-size: 12px; font-weight: 600; color: var(--text3); margin-top: 4px; }
+
+        .liberacao-box {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 14px; padding: 16px 18px;
+            min-width: 220px;
+        }
+        .lib-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .lib-title { font-size: 12px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; }
+        .lib-badge { background: rgba(16,185,129,0.12); color: var(--green2); font-size: 10px; font-weight: 800; padding: 3px 9px; border-radius: 20px; border: 1px solid rgba(16,185,129,0.2); display: flex; align-items: center; gap: 5px; }
+        .lib-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+        .lib-id { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+        .lib-date { font-size: 12px; color: var(--text2); font-weight: 500; display: flex; align-items: center; gap: 6px; }
+
+        /* Ações rápidas */
+        .section-title { font-size: 16px; font-weight: 800; margin-bottom: 14px; letter-spacing: -0.2px; }
+
+        .acoes-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .acao-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .acao-card:hover { background: var(--surface2); border-color: var(--border); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+        .acao-icon {
+            width: 52px; height: 52px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 12px; font-size: 22px;
+        }
+        .acao-icon.blue { background: rgba(37,99,235,0.15); color: var(--accent2); }
+        .acao-icon.green { background: rgba(16,185,129,0.12); color: var(--green2); }
+        .acao-icon.purple { background: rgba(139,92,246,0.12); color: #A78BFA; }
+        .acao-icon.amber { background: rgba(245,158,11,0.12); color: var(--amber); }
+        .acao-title { font-size: 13px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.1px; }
+        .acao-desc { font-size: 11px; color: var(--text2); font-weight: 500; line-height: 1.4; }
+
+        /* Resumo */
+        .resumo-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .resumo-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px; padding: 16px 18px;
+            transition: background 0.2s;
+        }
+        .resumo-card:hover { background: var(--surface2); }
+        .resumo-icon-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .resumo-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .resumo-icon.blue { background: rgba(37,99,235,0.12); color: var(--accent2); }
+        .resumo-icon.green { background: rgba(16,185,129,0.1); color: var(--green2); }
+        .resumo-icon.amber { background: rgba(245,158,11,0.1); color: var(--amber); }
+        .resumo-icon.purple { background: rgba(139,92,246,0.1); color: #A78BFA; }
+        .resumo-label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+        .resumo-valor { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 2px; }
+        .resumo-sub { font-size: 11px; color: var(--text3); font-weight: 600; }
+
+        /* Tabela */
+        .table-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .table-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border2);
+        }
+        .ver-todos { font-size: 13px; font-weight: 700; color: var(--accent-light); cursor: pointer; }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead th {
+            padding: 12px 22px;
+            font-size: 11px; font-weight: 700;
+            color: var(--text3);
+            text-transform: uppercase; letter-spacing: 0.07em;
+            text-align: left;
+            border-bottom: 1px solid var(--border2);
+            background: var(--surface2);
+        }
+        tbody tr {
+            border-bottom: 1px solid var(--border2);
+            transition: background 0.15s;
+            cursor: pointer;
+        }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: var(--surface2); }
+        tbody td { padding: 14px 22px; font-size: 13px; vertical-align: middle; }
+
+        .gasto-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; flex-shrink: 0;
+        }
+        .gasto-desc { font-weight: 700; font-size: 13px; }
+        .gasto-sub { font-size: 11px; color: var(--text2); font-weight: 500; margin-top: 2px; }
+        .gasto-data { font-size: 12px; font-weight: 600; color: var(--text2); }
+        .gasto-hora { font-size: 11px; color: var(--text3); font-weight: 500; margin-top: 2px; }
+
+        .cat-badge {
+            display: inline-block;
+            font-size: 11px; font-weight: 700;
+            padding: 3px 10px; border-radius: 20px;
+        }
+        .cat-alimentacao { background: rgba(16,185,129,0.1); color: var(--green2); border: 1px solid rgba(16,185,129,0.2); }
+        .cat-transporte { background: rgba(37,99,235,0.1); color: var(--accent-light); border: 1px solid rgba(37,99,235,0.2); }
+        .cat-material { background: rgba(139,92,246,0.1); color: #A78BFA; border: 1px solid rgba(139,92,246,0.2); }
+
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 11px; font-weight: 700;
+            padding: 3px 10px; border-radius: 20px;
+        }
+        .status-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+        .status-aprovado { background: rgba(16,185,129,0.08); color: var(--green2); border: 1px solid rgba(16,185,129,0.15); }
+        .status-aprovado::before { background: var(--green); }
+        .status-pendente { background: rgba(245,158,11,0.08); color: var(--amber); border: 1px solid rgba(245,158,11,0.15); }
+        .status-pendente::before { background: var(--amber); }
+
+        .gasto-valor { font-size: 14px; font-weight: 800; }
+        .row-arrow { color: var(--text3); font-size: 11px; }
+
+        /* Informações importantes */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .info-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px; padding: 18px;
+            display: flex; align-items: flex-start; gap: 14px;
+        }
+        .info-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .info-icon.blue { background: rgba(37,99,235,0.1); color: var(--accent2); }
+        .info-icon.green { background: rgba(16,185,129,0.1); color: var(--green2); }
+        .info-icon.amber { background: rgba(245,158,11,0.1); color: var(--amber); }
+        .info-title { font-size: 13px; font-weight: 800; margin-bottom: 4px; }
+        .info-desc { font-size: 12px; color: var(--text2); font-weight: 500; line-height: 1.4; }
+
+        /* ════════ BOTTOM NAV (mobile) ════════ */
+        .bottom-nav {
+            display: none;
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(11,17,32,0.97);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border);
+            padding: 10px 0 20px;
+            z-index: 40;
+        }
+        .bottom-nav-inner { display: flex; justify-content: space-around; align-items: center; }
+        .bn-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px 16px; border-radius: 10px; }
+        .bn-item i { font-size: 20px; }
+        .bn-item span { font-size: 10px; font-weight: 700; }
+        .bn-item.active { color: var(--accent-light); }
+        .bn-item:not(.active) { color: var(--text3); }
+        .bn-plus {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; color: #fff;
+            box-shadow: 0 6px 20px rgba(37,99,235,0.4);
+            margin-top: -18px;
+        }
+
+        /* Modal registrar gasto */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 50; display: none;
+            align-items: flex-end; justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: var(--surface);
+            border-radius: 24px 24px 0 0;
+            padding: 24px 20px 40px;
+            width: 100%; max-width: 480px;
+            border: 1px solid var(--border); border-bottom: none;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 99px; margin: 0 auto 20px; }
+
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 7px; }
+        .field input, .field select {
+            width: 100%; background: var(--surface2);
+            border: 1.5px solid var(--border); border-radius: 12px;
+            padding: 13px 16px; font-size: 14px; font-weight: 600;
+            color: var(--text); outline: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: border-color 0.2s, background 0.2s;
+            -webkit-appearance: none;
+        }
+        .field input::placeholder { color: var(--text3); font-weight: 500; }
+        .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%233D567A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; cursor: pointer; }
+        .field select option { background: var(--surface2); }
+        .field input:focus, .field select:focus { border-color: var(--accent2); background: var(--surface3); }
+        .btn-modal-primary {
+            width: 100%; background: var(--accent); color: #fff;
+            font-size: 15px; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 16px; border-radius: 12px; border: none;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .btn-modal-primary:hover { background: #1d4ed8; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .bottom-nav { display: block; }
+            .content { padding-bottom: 90px; }
+            .acoes-grid { grid-template-columns: repeat(2, 1fr); }
+            .resumo-grid { grid-template-columns: repeat(2, 1fr); }
+            .info-grid { grid-template-columns: 1fr; }
+            .saldo-card { grid-template-columns: 1fr; }
+            .liberacao-box { min-width: unset; }
+        }
+        @media (max-width: 600px) {
+            .topbar { padding: 12px 16px; }
+            .content { padding: 16px; }
+            .topbar-title { font-size: 18px; }
+            .topbar-sub { display: none; }
+            .user-name, .user-role { display: none; }
+            table { display: none; }
+            .cards-mobile { display: block; }
+        }
+
+        /* Animation */
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .animate { animation: fadeUp 0.4s ease both; }
+        .delay-1 { animation-delay: 0.05s; }
+        .delay-2 { animation-delay: 0.1s; }
+        .delay-3 { animation-delay: 0.15s; }
+        .delay-4 { animation-delay: 0.2s; }
+    </style>
+</head>
+<body>
+
+<!-- ════════ SIDEBAR ════════ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <img src="logo.png" alt="Pague Junto" style="height:32px;width:auto;object-fit:contain;">
+    </div>
+
+    <div class="sidebar-section-label">Principal</div>
+    <a href="dashboard.html" class="nav-item">
+        <i class="fas fa-home"></i> Início
+    </a>
+    <a href="dashboard.html" class="nav-item">
+        <i class="fas fa-layer-group"></i> Meus rateios
+    </a>
+    <a href="dashboard-corporativo.html" class="nav-item active">
+        <i class="fas fa-wallet"></i> Carteira corporativa
+    </a>
+    <a href="buscar-empresas.html" class="nav-item">
+        <i class="fas fa-grid-2"></i> Empresas
+    </a>
+    <a href="rateio-empresas.html" class="nav-item">
+        <i class="fas fa-credit-card"></i> Pagamentos
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-chart-bar"></i> Relatórios
+    </a>
+
+    <div class="sidebar-section-label">Outros</div>
+    <a href="notificacoes.html" class="nav-item">
+        <i class="fas fa-bell"></i> Notificações
+        <span class="nav-badge">3</span>
+    </a>
+    <a href="perfil.html" class="nav-item">
+        <i class="fas fa-gear"></i> Configurações
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-circle-question"></i> Ajuda
+    </a>
+
+    <div class="sidebar-bottom">
+        <div class="company-card">
+            <div class="company-avatar">AC</div>
+            <div class="company-name">Agência Criativa</div>
+            <div class="company-type">Empresa</div>
+            <div class="company-link">Ver perfil da empresa <i class="fas fa-chevron-right" style="font-size:10px;"></i></div>
+        </div>
+
+        <div class="sidebar-help">
+            <div class="help-visual">💼</div>
+            <div class="help-title">Dúvidas sobre sua liberação de valores?</div>
+            <div class="help-desc">Fale com o responsável financeiro da empresa.</div>
+            <button class="btn-help"><i class="fas fa-headset"></i> Entrar em contato</button>
+        </div>
+    </div>
+</aside>
+
+<!-- ════════ MAIN ════════ -->
+<main class="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <div>
+            <div class="topbar-title">Carteira Corporativa</div>
+            <div class="topbar-sub">Use os valores liberados pela empresa e registre seus gastos.</div>
+        </div>
+        <div class="topbar-right">
+            <button class="top-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars" id="menuIcon"></i>
+            </button>
+            <button class="top-btn">
+                <i class="fas fa-bell"></i>
+                <div class="notif-dot">3</div>
+            </button>
+            <div class="user-info">
+                <div class="user-avatar">J</div>
+                <div>
+                    <div class="user-name">Olá, João</div>
+                    <div class="user-role">Funcionário</div>
+                </div>
+                <i class="fas fa-chevron-down" style="font-size:11px;color:var(--text3);margin-left:4px;"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content">
+
+        <!-- Saldo card -->
+        <div class="saldo-card animate">
+            <div>
+                <div class="saldo-label">Saldo disponível</div>
+                <div class="saldo-valor">R$ 400,00</div>
+                <div class="saldo-bar-wrap">
+                    <div class="saldo-bar">
+                        <div class="saldo-bar-fill" style="width:60%;"></div>
+                    </div>
+                    <span class="saldo-pct">60% utilizado</span>
+                </div>
+                <div class="saldo-total">de R$ 1.000,00 liberados</div>
+            </div>
+            <div class="liberacao-box">
+                <div class="lib-header">
+                    <span class="lib-title">Liberação ativa</span>
+                    <span class="lib-badge">Ativa</span>
+                </div>
+                <div class="lib-id">Liberação #LIB-2024-0007</div>
+                <div class="lib-date">
+                    <i class="fas fa-calendar-alt" style="font-size:11px;color:var(--text3);"></i>
+                    Válida até 20/06/2024
+                </div>
+            </div>
+        </div>
+
+        <!-- Ações rápidas -->
+        <div class="section-title animate delay-1">Ações rápidas</div>
+        <div class="acoes-grid animate delay-1">
+            <div class="acao-card" onclick="abrirModal()">
+                <div class="acao-icon blue"><i class="fas fa-file-invoice"></i></div>
+                <div class="acao-title">Registrar gasto</div>
+                <div class="acao-desc">Adicione um novo gasto à liberação</div>
+            </div>
+            <div class="acao-card">
+                <div class="acao-icon green"><i class="fas fa-camera"></i></div>
+                <div class="acao-title">Enviar comprovante</div>
+                <div class="acao-desc">Anexe comprovantes de gastos realizados</div>
+            </div>
+            <div class="acao-card">
+                <div class="acao-icon purple"><i class="fas fa-chart-pie"></i></div>
+                <div class="acao-title">Ver extrato</div>
+                <div class="acao-desc">Consulte todos os gastos e saldos</div>
+            </div>
+            <div class="acao-card">
+                <div class="acao-icon amber"><i class="fas fa-circle-info"></i></div>
+                <div class="acao-title">Sobre a liberação</div>
+                <div class="acao-desc">Veja regras e orientações de uso do valor</div>
+            </div>
+        </div>
+
+        <!-- Resumo liberação -->
+        <div class="section-title animate delay-2">Resumo da liberação</div>
+        <div class="resumo-grid animate delay-2">
+            <div class="resumo-card">
+                <div class="resumo-icon-wrap">
+                    <div class="resumo-icon blue"><i class="fas fa-wallet"></i></div>
+                    <span class="resumo-label">Valor liberado</span>
+                </div>
+                <div class="resumo-valor">R$ 1.000,00</div>
+                <div class="resumo-sub">100% — Total do crédito</div>
+            </div>
+            <div class="resumo-card">
+                <div class="resumo-icon-wrap">
+                    <div class="resumo-icon green"><i class="fas fa-circle-check"></i></div>
+                    <span class="resumo-label">Total utilizado</span>
+                </div>
+                <div class="resumo-valor" style="color:var(--green2);">R$ 600,00</div>
+                <div class="resumo-sub">60% — Já recebido</div>
+            </div>
+            <div class="resumo-card">
+                <div class="resumo-icon-wrap">
+                    <div class="resumo-icon amber"><i class="fas fa-clock"></i></div>
+                    <span class="resumo-label">Saldo disponível</span>
+                </div>
+                <div class="resumo-valor" style="color:var(--green2);">R$ 400,00</div>
+                <div class="resumo-sub">40% — A utilizar</div>
+            </div>
+            <div class="resumo-card">
+                <div class="resumo-icon-wrap">
+                    <div class="resumo-icon purple"><i class="fas fa-calendar-days"></i></div>
+                    <span class="resumo-label">Válido até</span>
+                </div>
+                <div class="resumo-valor" style="font-size:18px;">20/06/2024</div>
+                <div class="resumo-sub">em 12 dias</div>
+            </div>
+        </div>
+
+        <!-- Gastos recentes -->
+        <div class="table-card animate delay-3">
+            <div class="table-header">
+                <span class="section-title" style="margin-bottom:0;">Gastos recentes</span>
+                <span class="ver-todos">Ver todos</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Descrição</th>
+                        <th>Categoria</th>
+                        <th>Valor</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="gasto-data">08/06/2024</div>
+                            <div class="gasto-hora">14:32</div>
+                        </td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div class="gasto-icon" style="background:rgba(16,185,129,0.1);">🍽️</div>
+                                <div>
+                                    <div class="gasto-desc">Almoço com cliente</div>
+                                    <div class="gasto-sub">Restaurante Garota de Ipanema</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="cat-badge cat-alimentacao">Alimentação</span></td>
+                        <td><span class="gasto-valor">R$ 120,00</span></td>
+                        <td><span class="status-badge status-aprovado">Aprovado</span></td>
+                        <td><i class="fas fa-chevron-right row-arrow"></i></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="gasto-data">07/06/2024</div>
+                            <div class="gasto-hora">09:15</div>
+                        </td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div class="gasto-icon" style="background:rgba(37,99,235,0.1);">🚗</div>
+                                <div>
+                                    <div class="gasto-desc">Uber – Reunião externa</div>
+                                    <div class="gasto-sub">Corrida para o cliente</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="cat-badge cat-transporte">Transporte</span></td>
+                        <td><span class="gasto-valor">R$ 45,00</span></td>
+                        <td><span class="status-badge status-aprovado">Aprovado</span></td>
+                        <td><i class="fas fa-chevron-right row-arrow"></i></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="gasto-data">06/06/2024</div>
+                            <div class="gasto-hora">16:45</div>
+                        </td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div class="gasto-icon" style="background:rgba(139,92,246,0.1);">📦</div>
+                                <div>
+                                    <div class="gasto-desc">Material de escritório</div>
+                                    <div class="gasto-sub">Papelaria Universitária</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="cat-badge cat-material">Material</span></td>
+                        <td><span class="gasto-valor">R$ 80,00</span></td>
+                        <td><span class="status-badge status-aprovado">Aprovado</span></td>
+                        <td><i class="fas fa-chevron-right row-arrow"></i></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="gasto-data">05/06/2024</div>
+                            <div class="gasto-hora">11:20</div>
+                        </td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div class="gasto-icon" style="background:rgba(16,185,129,0.1);">☕</div>
+                                <div>
+                                    <div class="gasto-desc">Café com cliente</div>
+                                    <div class="gasto-sub">Starbucks – Paulista</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="cat-badge cat-alimentacao">Alimentação</span></td>
+                        <td><span class="gasto-valor">R$ 35,00</span></td>
+                        <td><span class="status-badge status-pendente">Pendente</span></td>
+                        <td><i class="fas fa-chevron-right row-arrow"></i></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="gasto-data">04/06/2024</div>
+                            <div class="gasto-hora">15:10</div>
+                        </td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div class="gasto-icon" style="background:rgba(37,99,235,0.1);">🅿️</div>
+                                <div>
+                                    <div class="gasto-desc">Estacionamento</div>
+                                    <div class="gasto-sub">Shopping Eldorado</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="cat-badge cat-transporte">Transporte</span></td>
+                        <td><span class="gasto-valor">R$ 20,00</span></td>
+                        <td><span class="status-badge status-aprovado">Aprovado</span></td>
+                        <td><i class="fas fa-chevron-right row-arrow"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Informações importantes -->
+        <div class="section-title animate delay-4">Informações importantes</div>
+        <div class="info-grid animate delay-4">
+            <div class="info-card">
+                <div class="info-icon blue"><i class="fas fa-shield-halved"></i></div>
+                <div>
+                    <div class="info-title">Use o valor com responsabilidade</div>
+                    <div class="info-desc">Todos os gastos são monitorados pela empresa.</div>
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="info-icon green"><i class="fas fa-file-lines"></i></div>
+                <div>
+                    <div class="info-title">Envie seus comprovantes</div>
+                    <div class="info-desc">Anexe os comprovantes para aprovação dos gastos.</div>
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="info-icon amber"><i class="fas fa-clock"></i></div>
+                <div>
+                    <div class="info-title">Fique atento ao prazo de validade</div>
+                    <div class="info-desc">Gastos após o vencimento podem ser recusados.</div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /content -->
+</main>
+
+<!-- Bottom nav mobile -->
+<nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+        <div class="bn-item"><i class="fas fa-home"></i><span>Início</span></div>
+        <div class="bn-item"><i class="fas fa-layer-group"></i><span>Rateios</span></div>
+        <div class="bn-item" onclick="abrirModal()">
+            <div class="bn-plus"><i class="fas fa-plus"></i></div>
+        </div>
+        <div class="bn-item active"><i class="fas fa-wallet"></i><span>Carteira</span></div>
+        <div class="bn-item"><i class="fas fa-user"></i><span>Perfil</span></div>
+    </div>
+</nav>
+
+<!-- Modal Registrar Gasto -->
+<div class="modal-overlay" id="modalGasto" onclick="fecharModal(event)">
+    <div class="modal">
+        <div class="modal-handle"></div>
+        <div style="font-size:17px;font-weight:800;margin-bottom:4px;letter-spacing:-0.3px;">Registrar gasto</div>
+        <div style="font-size:13px;color:var(--text2);font-weight:500;margin-bottom:20px;">Liberação #LIB-2024-0007 · Saldo R$ 400,00</div>
+
+        <div class="field">
+            <label>Descrição do gasto</label>
+            <input type="text" placeholder="Ex.: Almoço com cliente">
+        </div>
+        <div class="field">
+            <label>Valor (R$)</label>
+            <input type="number" placeholder="0,00" min="0" step="0.01">
+        </div>
+        <div class="field">
+            <label>Categoria</label>
+            <select>
+                <option value="" disabled selected>Selecione</option>
+                <option>Alimentação</option>
+                <option>Transporte</option>
+                <option>Material</option>
+                <option>Hospedagem</option>
+                <option>Outros</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Comprovante (opcional)</label>
+            <div style="background:var(--surface2);border:2px dashed var(--border);border-radius:12px;padding:16px;text-align:center;cursor:pointer;">
+                <i class="fas fa-cloud-upload-alt" style="font-size:20px;color:var(--text3);margin-bottom:6px;display:block;"></i>
+                <div style="font-size:12px;font-weight:600;color:var(--text2);">Toque para anexar foto ou PDF</div>
+            </div>
+        </div>
+        <button class="btn-modal-primary" onclick="document.getElementById('modalGasto').classList.remove('open')">
+            <i class="fas fa-plus"></i> Registrar gasto
+        </button>
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+    }
+    function abrirModal() {
+        document.getElementById('modalGasto').classList.add('open');
+    }
+    function fecharModal(e) {
+        if (e.target === document.getElementById('modalGasto'))
+            document.getElementById('modalGasto').classList.remove('open');
+    }
+</script>
+</body>
+</html>

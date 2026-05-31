@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pague Junto - Início</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Nunito', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #060D1F;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            overflow-x: hidden;
+        }
+
+        .bg-glow {
+            position: fixed; inset: 0;
+            background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,80,255,0.35) 0%, transparent 70%),
+                        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,40,180,0.18) 0%, transparent 60%);
+            pointer-events: none; z-index: 0;
+        }
+
+        .container {
+            position: relative; z-index: 1;
+            width: 100%; max-width: 400px;
+            display: flex; flex-direction: column;
+            align-items: center;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .logo-area img {
+            width: 280px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .tagline {
+            font-size: 22px; font-weight: 800;
+            color: #fff; text-align: center; line-height: 1.5;
+            margin-bottom: 36px;
+        }
+        .tagline span { color: #3B82F6; }
+
+        /* Steps */
+        .steps {
+            display: flex; align-items: flex-start;
+            justify-content: center; width: 100%;
+            margin-bottom: 44px;
+        }
+        .step {
+            display: flex; flex-direction: column;
+            align-items: center; gap: 8px; flex: 1;
+        }
+        .step-icon {
+            width: 52px; height: 52px;
+            border: 2px solid rgba(59,130,246,0.5);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #3B82F6; font-size: 20px;
+        }
+        .step span {
+            font-size: 11px; font-weight: 800;
+            color: rgba(255,255,255,0.6);
+            text-align: center; line-height: 1.3;
+        }
+        .step-divider {
+            flex: 0 0 24px; display: flex;
+            align-items: center; padding-top: 26px;
+        }
+        .step-divider::before {
+            content: ''; width: 100%;
+            border-top: 2px dashed rgba(59,130,246,0.35);
+        }
+
+        /* Botões principais */
+        .btn-solid {
+            width: 100%; background: #2563EB; color: #fff;
+            font-size: 17px; font-weight: 900;
+            font-family: 'Nunito', sans-serif;
+            padding: 19px; border-radius: 16px; border: none;
+            cursor: pointer; margin-bottom: 14px;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn-solid:hover { background: #1d4ed8; }
+        .btn-solid:active { transform: scale(0.98); }
+
+        .btn-outline {
+            width: 100%; background: transparent; color: #3B82F6;
+            font-size: 17px; font-weight: 900;
+            font-family: 'Nunito', sans-serif;
+            padding: 18px; border-radius: 16px;
+            border: 2px solid rgba(59,130,246,0.5);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-bottom: 28px;
+            transition: border-color 0.2s, background 0.2s, transform 0.1s;
+        }
+        .btn-outline:hover { border-color: #3B82F6; background: rgba(59,130,246,0.08); }
+        .btn-outline:active { transform: scale(0.98); }
+
+        /* Social — só Google */
+        .social-label {
+            font-size: 12px; font-weight: 800;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase; letter-spacing: 0.1em;
+            margin-bottom: 16px; text-align: center;
+        }
+        .social-btn {
+            width: 58px; height: 58px; border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.15);
+            background: #fff;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; margin-bottom: 28px;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .social-btn:hover { background: #f0f0f0; transform: scale(1.05); }
+        .social-btn img { width: 26px; }
+
+        /* Footer segurança */
+        .security-box {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            display: flex;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .security-item {
+            flex: 1;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; padding: 14px 10px;
+        }
+        .security-item:first-child {
+            border-right: 1px solid rgba(255,255,255,0.08);
+        }
+        .security-item i { color: #3B82F6; font-size: 18px; flex-shrink: 0; }
+        .security-item span {
+            font-size: 10px; font-weight: 800;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase; line-height: 1.3;
+        }
+
+        /* Saiba mais */
+        .saiba-mais {
+            font-size: 14px; font-weight: 700;
+            color: rgba(255,255,255,0.5);
+            text-align: center; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            text-decoration: none;
+        }
+        .saiba-mais span { color: #3B82F6; font-weight: 900; }
+        .saiba-mais i { color: #3B82F6; font-size: 13px; }
+        .saiba-mais:hover { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+
+    <div class="container">
+
+        <!-- Logo grande -->
+        <div class="logo-area">
+            <img src="logo.png" alt="Pague Junto">
+        </div>
+
+        <!-- Tagline -->
+        <p class="tagline">
+            Juntar ficou <span>simples.</span><br>
+            Pagar ficou <span>fácil.</span>
+        </p>
+
+        <!-- Passos -->
+        <div class="steps">
+            <div class="step">
+                <div class="step-icon"><i class="fas fa-users"></i></div>
+                <span>Crie um rateio</span>
+            </div>
+            <div class="step-divider"></div>
+            <div class="step">
+                <div class="step-icon"><i class="fas fa-link"></i></div>
+                <span>Convide amigos</span>
+            </div>
+            <div class="step-divider"></div>
+            <div class="step">
+                <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                <span>Acompanhe e pague</span>
+            </div>
+        </div>
+
+        <!-- Botões principais -->
+        <button class="btn-solid" onclick="window.location.href='login.html'">
+            Entrar na minha conta
+        </button>
+        <button class="btn-outline" onclick="window.location.href='cadastro.html'">
+            <i class="fas fa-user-plus"></i> Criar minha conta
+        </button>
+
+        <!-- Só Google - LINK CORRIGIDO AQUI -->
+        <p class="social-label">ou continue com</p>
+        <button class="social-btn" onclick="window.location.href='login.html'">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+        </button>
+
+        <!-- Segurança -->
+        <div class="security-box">
+            <div class="security-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>Seus dados protegidos com segurança</span>
+            </div>
+            <div class="security-item">
+                <i class="fas fa-lock"></i>
+                <span>Pagamento 100% seguro</span>
+            </div>
+        </div>
+
+        <!-- Saiba mais -->
+        <a class="saiba-mais" href="landin_page.html">
+            Saiba mais sobre o <span>Pague Junto</span> <i class="fas fa-chevron-right"></i>
+        </a>
+
+    </div>
+</body>
+</html>

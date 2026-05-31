@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Pague Junto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #0B0F1A; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 0 0 40px; overflow-x: hidden; }
+        .bg-glow { position: fixed; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,80,255,0.25) 0%, transparent 65%); }
+        .wrapper { position: relative; z-index: 1; width: 100%; max-width: 420px; padding: 0 20px 40px; animation: fadeUp 0.5s ease both; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .top-bar { display: flex; align-items: center; padding: 20px 0 8px; }
+        .back-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.07); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; transition: background 0.2s; margin-right: 12px; }
+        .back-btn:hover { background: rgba(255,255,255,0.12); }
+        .top-title { font-size: 17px; font-weight: 900; color: #fff; }
+
+        .logo-area { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 16px 0 20px; }
+        .logo-area img { width: 64px; object-fit: contain; }
+        .logo-text .pague { font-size: 32px; font-weight: 900; color: #fff; line-height: 1; }
+        .logo-text .junto { font-size: 32px; font-weight: 900; color: #818CF8; line-height: 1; }
+
+        .tagline { text-align: center; margin-bottom: 24px; }
+        .tagline h2 { font-size: 20px; font-weight: 800; color: #fff; }
+        .tagline h2 span { color: #818CF8; }
+        .tagline p { font-size: 14px; color: rgba(255,255,255,0.4); font-weight: 600; margin-top: 4px; }
+
+        .convite-banner { background: linear-gradient(135deg, #1e3a6e, #2563EB); border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+        .convite-banner i { font-size: 18px; color: #93C5FD; flex-shrink: 0; }
+        .convite-banner p { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.4; }
+
+        .input-group { position: relative; margin-bottom: 12px; }
+        .input-group i.icon-left { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.3); font-size: 16px; pointer-events: none; }
+        .input-group i.toggle { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.3); font-size: 16px; cursor: pointer; }
+        .input-group .prefix { position: absolute; left: 46px; top: 50%; transform: translateY(-50%); color: #818CF8; font-size: 16px; font-weight: 900; pointer-events: none; }
+
+        .input-group input {
+            width: 100%; background: #141824;
+            border: 1.5px solid #1F2533; border-radius: 14px;
+            padding: 16px 16px 16px 48px;
+            font-size: 15px; font-weight: 700; color: #fff; outline: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .input-group input.with-prefix { padding-left: 64px; }
+        .input-group input.has-toggle { padding-right: 48px; }
+        .input-group input::placeholder { color: rgba(255,255,255,0.25); font-weight: 600; }
+        .input-group input:focus { border-color: #818CF8; background: rgba(59,130,246,0.08); }
+        .input-group input.valid { border-color: #22C55E; }
+        .input-group input.invalid { border-color: #F87171; }
+
+        /* Username check */
+        .username-check { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 14px; }
+        .username-check.ok { color: #22C55E; }
+        .username-check.err { color: #F87171; }
+        .username-hint { font-size: 11px; font-weight: 700; margin-top: 4px; padding-left: 4px; }
+        .username-hint.ok { color: #22C55E; }
+        .username-hint.err { color: #F87171; }
+        .username-hint.info { color: rgba(255,255,255,0.3); }
+
+        .secao-label { font-size: 11px; font-weight: 900; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.08em; margin: 16px 0 8px; }
+
+        .termos-row { display: flex; align-items: flex-start; gap: 10px; margin: 16px 0 20px; }
+        .termos-check { width: 20px; height: 20px; border-radius: 6px; border: 2px solid rgba(255,255,255,0.2); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; transition: all 0.2s; }
+        .termos-check.checked { background: linear-gradient(135deg, #6366F1, #8B5CF6); border-color: #2563EB; }
+        .termos-check.checked::after { content: '✓'; color: #fff; font-size: 11px; font-weight: 900; }
+        .termos-txt { font-size: 13px; color: rgba(255,255,255,0.45); font-weight: 600; line-height: 1.5; }
+        .termos-txt a { color: #818CF8; font-weight: 800; text-decoration: none; }
+
+        .btn-criar { width: 100%; background: linear-gradient(135deg, #6366F1, #8B5CF6); color: #fff; font-size: 17px; font-weight: 900; font-family: 'Plus Jakarta Sans', sans-serif; padding: 18px; border-radius: 14px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.2s, transform 0.1s; box-shadow: 0 8px 24px rgba(37,99,235,0.35); }
+        .btn-criar:hover { background: #1d4ed8; }
+        .btn-criar:active { transform: scale(0.98); }
+        .btn-criar:disabled { opacity: 0.65; cursor: not-allowed; }
+
+        .ja-tenho { text-align: center; margin-top: 18px; font-size: 15px; font-weight: 800; color: #818CF8; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
+
+        .error-msg { background: rgba(248,113,113,0.1); color: #F87171; border: 1px solid rgba(248,113,113,0.2); border-radius: 12px; padding: 12px 16px; font-size: 13px; font-weight: 700; margin-bottom: 12px; display: none; }
+    </style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="wrapper">
+
+    <div class="top-bar">
+        <button class="back-btn" onclick="history.back()"><i class="fas fa-chevron-left"></i></button>
+        <span class="top-title">Cadastro</span>
+    </div>
+
+    <div class="logo-area">
+        <img src="logo.png" alt="Pague Junto">
+        <div class="logo-text">
+            <div class="pague">Pague</div>
+            <div class="junto">Junto</div>
+        </div>
+    </div>
+
+    <div class="tagline">
+        <h2>Crie <span>sua conta</span></h2>
+        <p>Preencha seus dados para começar.</p>
+    </div>
+
+    <div class="convite-banner" id="conviteBanner" style="display:none;">
+        <i class="fas fa-envelope-open-text"></i>
+        <p>Você foi convidado para um rateio! Crie sua conta para participar.</p>
+    </div>
+
+    <div class="error-msg" id="erroMsg"></div>
+
+    <form id="formCadastro">
+        <div class="secao-label">Dados pessoais</div>
+
+        <div class="input-group">
+            <i class="fas fa-user icon-left"></i>
+            <input type="text" id="nome" placeholder="Nome completo" required autocomplete="name">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-envelope icon-left"></i>
+            <input type="email" id="email" placeholder="E-mail" required autocomplete="email">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-phone icon-left"></i>
+            <input type="tel" id="telefone" placeholder="Telefone  (11) 99999-9999">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-id-card icon-left"></i>
+            <input type="text" id="cpf" placeholder="CPF  000.000.000-00" maxlength="14">
+        </div>
+        <div class="input-group">
+            <i class="fas fa-calendar icon-left"></i>
+            <input type="text" id="nascimento" placeholder="Data de nascimento  dd/mm/aaaa" maxlength="10">
+        </div>
+
+        <div class="secao-label">Seu @username</div>
+
+        <div class="input-group">
+            <i class="fas fa-at icon-left"></i>
+            <span class="prefix">@</span>
+            <input type="text" id="username" placeholder="seunome" class="with-prefix" autocomplete="off" autocorrect="off" spellcheck="false">
+            <span class="username-check" id="usernameCheck"></span>
+        </div>
+        <div class="username-hint info" id="usernameHint">Este será seu ID único para receber convites de rateio.</div>
+
+        <div class="secao-label">Segurança</div>
+
+        <div class="input-group">
+            <i class="fas fa-lock icon-left"></i>
+            <input type="password" id="senha" placeholder="Senha" required class="has-toggle" autocomplete="new-password">
+            <i class="fas fa-eye toggle" id="toggleSenha1"></i>
+        </div>
+        <div class="input-group">
+            <i class="fas fa-lock icon-left"></i>
+            <input type="password" id="confirmarSenha" placeholder="Confirmar senha" required class="has-toggle" autocomplete="new-password">
+            <i class="fas fa-eye toggle" id="toggleSenha2"></i>
+        </div>
+
+        <div class="termos-row">
+            <div class="termos-check" id="termosCheck" onclick="toggleTermos()"></div>
+            <p class="termos-txt">Li e aceito os <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a>.</p>
+        </div>
+
+        <button type="submit" class="btn-criar" id="btnCriar">
+            <i class="fas fa-user-plus"></i> Criar minha conta
+        </button>
+    </form>
+
+    <a class="ja-tenho" href="login.html" id="linkLogin">
+        Já tenho conta <i class="fas fa-chevron-right" style="font-size:12px;"></i>
+    </a>
+
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import firebaseConfig from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const conviteId = urlParams.get('convite') || localStorage.getItem('rateioConvite');
+    if (conviteId) {
+        document.getElementById('conviteBanner').style.display = 'flex';
+        document.getElementById('linkLogin').href = `login.html?convite=${conviteId}`;
+    }
+
+    // Toggle senhas
+    ['toggleSenha1', 'toggleSenha2'].forEach((id, i) => {
+        document.getElementById(id).addEventListener('click', () => {
+            const input = document.getElementById(i === 0 ? 'senha' : 'confirmarSenha');
+            const icon = document.getElementById(id);
+            input.type = input.type === 'password' ? 'text' : 'password';
+            icon.classList.toggle('fa-eye'); icon.classList.toggle('fa-eye-slash');
+        });
+    });
+
+    // Máscaras
+    document.getElementById('cpf').addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, '');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        e.target.value = v;
+    });
+    document.getElementById('nascimento').addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, '');
+        v = v.replace(/(\d{2})(\d)/, '$1/$2').replace(/(\d{2})(\d)/, '$1/$2');
+        e.target.value = v;
+    });
+
+    // Username — verificação em tempo real
+    let usernameTimer = null;
+    let usernameDisponivel = false;
+
+    document.getElementById('username').addEventListener('input', (e) => {
+        let v = e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, '');
+        e.target.value = v;
+        clearTimeout(usernameTimer);
+
+        const check = document.getElementById('usernameCheck');
+        const hint = document.getElementById('usernameHint');
+
+        if (v.length < 3) {
+            check.innerHTML = '';
+            hint.className = 'username-hint info';
+            hint.textContent = 'Mínimo 3 caracteres. Use letras, números, _ ou .';
+            usernameDisponivel = false;
+            return;
+        }
+
+        check.innerHTML = '<i class="fas fa-spinner fa-spin" style="color:rgba(255,255,255,0.3);"></i>';
+        hint.className = 'username-hint info';
+        hint.textContent = 'Verificando disponibilidade...';
+
+        usernameTimer = setTimeout(async () => {
+            const snap = await getDocs(query(collection(db, "usuarios"), where("username", "==", v)));
+            if (snap.empty) {
+                check.innerHTML = '<i class="fas fa-check-circle"></i>';
+                check.className = 'username-check ok';
+                hint.className = 'username-hint ok';
+                hint.textContent = `@${v} está disponível!`;
+                e.target.classList.add('valid'); e.target.classList.remove('invalid');
+                usernameDisponivel = true;
+            } else {
+                check.innerHTML = '<i class="fas fa-times-circle"></i>';
+                check.className = 'username-check err';
+                hint.className = 'username-hint err';
+                hint.textContent = `@${v} já está em uso. Tente outro.`;
+                e.target.classList.add('invalid'); e.target.classList.remove('valid');
+                usernameDisponivel = false;
+            }
+        }, 600);
+    });
+
+    let termosAceitos = false;
+    window.toggleTermos = () => {
+        termosAceitos = !termosAceitos;
+        document.getElementById('termosCheck').className = 'termos-check' + (termosAceitos ? ' checked' : '');
+    };
+
+    function mostrarErro(msg) {
+        const el = document.getElementById('erroMsg');
+        el.textContent = msg; el.style.display = 'block'; window.scrollTo(0, 0);
+    }
+
+    document.getElementById('formCadastro').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!termosAceitos) { mostrarErro('Aceite os Termos de Uso para continuar.'); return; }
+
+        const username = document.getElementById('username').value.trim();
+        if (username.length < 3) { mostrarErro('Escolha um @username com pelo menos 3 caracteres.'); return; }
+        if (!usernameDisponivel) { mostrarErro('Este @username não está disponível. Escolha outro.'); return; }
+
+        const senha = document.getElementById('senha').value;
+        const confirmar = document.getElementById('confirmarSenha').value;
+        if (senha !== confirmar) { mostrarErro('As senhas não coincidem.'); return; }
+        if (senha.length < 6) { mostrarErro('A senha deve ter pelo menos 6 caracteres.'); return; }
+
+        const btn = document.getElementById('btnCriar');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Criando conta...';
+        btn.disabled = true;
+
+        const email = document.getElementById('email').value.trim();
+        const nome = document.getElementById('nome').value.trim();
+
+        try {
+            const cred = await createUserWithEmailAndPassword(auth, email, senha);
+            await updateProfile(cred.user, { displayName: nome });
+            await setDoc(doc(db, "usuarios", cred.user.uid), {
+                nome, email, username,
+                telefone: document.getElementById('telefone').value,
+                cpf: document.getElementById('cpf').value,
+                nascimento: document.getElementById('nascimento').value,
+                dataCadastro: new Date()
+            });
+
+            if (conviteId) {
+                localStorage.removeItem('rateioConvite');
+                window.location.href = `pagamento.html?id=${conviteId}`;
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        } catch (error) {
+            const msgs = {
+                'auth/email-already-in-use': 'Este e-mail já está cadastrado.',
+                'auth/invalid-email': 'E-mail inválido.',
+                'auth/weak-password': 'Senha fraca. Use pelo menos 6 caracteres.',
+            };
+            mostrarErro(msgs[error.code] || 'Erro: ' + error.message);
+            btn.innerHTML = '<i class="fas fa-user-plus"></i> Criar minha conta';
+            btn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>

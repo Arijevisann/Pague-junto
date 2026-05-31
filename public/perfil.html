@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="responsive.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alteração Cadastral - Pague Junto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Nunito', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #060D1F;
+            min-height: 100vh;
+            padding-bottom: 40px;
+            overflow-x: hidden;
+        }
+
+        .bg-glow {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,80,255,0.2) 0%, transparent 65%);
+        }
+
+        .wrapper { position: relative; z-index: 1; max-width: 420px; margin: 0 auto; padding: 0 20px 40px; animation: fadeUp 0.4s ease both; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Header */
+        .top-bar { display: flex; align-items: center; padding: 20px 0 20px; }
+        .back-btn {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(255,255,255,0.07); border: none;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 15px; margin-right: 12px; transition: background 0.2s;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.12); }
+        .top-title { font-size: 17px; font-weight: 900; color: #fff; }
+
+        /* Avatar */
+        .avatar-area { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+        .avatar-wrap { position: relative; }
+        .avatar {
+            width: 76px; height: 76px; border-radius: 50%;
+            background: linear-gradient(135deg, #1e3a6e, #2563EB);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; font-weight: 900; color: #fff;
+            border: 3px solid rgba(37,99,235,0.4);
+        }
+        .avatar-cam {
+            position: absolute; bottom: 0; right: 0;
+            width: 26px; height: 26px; border-radius: 50%;
+            background: #2563EB; border: 2px solid #060D1F;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 11px; color: #fff;
+        }
+        .avatar-nome { font-size: 22px; font-weight: 900; color: #fff; }
+        .avatar-sub { font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 600; margin-top: 2px; }
+
+        /* Input row */
+        .input-row {
+            background: rgba(255,255,255,0.05);
+            border: 1.5px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .input-row:focus-within {
+            border-color: #3B82F6;
+            background: rgba(59,130,246,0.07);
+        }
+        .input-row i { color: rgba(255,255,255,0.3); font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
+        .input-row input {
+            flex: 1; background: transparent; border: none; outline: none;
+            font-size: 15px; font-weight: 700; color: #fff;
+            font-family: 'Nunito', sans-serif;
+        }
+        .input-row input::placeholder { color: rgba(255,255,255,0.2); font-weight: 600; }
+        .input-row .valor { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.7); }
+        .input-row .seta { color: rgba(255,255,255,0.2); font-size: 13px; }
+
+        /* Botões */
+        .btn-alterar-senha {
+            width: 100%; background: transparent; color: #3B82F6;
+            font-size: 16px; font-weight: 900; font-family: 'Nunito', sans-serif;
+            padding: 17px; border-radius: 14px;
+            border: 2px solid rgba(59,130,246,0.3);
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin: 20px 0 10px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .btn-alterar-senha:hover { background: rgba(59,130,246,0.08); border-color: #3B82F6; }
+
+        .btn-salvar {
+            width: 100%; background: #2563EB; color: #fff;
+            font-size: 16px; font-weight: 900; font-family: 'Nunito', sans-serif;
+            padding: 17px; border-radius: 14px; border: none;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 8px 24px rgba(37,99,235,0.3);
+        }
+        .btn-salvar:hover { background: #1d4ed8; }
+        .btn-salvar:active { transform: scale(0.98); }
+        .btn-salvar:disabled { opacity: 0.65; cursor: not-allowed; }
+
+        /* Segurança */
+        .seguranca-box {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px; padding: 16px 18px;
+            display: flex; align-items: flex-start; gap: 14px;
+            margin-top: 16px;
+        }
+        .seguranca-box i { font-size: 22px; color: #3B82F6; flex-shrink: 0; margin-top: 2px; }
+        .seguranca-box h4 { font-size: 14px; font-weight: 900; color: #fff; margin-bottom: 4px; }
+        .seguranca-box p { font-size: 12px; color: rgba(255,255,255,0.4); font-weight: 600; line-height: 1.5; }
+
+        /* Logout */
+        .btn-logout {
+            width: 100%; background: rgba(248,113,113,0.08); color: #F87171;
+            font-size: 15px; font-weight: 800; font-family: 'Nunito', sans-serif;
+            padding: 15px; border-radius: 14px;
+            border: 1px solid rgba(248,113,113,0.2);
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-top: 12px; transition: background 0.2s;
+        }
+        .btn-logout:hover { background: rgba(248,113,113,0.15); }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: #22C55E; color: #000; font-size: 14px; font-weight: 800;
+            padding: 12px 24px; border-radius: 99px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            display: none; align-items: center; gap: 8px; z-index: 100;
+            white-space: nowrap;
+        }
+
+        /* Modal senha */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 50; display: none; align-items: flex-end; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: #131F35; border-radius: 28px 28px 0 0; padding: 28px 24px 40px; width: 100%; max-width: 420px; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-handle { width: 40px; height: 4px; background: rgba(255,255,255,0.15); border-radius: 99px; margin: 0 auto 24px; }
+        .modal-title { font-size: 20px; font-weight: 900; margin-bottom: 20px; color: #fff; }
+
+        .modal-input {
+            background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.1);
+            border-radius: 14px; padding: 15px 16px; font-size: 15px; font-weight: 700;
+            color: #fff; outline: none; width: 100%; font-family: 'Nunito', sans-serif;
+            margin-bottom: 12px; transition: border-color 0.2s;
+        }
+        .modal-input:focus { border-color: #3B82F6; }
+        .modal-input::placeholder { color: rgba(255,255,255,0.2); }
+        .btn-modal-salvar {
+            width: 100%; background: #2563EB; color: #fff;
+            font-size: 16px; font-weight: 900; font-family: 'Nunito', sans-serif;
+            padding: 17px; border-radius: 14px; border: none; cursor: pointer;
+            margin-top: 4px; transition: background 0.2s;
+        }
+        .btn-modal-salvar:hover { background: #1d4ed8; }
+
+        .error-msg { background: rgba(248,113,113,0.1); color: #F87171; border: 1px solid rgba(248,113,113,0.2); border-radius: 12px; padding: 12px 16px; font-size: 13px; font-weight: 700; margin-bottom: 12px; display: none; }
+    </style>
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<div class="wrapper">
+
+    <div class="top-bar">
+        <button class="back-btn" onclick="location.href='dashboard.html'">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <span class="top-title">Alteração cadastral</span>
+    </div>
+
+    <!-- Avatar -->
+    <div class="avatar-area">
+        <div class="avatar-wrap">
+            <div class="avatar" id="avatarIcon">?</div>
+            <div class="avatar-cam"><i class="fas fa-camera"></i></div>
+        </div>
+        <div>
+            <div class="avatar-nome" id="avatarNome">Carregando...</div>
+            <div class="avatar-sub">Atualize seus dados</div>
+        </div>
+    </div>
+
+    <div class="error-msg" id="erroMsg"></div>
+
+    <!-- Campos -->
+    <div class="input-row">
+        <i class="fas fa-user"></i>
+        <input type="text" id="nome" placeholder="Nome completo" autocomplete="name">
+    </div>
+    <div class="input-row">
+        <i class="fas fa-envelope"></i>
+        <input type="email" id="email" placeholder="E-mail" autocomplete="email" readonly style="opacity:0.5; cursor:not-allowed;">
+    </div>
+    <div class="input-row">
+        <i class="fas fa-phone"></i>
+        <input type="tel" id="telefone" placeholder="Telefone" autocomplete="tel">
+    </div>
+    <div class="input-row">
+        <i class="fas fa-id-card"></i>
+        <input type="text" id="cpf" placeholder="CPF" maxlength="14">
+    </div>
+    <div class="input-row" style="cursor:pointer;" onclick="document.getElementById('endereco').focus()">
+        <i class="fas fa-home"></i>
+        <input type="text" id="endereco" placeholder="Endereço">
+        <i class="fas fa-chevron-up seta"></i>
+    </div>
+    <div class="input-row" style="cursor:pointer;" onclick="document.getElementById('nascimento').focus()">
+        <i class="fas fa-calendar"></i>
+        <input type="text" id="nascimento" placeholder="Data de nascimento" maxlength="10">
+        <i class="fas fa-chevron-right seta"></i>
+    </div>
+
+    <!-- Botões -->
+    <button class="btn-alterar-senha" onclick="abrirModalSenha()">
+        <i class="fas fa-lock"></i> Alterar senha
+    </button>
+
+    <button class="btn-salvar" id="btnSalvar" onclick="salvarAlteracoes()">
+        <i class="fas fa-check"></i> Salvar alterações
+    </button>
+
+    <!-- Segurança -->
+    <div class="seguranca-box">
+        <i class="fas fa-shield-alt"></i>
+        <div>
+            <h4>Seus dados protegidos</h4>
+            <p>Utilizamos criptografia e seguimos os mais altos padrões de segurança.</p>
+        </div>
+    </div>
+
+    <!-- Logout -->
+    <button class="btn-logout" id="btnLogout">
+        <i class="fas fa-sign-out-alt"></i> Sair da conta
+    </button>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><i class="fas fa-check"></i> <span id="toastMsg">Salvo!</span></div>
+
+<!-- Modal alterar senha -->
+<div class="modal-overlay" id="modalSenha" onclick="fecharModal(event)">
+    <div class="modal">
+        <div class="modal-handle"></div>
+        <div class="modal-title">Alterar senha</div>
+        <input type="password" class="modal-input" id="senhaAtual" placeholder="Senha atual">
+        <input type="password" class="modal-input" id="novaSenha" placeholder="Nova senha">
+        <input type="password" class="modal-input" id="confirmarNovaSenha" placeholder="Confirmar nova senha">
+        <button class="btn-modal-salvar" onclick="alterarSenha()">Salvar nova senha</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut, updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import firebaseConfig from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let usuarioLogado = null;
+
+    // Máscaras
+    document.getElementById('cpf').addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, '');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        e.target.value = v;
+    });
+    document.getElementById('nascimento').addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, '');
+        v = v.replace(/(\d{2})(\d)/, '$1/$2').replace(/(\d{2})(\d)/, '$1/$2');
+        e.target.value = v;
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) { window.location.href = 'login.html'; return; }
+        usuarioLogado = user;
+
+        const nome = user.displayName || '';
+        document.getElementById('avatarNome').textContent = nome.split(' ')[0] || 'Usuário';
+        document.getElementById('avatarIcon').textContent = nome ? nome.charAt(0).toUpperCase() : '?';
+        document.getElementById('nome').value = nome;
+        document.getElementById('email').value = user.email || '';
+
+        // Carrega dados extras do Firestore
+        try {
+            const snap = await getDoc(doc(db, "usuarios", user.uid));
+            if (snap.exists()) {
+                const d = snap.data();
+                document.getElementById('telefone').value = d.telefone || '';
+                document.getElementById('cpf').value = d.cpf || '';
+                document.getElementById('endereco').value = d.endereco || '';
+                document.getElementById('nascimento').value = d.nascimento || '';
+            }
+        } catch (e) { console.error(e); }
+    });
+
+    function mostrarToast(msg, erro = false) {
+        const t = document.getElementById('toast');
+        const m = document.getElementById('toastMsg');
+        m.textContent = msg;
+        t.style.background = erro ? '#F87171' : '#22C55E';
+        t.style.color = erro ? '#fff' : '#000';
+        t.style.display = 'flex';
+        setTimeout(() => t.style.display = 'none', 3000);
+    }
+
+    window.salvarAlteracoes = async () => {
+        if (!usuarioLogado) return;
+        const btn = document.getElementById('btnSalvar');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+        btn.disabled = true;
+
+        try {
+            const nome = document.getElementById('nome').value.trim();
+            await updateProfile(usuarioLogado, { displayName: nome });
+            await setDoc(doc(db, "usuarios", usuarioLogado.uid), {
+                nome,
+                email: usuarioLogado.email,
+                telefone: document.getElementById('telefone').value,
+                cpf: document.getElementById('cpf').value,
+                endereco: document.getElementById('endereco').value,
+                nascimento: document.getElementById('nascimento').value,
+            }, { merge: true });
+
+            document.getElementById('avatarNome').textContent = nome.split(' ')[0];
+            document.getElementById('avatarIcon').textContent = nome.charAt(0).toUpperCase();
+            mostrarToast('Alterações salvas com sucesso!');
+        } catch (e) {
+            mostrarToast('Erro ao salvar: ' + e.message, true);
+        }
+
+        btn.innerHTML = '<i class="fas fa-check"></i> Salvar alterações';
+        btn.disabled = false;
+    };
+
+    window.abrirModalSenha = () => {
+        document.getElementById('modalSenha').classList.add('open');
+    };
+    window.fecharModal = (e) => {
+        if (e.target === document.getElementById('modalSenha')) {
+            document.getElementById('modalSenha').classList.remove('open');
+        }
+    };
+
+    window.alterarSenha = async () => {
+        const atual = document.getElementById('senhaAtual').value;
+        const nova = document.getElementById('novaSenha').value;
+        const confirmar = document.getElementById('confirmarNovaSenha').value;
+
+        if (nova !== confirmar) { mostrarToast('As senhas não coincidem.', true); return; }
+        if (nova.length < 6) { mostrarToast('Senha deve ter pelo menos 6 caracteres.', true); return; }
+
+        try {
+            const cred = EmailAuthProvider.credential(usuarioLogado.email, atual);
+            await reauthenticateWithCredential(usuarioLogado, cred);
+            await updatePassword(usuarioLogado, nova);
+            document.getElementById('modalSenha').classList.remove('open');
+            mostrarToast('Senha alterada com sucesso!');
+            document.getElementById('senhaAtual').value = '';
+            document.getElementById('novaSenha').value = '';
+            document.getElementById('confirmarNovaSenha').value = '';
+        } catch (e) {
+            const msgs = {
+                'auth/wrong-password': 'Senha atual incorreta.',
+                'auth/too-many-requests': 'Muitas tentativas. Tente mais tarde.',
+            };
+            mostrarToast(msgs[e.code] || 'Erro: ' + e.message, true);
+        }
+    };
+
+    document.getElementById('btnLogout').addEventListener('click', async () => {
+        await signOut(auth);
+        window.location.href = 'index.html';
+    });
+</script>
+</body>
+</html>
