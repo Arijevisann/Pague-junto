@@ -526,15 +526,45 @@
     };
 
     window.continuar = async () => {
-        if (metodoSelecionado === 'pix') {
-            document.getElementById('telaEscolha').style.display = 'none';
-            document.getElementById('pixScreen').style.display = 'block';
-            iniciarTimer(); window.scrollTo(0, 0);
-        } else {
-            await registrarPagamento();
-        }
-    };
+    if (metodoSelecionado === 'pix') {
+        const btn = document.querySelector('.btn-continuar');
+        btn.innerHTML = '<span>Gerando Pix...</span>';
+        btn.disabled = true;
 
+        try {
+            const val = dadosRateio.valorIndividual;
+            const taxa = val * 0.01;
+            const total = val + taxa;
+
+            const response = await fetch('/api/create-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    valor: total,
+                    nomeParticipante: usuarioLogado.displayName || usuarioLogado.email,
+                    emailParticipante: usuarioLogado.email,
+                    rateioId: rateioId
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success && data.url) {
+                window.location.href = data.url;
+            } else {
+                alert('Erro ao gerar Pix. Tente novamente.');
+                btn.innerHTML = '<span>Continuar</span><i class="fas fa-arrow-right"></i>';
+                btn.disabled = false;
+            }
+        } catch (error) {
+            alert('Erro de conexão. Tente novamente.');
+            btn.innerHTML = '<span>Continuar</span><i class="fas fa-arrow-right"></i>';
+            btn.disabled = false;
+        }
+    } else {
+        await registrarPagamento();
+    }
+};
     window.voltarEscolha = () => {
         clearInterval(timerInterval);
         document.getElementById('pixScreen').style.display = 'none';
